@@ -1,7 +1,6 @@
 import pygame as pg
 
 from EventManager import *
-from StateMachine import *
 from Model import GameEngine
 import Const
 
