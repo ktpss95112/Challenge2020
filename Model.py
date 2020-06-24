@@ -170,7 +170,7 @@ EventInitialize{
     initiate all players;
     respawn all players;   
     initiate timer
-}
+}   
 EventStateChange{
     pass
 }
@@ -180,7 +180,7 @@ EventEveryTick{
 EventTimesUp{
     maintain item spawn time
     maintain player respawn time
-    maintain [layer     last-being-attacked-time-elapsed;
+    maintain [layer last-being-attacked-time-elapsed;
 }
 EventPlayerMove
 EventPlayerAttack
