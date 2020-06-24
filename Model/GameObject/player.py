@@ -11,7 +11,8 @@ class Player:
         self.voltage = 0
         self.keep_item_id = -1
         self.position = Const.PLAYER_INIT_POSITION[player_id] # is a pg.Vector2 (Const.PLAYER_INIT_POSITION is not update now!)
-        self.speed = Const.SPEED_ATTACK if player_id == 1 else Const.SPEED_DEFENSE
+        self.velocity = 0 # current velocity of user
+        self.speed = Const.PLAYER_SPEED # speed gain when user control the little dian ball
 
     def move_direction(self, direction: str):
         '''

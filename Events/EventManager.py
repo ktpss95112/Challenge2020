@@ -84,7 +84,7 @@ class EventPlayerMove(BaseEvent):
 class EventPlayerAttack(BaseEvent):
     name = 'PlayerAttack event'
 
-    def __init__(self, attacker_id, velocity_delta):
+    def __init__(self, attacker_id, velocity_delta): # velocity_delta is a pg.Vector2
         self.attacker_id = attacker_id
         self.velocity_delta = velocity_delta
 

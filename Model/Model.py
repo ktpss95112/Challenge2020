@@ -4,6 +4,7 @@ import pygame as pg
 
 from Events.EventManager import *
 from Model.GameObject.player import Player
+from Model.GameObject.item import Item
 import Const
 
 
@@ -89,6 +90,7 @@ class GameEngine:
             if cur_state == Const.STATE_MENU:
                 self.update_menu()
             elif cur_state == Const.STATE_PLAY:
+                self.update_players()
                 self.update_objects()
 
                 self.timer -= 1
@@ -135,6 +137,13 @@ class GameEngine:
         '''
         Update the objects in welcome scene.
         For example: game title, hint text
+        '''
+        pass
+
+    def update_players(self):
+        '''
+        Update information of users
+        For example: position, remaining time of item used
         '''
         pass
 
