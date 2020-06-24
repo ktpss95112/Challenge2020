@@ -162,3 +162,60 @@ class Player:
         # clipping
         self.position.x = max(0, min(Const.ARENA_SIZE[0], self.position.x))
         self.position.y = max(0, min(Const.ARENA_SIZE[1], self.position.y))
+
+
+""" Events that model.py should handle. 
+
+EventInitialize{
+    initiate all players;
+    respawn all players;   
+    initiate timer
+}
+EventStateChange{
+    pass
+}
+EventEveryTick{
+
+}
+EventTimesUp{
+    maintain item spawn time
+    maintain player respawn time
+    maintain [layer     last-being-attacked-time-elapsed;
+}
+EventPlayerMove
+EventPlayerAttack
+EventPlayerRespawn
+EventPlayerDied
+EventPlayerPickItem
+EventPlayerUseItem
+
+"""
+
+"""
+class player's varible
+
+player-id; (1-indexed)
+last-being-attacked-by;
+last-being-attacked-time-elapsed;
+respawn-time-elapsed;
+is-invincible; (is true when respawn-time-elapsed < t)
+KO time;
+has-item;
+be KOed time;
+voltage;
+position;
+velosity; (there is no acceleration variable because acceleration is instant)
+
+"""
+
+""" 
+class item's varible
+item-id (1-indexed)
+postition
+"""
+
+"""
+class platform
+upper-left
+bottom-right
+"""
