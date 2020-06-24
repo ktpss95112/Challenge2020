@@ -80,3 +80,18 @@ class EventPlayerMove(BaseEvent):
 
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} move {self.direction}'
+
+class EventPlayerAttack(BaseEvent):
+    name = 'PlayerAttack event'
+
+class EventPlayerRespawn(BaseEvent):
+    name = 'PlayerRespawn event'
+
+class EventPlayerDied(BaseEvent):
+    name = 'PlayerDied event'
+
+class EventPlayerPickItem(BaseEvent):
+    name = 'PlayerPickItem event'
+
+class EventPlayerUseItem(BaseEvent):
+    name = 'PlayerUseItem event'
