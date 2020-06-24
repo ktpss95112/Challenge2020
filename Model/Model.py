@@ -75,7 +75,7 @@ class GameEngine:
         '''
         self.clock = pg.time.Clock()
         self.state_machine.push(Const.STATE_MENU)
-        self.players = [Player(0), Player(1)]
+        self.players = [Player(0), Player(1), Player(2), Player(3)]
 
     def notify(self, event: BaseEvent):
         '''
