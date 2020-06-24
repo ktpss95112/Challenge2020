@@ -84,14 +84,43 @@ class EventPlayerMove(BaseEvent):
 class EventPlayerAttack(BaseEvent):
     name = 'PlayerAttack event'
 
+    def __init__(self, attacker_id, velocity_delta):
+        self.attacker_id = attacker_id
+        self.velocity_delta = velocity_delta
+
+class EventPlayerDefense(BaseEvent):
+    name = 'PlayerDefense event'
+
+    def __init__(self, defenser_id, velocity_delta):
+        self.defenser_id = defenser_id
+        self.velocity_delta = velocity_delta
+
 class EventPlayerRespawn(BaseEvent):
     name = 'PlayerRespawn event'
+
+    def __init__(self, player_id):
+        self.player_id = player_id
 
 class EventPlayerDied(BaseEvent):
     name = 'PlayerDied event'
 
+    def __init__(self, player_id):
+        self.player_id = player_id
+
 class EventPlayerPickItem(BaseEvent):
     name = 'PlayerPickItem event'
 
+    def __init__(self, player_id):
+        self.player_id = player_id
+
 class EventPlayerUseItem(BaseEvent):
     name = 'PlayerUseItem event'
+
+    def __init__(self, player_id):
+        self.player_id = player_id
+
+class EventItemSpawn(BaseEvent):
+    name = 'ItemSpawn event'
+
+    def __init__(self, item):
+        self.item = item

@@ -6,8 +6,8 @@ class Player:
         self.last_being_attacked_by = -1
         self.last_being_attacked_time_elapsed = 0
         self.invincible_time = 0
-        self.KO_time = 0
-        self.be_KO_time = 0
+        self.KO_amount = 0
+        self.be_KO_amount = 0
         self.voltage = 0
         self.keep_item_id = -1
         self.position = Const.PLAYER_INIT_POSITION[player_id] # is a pg.Vector2 (Const.PLAYER_INIT_POSITION is not update now!)

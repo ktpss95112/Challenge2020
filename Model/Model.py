@@ -113,6 +113,24 @@ class GameEngine:
         elif isinstance(event, EventTimesUp):
             self.state_machine.push(Const.STATE_ENDGAME)
 
+        elif isinstance(event, EventPlayerAttack):
+            pass
+        
+        elif isinstance(event, EventPlayerRespawn):
+            pass
+
+        elif isinstance(event, EventPlayerDied):
+            pass
+
+        elif isinstance(event, EventPlayerPickItem):
+            pass
+
+        elif isinstance(event, EventPlayerUseItem):
+            pass
+
+        elif isinstance(event, EventItemSpawn):
+            pass
+
     def update_menu(self):
         '''
         Update the objects in welcome scene.
