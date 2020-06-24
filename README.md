@@ -1,5 +1,5 @@
-# Challenge 2020 Homework
+# Challenge 2020
 
 改編自 [WooLNinesun / PygameMVC](https://github.com/WooLNinesun/PygameMVC) 和 [howard41436 / challenge2019](https://github.com/howard41436/challenge2019) 。
 
-作業說明： https://hackmd.io/GTuJVpljQeiw5PbnbhqrTQ
+開發 Document： https://hackmd.io/@HH54wAcPSMKu3sBWfWcDbQ/SkTXpnPTI
