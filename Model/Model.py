@@ -194,18 +194,18 @@ EventPlayerUseItem
 """
 class player's varible
 
-player-id; (1-indexed)
-last-being-attacked-by;
-last-being-attacked-time-elapsed;
-respawn-time-elapsed;
-is-invincible; (is true when respawn-time-elapsed < t)
-KO time;
-has-item;
-be KOed time;
-voltage;
-position;
+player-id; (1-indexed):int
+last-being-attacked-by:int
+last-being-attacked-time-elapsed:int
+respawn-time-elapsed:int 
+is-invincible; (is true when respawn-time-elapsed < t):int
+KO time:int
+has-item:int
+be KOed time:int
+voltage:int
+position:vec2
 velosity; (there is no acceleration variable because acceleration is instant)
-
+:vec2
 """
 
 """ 
