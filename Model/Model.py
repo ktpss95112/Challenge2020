@@ -149,7 +149,14 @@ class GameEngine:
 class Player:
     def __init__(self, player_id):
         self.player_id = player_id
-        self.position = Const.PLAYER_INIT_POSITION[player_id] # is a pg.Vector2
+        self.last_being_attacked_by = -1
+        self.last_being_attacked_time_elapsed = 0
+        self.invincible_time = 0
+        self.KO_time = 0
+        self.be_KO_time = 0
+        self.voltage = 0
+        self.keep_item_id = -1
+        self.position = Const.PLAYER_INIT_POSITION[player_id] # is a pg.Vector2 (Const.PLAYER_INIT_POSITION is not update now!)
         self.speed = Const.SPEED_ATTACK if player_id == 1 else Const.SPEED_DEFENSE
 
     def move_direction(self, direction: str):
@@ -194,7 +201,7 @@ EventPlayerUseItem
 """
 class player's varible
 
-player-id; (1-indexed)
+player-id; (0-indexed)
 last-being-attacked-by;
 last-being-attacked-time-elapsed;
 respawn-time-elapsed;
@@ -210,7 +217,7 @@ velosity; (there is no acceleration variable because acceleration is instant)
 
 """ 
 class item's varible
-item-id (1-indexed)
+item-id (0-indexed)
 postition
 """
 
