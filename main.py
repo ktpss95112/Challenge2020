@@ -1,9 +1,9 @@
 import pygame as pg
 
-from EventManager import EventManager
-from Model import GameEngine
-from Controller import Controller
-from View import GraphicalView
+from Events.EventManager import EventManager
+from Model.Model import GameEngine
+from Controller.Controller import Controller
+from View.View import GraphicalView
 
 
 def main():

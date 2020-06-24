@@ -2,7 +2,7 @@ import random
 
 import pygame as pg
 
-from EventManager import *
+from Events.EventManager import *
 import Const
 
 
