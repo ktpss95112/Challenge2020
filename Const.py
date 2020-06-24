@@ -30,6 +30,16 @@ ARENA_SIZE = (800, 800)
 BACKGROUND_COLOR = pg.Color('black')
 PLAYER_COLOR = [pg.Color('green'), pg.Color('magenta')]
 
+# item
+NO_ITEM = 0
+BANANA_PISTOL = 1
+BIG_BLACK_HOLE = 2
+CANCER_BOMB = 3
+ZAP_ZAP_ZAP = 4
+BANANA_PEEL = 5
+RAINBOW_GROUNDER = 6
+INVINCIBLE_BATTERY = 7
+
 
 # controller
 PLAYER_KEYS = {
