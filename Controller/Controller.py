@@ -61,9 +61,10 @@ class Controller:
             if keys[k]:
                 self.ev_manager.post(EventPlayerMove(*v))
 
-        for k, v in Const.PLAYER_JUMP_KEYS.items():
-            if keys[k]:
-                self.ev_manager.post(EventPlayerJump(v))
+        for event_pg in key_down_events:
+            for k, v in Const.PLAYER_JUMP_KEYS.items():
+                if event_pg.type == pg.KEYDOWN and event_pg.key == k:
+                    self.ev_manager.post(EventPlayerJump(v))
         
         for k, v in Const.PLAYER_ATTACK_KEYS.items():
             if keys[k]:

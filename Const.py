@@ -10,8 +10,9 @@ PLAYER_INIT_POSITION = [
     pg.Vector2(700, 700)
 ]
 PLAYER_RADIUS = 30
-PLAYER_NORMAL_SPEED = 100
-PLAYER_JUMP_SPEED = 200
+PLAYER_INIT_VELOCITY = pg.Vector2(0, 0)
+PLAYER_NORMAL_SPEED = 8000
+PLAYER_JUMP_SPEED = 80000
 DIRECTION_TO_VEC2 = {
     'up': pg.Vector2(0, -1),
     'left': pg.Vector2(-1, 0),
@@ -21,6 +22,9 @@ DIRECTION_TO_VEC2 = {
 PLATFORM_INIT_POSITION = [
     [pg.Vector2(100, 730), pg.Vector2(700, 740)]
 ]
+PLAYER_JUMP_QUOTA = 3
+GRAVITY_ACCELERATION = 60
+HORIZONTAL_ACCELERATION = 100
 
 # State machine constants
 STATE_POP = 0 # for convenience, not really a state which we can be in

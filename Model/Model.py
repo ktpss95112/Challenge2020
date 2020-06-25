@@ -115,7 +115,10 @@ class GameEngine:
             self.running = False
 
         elif isinstance(event, EventPlayerMove):
-            self.players[event.player_id].move_direction(event.direction)
+            self.players[event.player_id].move_horizontal(event.direction)
+
+        elif isinstance(event, EventPlayerJump):
+            self.players[event.player_id].jump()
 
         elif isinstance(event, EventTimesUp):
             self.state_machine.push(Const.STATE_ENDGAME)
@@ -151,7 +154,8 @@ class GameEngine:
         Update information of users
         For example: position, remaining time of item used
         '''
-        pass
+        for player in self.players:
+            player.move_every_tick(self.platforms)
 
     def update_objects(self):
         '''
