@@ -49,25 +49,31 @@ INVINCIBLE_BATTERY = 7
 
 
 # controller
-PLAYER_KEYS = {
-    pg.K_RCTRL: (3, 'use-item'),
-    pg.K_UP: (3, 'up'),
+PLAYER_MOVE_KEYS = {
     pg.K_LEFT: (3, 'left'),
-    pg.K_DOWN: (3, 'down'),
     pg.K_RIGHT: (3, 'right'),
-    pg.K_u: (2, 'use-item'),
-    pg.K_i: (2, 'up'),
     pg.K_j: (2, 'left'),
-    pg.K_k: (2, 'down'),
     pg.K_l: (2, 'right'),
-    pg.K_r: (1, 'use-item'),
-    pg.K_t: (1, 'up'),
     pg.K_f: (1, 'left'),
-    pg.K_g: (1, 'down'),
     pg.K_h: (1, 'right'),
-    pg.K_q: (0, 'use-item'),
-    pg.K_w: (0, 'up'),
     pg.K_a: (0, 'left'),
-    pg.K_s: (0, 'down'),
     pg.K_d: (0, 'right'),
+}
+PLAYER_JUMP_KEYS = {
+    pg.K_UP: 3,
+    pg.K_i: 2,
+    pg.K_t: 1,
+    pg.K_w: 0
+}
+PLAYER_ITEM_KEYS = {
+    pg.K_RCTRL: 3,
+    pg.K_u: 2,
+    pg.K_r: 1,
+    pg.K_q: 0
+}
+PLAYER_ATTACK_KEYS = {
+    pg.K_DOWN: 3,
+    pg.K_k: 2,
+    pg.K_g: 1,
+    pg.K_s: 0
 }

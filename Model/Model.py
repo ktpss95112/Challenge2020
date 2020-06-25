@@ -138,8 +138,6 @@ class GameEngine:
         elif isinstance(event, EventPlayerUseItem):
             pass
 
-        elif isinstance(event, EventItemSpawn):
-            pass
 
     def update_menu(self):
         '''

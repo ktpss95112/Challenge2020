@@ -57,7 +57,7 @@ class Controller:
 
     def ctrl_play(self, key_down_events):
         keys = pg.key.get_pressed()
-        for k, v in Const.PLAYER_KEYS.items():
+        for k, v in Const.PLAYER_MOVE_KEYS.items():
             if keys[k]:
                 self.ev_manager.post(EventPlayerMove(*v))
 
