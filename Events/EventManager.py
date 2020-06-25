@@ -81,19 +81,25 @@ class EventPlayerMove(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} move {self.direction}'
 
+
+class EventPlayerJump(BaseEvent):
+    name = 'PlayerJump event'
+
+    def __init__(self, player_id):
+        self.player_id = player_id
+    
+    def __str__(self):
+        return f'{self.name} => player_id {self.player_id} jump'
+
 class EventPlayerAttack(BaseEvent):
     name = 'PlayerAttack event'
 
-    def __init__(self, attacker_id, velocity_delta): # velocity_delta is a pg.Vector2
-        self.attacker_id = attacker_id
-        self.velocity_delta = velocity_delta
+    def __init__(self, player_id):
+        self.player_id = player_id
+    
+    def __str__(self):
+        return f'{self.name} => player_id {self.player_id} attack'
 
-class EventPlayerDefense(BaseEvent):
-    name = 'PlayerDefense event'
-
-    def __init__(self, defenser_id, velocity_delta):
-        self.defenser_id = defenser_id
-        self.velocity_delta = velocity_delta
 
 class EventPlayerRespawn(BaseEvent):
     name = 'PlayerRespawn event'
@@ -101,20 +107,47 @@ class EventPlayerRespawn(BaseEvent):
     def __init__(self, player_id):
         self.player_id = player_id
 
+    def __str__(self):
+        return f'{self.name} => player_id {self.player_id} respawn'
+
+
 class EventPlayerDied(BaseEvent):
     name = 'PlayerDied event'
 
     def __init__(self, player_id):
         self.player_id = player_id
 
+    def __str__(self):
+        return f'{self.name} => player_id {self.player_id} died'
+
+
 class EventPlayerItem(BaseEvent):
-    name = 'Player Uses or Picks Item event'
+    name = 'Player press item button (contoller => model)'
 
     def __init__(self, player_id):
         self.player_id = player_id
 
-class EventItemSpawn(BaseEvent):
-    name = 'ItemSpawn event'
+    def __str__(self):
+        return f'{self.name} => player_id {self.player_id}'
 
-    def __init__(self, item):
-        self.item = item
+
+class EventPlayerUseItem(BaseEvent):
+    name = 'Player use item event (model => view)'
+
+    def __init__(self, player_id, item_id):
+        self.player_id = player_id
+        self.item_id = item_id
+
+    def __str__(self):
+        return f'{self.name} => player_id {self.player_id} use item {self.item_id}'
+
+
+class EventPlayerPickItem(BaseEvent):
+    name = 'Player pick item event (model => view)'
+
+    def __init__(self, player_id, item_id):
+        self.player_id = player_id
+        self.item_id = item_id
+
+    def __str__(self):
+        return f'{self.name} => player_id {self.player_id} pick item {self.item_id}'

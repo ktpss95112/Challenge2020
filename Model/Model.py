@@ -123,6 +123,9 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerDied):
             pass
+        
+        elif isinstance(event, EventPlayerItem):
+            pass
 
         elif isinstance(event, EventPlayerPickItem):
             pass
@@ -150,7 +153,7 @@ class GameEngine:
     def update_objects(self):
         '''
         Update the objects not controlled by user.
-        For example: obstacles, items, special effects
+        For example: obstacles, items, special effects, platform
         '''
         pass
 
