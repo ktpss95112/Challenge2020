@@ -17,21 +17,21 @@ class Player:
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
 
-    def move_every_tick(self, platforms: list):
+    def move_every_tick(self, platforms: list, fps):
         # Move the player
         prev_position = pg.Vector2(self.position)
         self.position += self.velocity / Const.FPS
 
         # Modify the horizontal velocity
         if self.velocity.x > 0:
-            self.velocity.x -= Const.HORIZONTAL_ACCELERATION
+            self.velocity.x -= Const.HORIZONTAL_ACCELERATION / Const.FPS
             self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
         elif self.velocity.x < 0:
-            self.velocity.x += Const.HORIZONTAL_ACCELERATION
+            self.velocity.x += Const.HORIZONTAL_ACCELERATION / Const.FPS
             self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
 
         # Modify the vertical velocity
-        self.velocity.y += Const.GRAVITY_ACCELERATION
+        self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
 
         # Make sure that the player do not pass through the platform
         for platform in platforms:

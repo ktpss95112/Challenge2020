@@ -14,17 +14,15 @@ PLAYER_INIT_VELOCITY = pg.Vector2(0, 0)
 PLAYER_NORMAL_SPEED = 300
 PLAYER_JUMP_SPEED = 1200
 DIRECTION_TO_VEC2 = {
-    'up': pg.Vector2(0, -1),
     'left': pg.Vector2(-1, 0),
-    'down': pg.Vector2(0, 1),
     'right': pg.Vector2(1, 0),
 }
 PLATFORM_INIT_POSITION = [
     [pg.Vector2(100, 730), pg.Vector2(700, 740)]
 ]
 PLAYER_JUMP_QUOTA = 3
-GRAVITY_ACCELERATION = 70
-HORIZONTAL_ACCELERATION = 300
+GRAVITY_ACCELERATION = 70 * FPS
+HORIZONTAL_ACCELERATION = 300 * FPS
 
 # State machine constants
 STATE_POP = 0 # for convenience, not really a state which we can be in
