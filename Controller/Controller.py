@@ -61,6 +61,18 @@ class Controller:
             if keys[k]:
                 self.ev_manager.post(EventPlayerMove(*v))
 
+        for k, v in Const.PLAYER_JUMP_KEYS.items():
+            if keys[k]:
+                self.ev_manager.post(EventPlayerJump(v))
+        
+        for k, v in Const.PLAYER_ATTACK_KEYS.items():
+            if keys[k]:
+                self.ev_manager.post(EventPlayerAttack(v))
+
+        for k, v in Const.PLAYER_ITEM_KEYS.items():
+            if keys[k]:
+                self.ev_manager.post(EventPlayerItem(v))
+
     def ctrl_stop(self, key_down_events):
         pass
 
