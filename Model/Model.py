@@ -5,6 +5,7 @@ import pygame as pg
 from Events.EventManager import *
 from Model.GameObject.player import Player
 from Model.GameObject.item import Item
+from Model.GameObject.platform import Platform
 import Const
 
 
@@ -77,6 +78,10 @@ class GameEngine:
         self.clock = pg.time.Clock()
         self.state_machine.push(Const.STATE_MENU)
         self.players = [Player(0), Player(1), Player(2), Player(3)]
+        self.items = []
+        self.platforms = []
+        for position in Const.PLATFORM_INIT_POSITION:
+            self.platforms.append(Platform(position[0], position[1]))
 
     def notify(self, event: BaseEvent):
         '''

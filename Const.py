@@ -18,6 +18,9 @@ DIRECTION_TO_VEC2 = {
     'down': pg.Vector2(0, 1),
     'right': pg.Vector2(1, 0),
 }
+PLATFORM_INIT_POSITION = [
+    [pg.Vector2(100, 730), pg.Vector2(700, 740)]
+]
 
 # State machine constants
 STATE_POP = 0 # for convenience, not really a state which we can be in

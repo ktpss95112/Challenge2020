@@ -75,6 +75,10 @@ class GraphicalView:
             center = list(map(int, player.position))
             pg.draw.circle(self.screen, Const.PLAYER_COLOR[player.player_id], center, Const.PLAYER_RADIUS)
 
+        # draw platforms
+        for platform in self.model.platforms:
+            pg.draw.rect(self.screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
+
         pg.display.flip()
 
     def render_stop(self):
