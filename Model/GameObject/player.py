@@ -26,7 +26,6 @@ class Player:
         if self.velocity.x > 0:
             self.velocity.x -= Const.HORIZONTAL_ACCELERATION
             self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
-
         elif self.velocity.x < 0:
             self.velocity.x += Const.HORIZONTAL_ACCELERATION
             self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
@@ -47,12 +46,12 @@ class Player:
         '''
         Add horizontal velocity to the player along the direction.
         '''
-        self.velocity += self.normal_speed / Const.FPS * Const.DIRECTION_TO_VEC2[direction]
+        self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
 
     def jump(self):
         '''
         Add vertical velocity to the player.
         '''
         if self.jump_quota != 0:
-            self.velocity += self.jump_speed / Const.FPS * pg.Vector2(0, -1)
+            self.velocity = self.jump_speed * pg.Vector2(0, -1)
             self.jump_quota -= 1
