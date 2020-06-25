@@ -107,14 +107,8 @@ class EventPlayerDied(BaseEvent):
     def __init__(self, player_id):
         self.player_id = player_id
 
-class EventPlayerPickItem(BaseEvent):
-    name = 'PlayerPickItem event'
-
-    def __init__(self, player_id):
-        self.player_id = player_id
-
-class EventPlayerUseItem(BaseEvent):
-    name = 'PlayerUseItem event'
+class EventPlayerItem(BaseEvent):
+    name = 'Player Uses or Picks Item event'
 
     def __init__(self, player_id):
         self.player_id = player_id

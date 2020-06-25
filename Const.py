@@ -10,7 +10,8 @@ PLAYER_INIT_POSITION = [
     pg.Vector2(700, 700)
 ]
 PLAYER_RADIUS = 30
-PLAYER_SPEED = 100
+PLAYER_NORMAL_SPEED = 100
+PLAYER_JUMP_SPEED = 200
 DIRECTION_TO_VEC2 = {
     'up': pg.Vector2(0, -1),
     'left': pg.Vector2(-1, 0),
