@@ -99,8 +99,6 @@ class GameEngine:
                 self.timer -= 1
                 if self.timer == 0:
                     self.ev_manager.post(EventTimesUp())
-            elif cur_state == Const.STATE_STOP:
-                pass
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
@@ -148,25 +146,25 @@ class GameEngine:
         elif isinstance(event, EventPlayerDied):
             self.ev_manager.post(EventPlayerRespawn(event.player_id))
         
+
+        elif isinstance(event, EventPlayerDied):
+            pass
+        
         elif isinstance(event, EventPlayerItem):
             the_player = self.players[ event.player_id ]
-            #print("player" + str(the_player) + " is at " + str(the_player.position))
             if the_player.keep_item_id > 0 :
-                self.players[ event.players_id ].use_item()
-                self.ev_manager.post( EventUseItem( the_player , the_player.keep_item_id ) )
+                self.players[ event.player_id ].use_item()
+                self.ev_manager.post( EventPlayerUseItem( the_player , the_player.keep_item_id ) )
             else :
                 for item in self.items:
                     delta = item.position - the_player.position
                     distance = ( delta * delta ) ** (1/2)
-                    #print("distance " + str(distance)) 
-                    if distance <= item.item_radius - the_player.player_radius:
-                        self.players[ event.player_id ].keep_item_id = self.items[ event.item_id ].item_id
-                        self.items.remove(event.item_id)
+                    if distance <= item.item_radius + the_player.player_radius:
+                        self.players[ event.player_id ].keep_item_id = item.item_id
+                        self.items.remove(item)
                         self.ev_manager.post( EventPlayerPickItem( the_player , item.item_id))
-        
         elif isinstance(event, EventPlayerPickItem):
             pass
-
         elif isinstance(event, EventPlayerUseItem):
             pass
 
@@ -193,7 +191,12 @@ class GameEngine:
         For example: obstacles, items, special effects, platform
         '''
         self.generate_item()
-
+        for item in self.items:
+            item.move_every_tick(self.platforms)
+            pos=item.position
+            if pos.x < 0 or pos.x > Const.WINDOW_SIZE[0] or pos.y < 0 or pos.y > Const.WINDOW_SIZE[1] : 
+                self.items.remove(item)
+           
     def update_endgame(self):
         '''
         Update the objects in endgame scene.
@@ -203,15 +206,17 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick,if item is less than ITEMS_MAX_AMOUNT,it MAY generate one item
-        if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1, 1000) > 990 : 
-            the_platform = random.choice( self.platforms )
-            platform_len = the_platform.bottom_right.x - the_platform.upper_left.x 
-            new_item = random.randint(1, Const.ITEM_SPECIES) # assume there are 7 types of item
-
-            pos = ( random.uniform( 0 , platform_len ) , -Const.ITEM_RADIUS[new_item - 1] ) + the_platform.upper_left
-
-            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item - 1] ) )
-            print("generate item " + str(new_item) + " at " + str(pos))
+        if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1, 1000) > 985 : 
+            new_item=random.randint(1,Const.ITEM_MAX_SPECIFIES)
+            OK=0
+            while OK == 0 :
+                OK = 1
+                pos=pg.Vector2( random.randint(50,1150) , random.randint(0,600)) 
+                for item in self.items :
+                    if abs( item.position.x - pos.x ) < Const.PLAYER_RADIUS*2 + Const.ITEM_RADIUS[new_item-1] + item.item_radius:
+                        OK = 0
+            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item-1] ) )
+             
 
     def run(self):
         '''

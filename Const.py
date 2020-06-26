@@ -2,7 +2,7 @@ import pygame as pg
 
 # model
 FPS = 60 # frame per second
-GAME_LENGTH = 30 * FPS
+GAME_LENGTH = 300 * FPS
 PLAYER_INIT_POSITION = [
     pg.Vector2(100, 700),
     pg.Vector2(300, 700),
@@ -63,6 +63,7 @@ INVINCIBLE_BATTERY = 7
 ITEMS_MAX_AMOUNT=6
 ITEM_RADIUS=[4,4,4,4,4,4,4]
 ITEM_INIT_HEIGHT=10
+ITEM_MAX_SPECIFIES=7
 
 # controller
 PLAYER_MOVE_KEYS = {
