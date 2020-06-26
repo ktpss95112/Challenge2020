@@ -71,9 +71,16 @@ class Controller:
             for k, v in Const.PLAYER_ITEM_KEYS.items():
                 if event_pg.key == k:
                     self.ev_manager.post(EventPlayerItem(v))
+            # detect stop event
+            if event_pg.key == Const.GAME_STOP:
+                self.ev_manager.post(EventStop())    
+
         
     def ctrl_stop(self, key_down_events):
-        pass
+        # detect continue event
+        for event_pg in key_down_events:
+            if event_pg.key == Const.GAME_CONTINUE:
+                self.ev_manager.post(EventContinue())
 
     def ctrl_endgame(self, key_down_events):
         pass

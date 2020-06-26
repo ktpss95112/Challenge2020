@@ -22,7 +22,7 @@ class GraphicalView:
 
         self.model = model
 
-        self.screen = pg.display.set_mode(Const.WINDOW_SIZE)
+        self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
         pg.display.set_caption(Const.WINDOW_CAPTION)
         self.background.fill(Const.BACKGROUND_COLOR)
 
@@ -88,7 +88,13 @@ class GraphicalView:
         pg.display.flip()
 
     def render_stop(self):
-        pass
+        # draw text
+        font = pg.font.Font(None, 36)
+        text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
+        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
+        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        
+        pg.display.flip()
 
     def render_endgame(self):
         # draw background

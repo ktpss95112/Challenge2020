@@ -93,3 +93,5 @@ PLAYER_ATTACK_KEYS = {
     pg.K_g: 1,
     pg.K_s: 0
 }
+GAME_STOP = pg.K_SPACE
+GAME_CONTINUE = pg.K_SPACE

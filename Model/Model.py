@@ -99,6 +99,8 @@ class GameEngine:
                 self.timer -= 1
                 if self.timer == 0:
                     self.ev_manager.post(EventTimesUp())
+            elif cur_state == Const.STATE_STOP:
+                pass
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
@@ -148,6 +150,14 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerUseItem):
             pass
+        
+        elif isinstance(event, EventStop):
+            if self.state_machine.peek() == Const.STATE_PLAY:
+                self.state_machine.push(Const.STATE_STOP)
+
+        elif isinstance(event, EventContinue):
+            if self.state_machine.peek() == Const.STATE_STOP:
+                self.state_machine.pop()
 
     def update_menu(self):
         '''
