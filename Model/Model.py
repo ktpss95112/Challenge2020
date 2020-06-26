@@ -160,7 +160,7 @@ class GameEngine:
         Update the objects not controlled by user.
         For example: obstacles, items, special effects, platform
         '''
-        pass
+        self.generate_item()
 
     def update_endgame(self):
         '''
@@ -168,6 +168,16 @@ class GameEngine:
         For example: scoreboard
         '''
         pass
+    def generate_item(self):
+        # In every tick,if item is less than ITEMS_MAX_AMOUNT,it MAY generate one item
+        if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1,1000) > 990 : 
+            the_platform = random.choice( self.platforms )
+            platform_len = the_platform.bottom_right.x - the_platform.upper_left.x 
+            new_item = random.randint(1,7) # assume there are 7 types of item
+
+            pos = ( random.uniform( 0 , platform_len ) , Const.ITEM_RADIUS[new_item-1] ) + the_platform.upper_left
+
+            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item-1] ) )
 
     def run(self):
         '''
