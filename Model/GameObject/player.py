@@ -4,6 +4,7 @@ import Const
 class Player:
     def __init__(self, player_id):
         self.player_id = player_id
+        self.player_radius = Const.PLAYER_RADIUS
         self.last_being_attacked_by = -1
         self.last_being_attacked_time_elapsed = 0
         self.invincible_time = 0
