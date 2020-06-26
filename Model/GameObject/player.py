@@ -11,7 +11,7 @@ class Player:
         self.KO_amount = 0
         self.be_KO_amount = 0
         self.voltage = 0
-        self.keep_item_id = -1
+        self.keep_item_id = Const.NO_ITEM
         self.position = pg.Vector2(Const.PLAYER_INIT_POSITION[player_id]) # is a pg.Vector2 (Const.PLAYER_INIT_POSITION is not update now!)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
         self.normal_speed = Const.PLAYER_NORMAL_SPEED # speed gain when players try to move left and right

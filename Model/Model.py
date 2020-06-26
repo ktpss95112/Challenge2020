@@ -8,7 +8,6 @@ from Model.GameObject.item import Item
 from Model.GameObject.platform import Platform
 import Const
 
-
 class StateMachine(object):
     '''
     Manages a stack based state machine.
@@ -146,27 +145,18 @@ class GameEngine:
         elif isinstance(event, EventPlayerDied):
             self.ev_manager.post(EventPlayerRespawn(event.player_id))
         
-
-        elif isinstance(event, EventPlayerDied):
-            pass
-        
         elif isinstance(event, EventPlayerItem):
-            the_player = self.players[ event.player_id ]
-            if the_player.keep_item_id > 0 :
+            player = self.players[ event.player_id ]
+            if player.keep_item_id > 0:
                 self.players[ event.player_id ].use_item()
-                self.ev_manager.post( EventPlayerUseItem( the_player , the_player.keep_item_id ) )
-            else :
+                self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
+            else:
                 for item in self.items:
-                    delta = item.position - the_player.position
-                    distance = ( delta * delta ) ** (1/2)
-                    if distance <= item.item_radius + the_player.player_radius:
+                    distance = (item.position - player.position).magnitude()
+                    if distance <= item.item_radius + player.player_radius:
                         self.players[ event.player_id ].keep_item_id = item.item_id
                         self.items.remove(item)
-                        self.ev_manager.post( EventPlayerPickItem( the_player , item.item_id))
-        elif isinstance(event, EventPlayerPickItem):
-            pass
-        elif isinstance(event, EventPlayerUseItem):
-            pass
+                        self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
 
     def update_menu(self):
         '''
@@ -182,7 +172,7 @@ class GameEngine:
         '''
         for player in self.players:
             player.move_every_tick(self.platforms)
-            if player.position.x > Const.PLATFORM_DIE_RANGE or player.position.y > Const.PLATFORM_DIE_RANGE:
+            if not Const.PLATFORM_DIE_RECT.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
                 
     def update_objects(self):
@@ -193,7 +183,7 @@ class GameEngine:
         self.generate_item()
         for item in self.items:
             item.move_every_tick(self.platforms)
-            pos=item.position
+            pos = item.position
             if pos.x < 0 or pos.x > Const.WINDOW_SIZE[0] or pos.y < 0 or pos.y > Const.WINDOW_SIZE[1] : 
                 self.items.remove(item)
            
@@ -205,19 +195,18 @@ class GameEngine:
         pass
 
     def generate_item(self):
-        # In every tick,if item is less than ITEMS_MAX_AMOUNT,it MAY generate one item
+        # In every tick, if item is less than ITEMS_MAX_AMOUNT, it MAY generate one item
         if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1, 1000) > 985 : 
-            new_item=random.randint(1,Const.ITEM_MAX_SPECIFIES)
-            OK=0
-            while OK == 0 :
-                OK = 1
-                pos=pg.Vector2( random.randint(50,1150) , random.randint(0,600)) 
-                for item in self.items :
-                    if abs( item.position.x - pos.x ) < Const.PLAYER_RADIUS*2 + Const.ITEM_RADIUS[new_item-1] + item.item_radius:
-                        OK = 0
-            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item-1] ) )
-             
-
+            new_item = random.randint(1, Const.ITEM_MAX_SPECIFIES)
+            find_position = False
+            while not find_position:
+                find_position = True
+                pos = pg.Vector2(random.randint(50,1150), random.randint(0,600))
+                for item in self.items:
+                    if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
+                        find_position = False
+            self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item-1]))
+            
     def run(self):
         '''
         The main loop of the game is in this function.
