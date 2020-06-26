@@ -62,9 +62,11 @@ class Player:
             self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / magnitude / Const.FPS
         else:
             self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / Const.BE_ATTACKED_MAX_ACCELERATION_DISTANCE / Const.FPS
+    
     def respawn(self):
         self.position = pg.Vector2(Const.PLAYER_RESTART_POSITION[self.player_id])
         self.velocity = pg.Vector2(0, 0)
         self.voltage = 0
+    
     def use_item(self):
-        self.keep_item_id=0
+        self.keep_item_id = Const.NO_ITEM

@@ -143,6 +143,7 @@ class GameEngine:
             self.players[event.player_id].respawn()
 
         elif isinstance(event, EventPlayerDied):
+            self.players[event.player_id].keep_item_id = Const.NO_ITEM
             self.ev_manager.post(EventPlayerRespawn(event.player_id))
         
         elif isinstance(event, EventPlayerItem):
