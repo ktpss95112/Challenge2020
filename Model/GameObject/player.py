@@ -55,6 +55,7 @@ class Player:
         if self.jump_quota != 0:
             self.velocity = self.jump_speed * pg.Vector2(0, -1)
             self.jump_quota -= 1
+
     def be_attacked(self , unit):
         self.velocity += Const.BE_ATTACKED_ACCELERATION * unit/ Const.FPS
         self.position += self.velocity / Const.FPS
