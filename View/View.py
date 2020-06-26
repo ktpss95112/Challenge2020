@@ -78,6 +78,11 @@ class GraphicalView:
         # draw platforms
         for platform in self.model.platforms:
             pg.draw.rect(self.screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
+        
+        # draw items
+        for item in self.model.items:
+            center = list(map(int, item.position))
+            pg.draw.circle(self.screen, pg.Color('white'), center, item.item_radius)
 
         # draw timer        
         font = pg.font.Font(None, 36)
@@ -88,7 +93,13 @@ class GraphicalView:
         pg.display.flip()
 
     def render_stop(self):
-        pass
+        # draw text
+        font = pg.font.Font(None, 36)
+        text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
+        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
+        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        
+        pg.display.flip()
 
     def render_endgame(self):
         # draw background
