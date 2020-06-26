@@ -131,7 +131,6 @@ class GameEngine:
                             unitx = (self.players[i].position.x - self.players[v].position.x) / magnitude
                             unity = (self.players[i].position.y - self.players[v].position.y) / magnitude
                             self.players[i].be_attacked(unitx , unity)
-                            print(i)
                             
             pass
         
