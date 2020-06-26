@@ -135,10 +135,10 @@ class GameEngine:
                             self.players[i].be_attacked(unit,magnitude)
                             
         elif isinstance(event, EventPlayerRespawn):
-            pass
+            self.players[event.player_id].respawn()
 
         elif isinstance(event, EventPlayerDied):
-            pass
+            self.ev_manager.post(EventPlayerRespawn(event.player_id))
         
         elif isinstance(event, EventPlayerItem):
             pass
@@ -165,8 +165,7 @@ class GameEngine:
             player.move_every_tick(self.platforms)
             if player.position.x > Const.PLATFORM_DIE_RANGE or player.position.y > Const.PLATFORM_DIE_RANGE:
                 self.ev_manager.post(EventPlayerDied(player.player_id))
-                self.ev_manager.post(EventPlayerRespawn(player.player_id))
-                player.respawn()
+                
             
 
     def update_objects(self):
