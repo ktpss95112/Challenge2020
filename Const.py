@@ -50,6 +50,7 @@ BACKGROUND_COLOR = pg.Color('black')
 PLAYER_COLOR = [pg.Color('green'), pg.Color('magenta'), pg.Color('orange'), pg.Color('red')]
 
 # item
+ITEM_SPECIES = 7
 NO_ITEM = 0
 BANANA_PISTOL = 1
 BIG_BLACK_HOLE = 2
