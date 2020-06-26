@@ -37,8 +37,8 @@ class Player:
         # Make sure that the player do not pass through the platform
         for platform in platforms:
             if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
-                if prev_position.y <= platform.upper_left.y - Const.PLAYER_RADIUS <= self.position.y:
-                    self.position.y = platform.upper_left.y - Const.PLAYER_RADIUS
+                if prev_position.y <= platform.upper_left.y - self.player_radius <= self.position.y:
+                    self.position.y = platform.upper_left.y - self.player_radius
                     self.velocity.y = 0
                     self.jump_quota = Const.PLAYER_JUMP_QUOTA
                     break
@@ -59,11 +59,11 @@ class Player:
 
     def be_attacked(self , unit , magnitude):
         if magnitude > 20:
-            self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / magnitude/ Const.FPS
+            self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / magnitude / Const.FPS
         elif magnitude != 0:
-            self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / 20/ Const.FPS
+            self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / 20 / Const.FPS
         else:
-            self.velocity += Const.BE_ATTACKED_ACCELERATION * pg.Vector2(1,0) / 20/ Const.FPS
+            self.velocity += Const.BE_ATTACKED_ACCELERATION * pg.Vector2(1,0) / 20 / Const.FPS
     def respawn(self):
         self.position = pg.Vector2(Const.PLAYER_RESTART_POSITION[self.player_id])
         self.velocity = pg.Vector2(0, 0)
