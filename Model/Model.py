@@ -126,11 +126,14 @@ class GameEngine:
             for k,v in Const.PLAYER_ATTACK_KEYS.items():
                 if keys[k]:
                     for i in range(4):
-                        magnitude = ((self.players[i].position.x - self.players[v].position.x)**2 +(self.players[i].position.y - self.players[v].position.y)**2)**0.5
+                        magnitude = (self.players[i].position - self.players[v].position).magnitude()
                         if i != v and magnitude < 3 * Const.PLAYER_RADIUS:
-                            unitx = (self.players[i].position.x - self.players[v].position.x) / magnitude
-                            unity = (self.players[i].position.y - self.players[v].position.y) / magnitude
-                            self.players[i].be_attacked(unitx , unity)
+                            if magnitude != 0:
+                                unit = (self.players[i].position - self.players[v].position).normalize()
+                                print(unit)
+                            else:
+                                unit = pg.Vector2(1,0)
+                            self.players[i].be_attacked(unit)
                             
             pass
         
