@@ -38,7 +38,7 @@ PLAYER_RESTART_POSITION = [
 STATE_POP = 0 # for convenience, not really a state which we can be in
 STATE_MENU = 1
 STATE_PLAY = 2
-STATE_STOP = 3 # not implemented yet
+STATE_STOP = 3
 STATE_ENDGAME = 4
 
 
@@ -93,5 +93,6 @@ PLAYER_ATTACK_KEYS = {
     pg.K_g: 1,
     pg.K_s: 0
 }
-GAME_STOP = pg.K_SPACE
-GAME_CONTINUE = pg.K_SPACE
+GAME_STOP_KEY = pg.K_SPACE
+GAME_CONTINUE_KEY = pg.K_SPACE
+GAME_RESTART_KEY = pg.K_SPACE

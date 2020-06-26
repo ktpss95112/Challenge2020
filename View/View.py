@@ -104,5 +104,10 @@ class GraphicalView:
     def render_endgame(self):
         # draw background
         self.screen.fill(Const.BACKGROUND_COLOR)
+        # draw text
+        font = pg.font.Font(None, 36)
+        text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
+        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
+        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
 
         pg.display.flip()

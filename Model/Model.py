@@ -123,6 +123,12 @@ class GameEngine:
         elif isinstance(event, EventTimesUp):
             self.state_machine.push(Const.STATE_ENDGAME)
 
+        elif isinstance(event, EventRestart):
+            self.state_machine.clear()
+            self.ev_manager.post(EventInitialize())
+            self.ev_manager.post(EventStateChange(Const.STATE_PLAY))
+            self.timer = Const.GAME_LENGTH
+
         elif isinstance(event, EventPlayerAttack):
             keys = pg.key.get_pressed()
             for k, v in Const.PLAYER_ATTACK_KEYS.items():
@@ -163,14 +169,6 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerUseItem):
             pass
-        
-        elif isinstance(event, EventStop):
-            if self.state_machine.peek() == Const.STATE_PLAY:
-                self.state_machine.push(Const.STATE_STOP)
-
-        elif isinstance(event, EventContinue):
-            if self.state_machine.peek() == Const.STATE_STOP:
-                self.state_machine.pop()
 
     def update_menu(self):
         '''
@@ -189,8 +187,6 @@ class GameEngine:
             if player.position.x > Const.PLATFORM_DIE_RANGE or player.position.y > Const.PLATFORM_DIE_RANGE:
                 self.ev_manager.post(EventPlayerDied(player.player_id))
                 
-            
-
     def update_objects(self):
         '''
         Update the objects not controlled by user.

@@ -151,8 +151,5 @@ class EventPlayerPickItem(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} pick item {self.item_id}'
 
-class EventStop(BaseEvent):
-    name = 'GamePause event'
-
-class EventContinue(BaseEvent):
-    name = 'GameContinue event'
+class EventRestart(BaseEvent):
+    name = 'GameRestart event'
