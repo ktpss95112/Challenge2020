@@ -19,9 +19,8 @@ class Player:
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
 
     def move_every_tick(self, platforms: list):
-        # Move the player
-        prev_position = pg.Vector2(self.position)
-        self.position += self.velocity / Const.FPS
+        # Calcultate the distance to move
+        displacement = self.velocity / Const.FPS
 
         # Modify the horizontal velocity
         if self.velocity.x > 0:
@@ -35,15 +34,39 @@ class Player:
         self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
 
         # Make sure that the player do not pass through the platform
+        self.move(displacement, platforms)
+
+    def collision(self, other, platforms: list):
+        # Collision with other player
+        distance = other.position - self.position
+        try:
+            unit = distance.normalize()
+        except ValueError:
+            return
+
+        # Modify velocity
+        velocity_delta = (other.velocity.dot(unit) - self.velocity.dot(unit)) * unit
+        self.velocity += velocity_delta
+        other.velocity -= velocity_delta
+
+        # Modify position
+        displacement = -(self.player_radius + other.player_radius) * unit + distance
+        self.move(displacement, platforms)
+        other.move(-displacement, platforms)
+
+    def move(self, displacement: pg.Vector2, platforms: list):
+        # Move and check if collide with platform
+        prev_position_y = self.position.y
+        self.position += displacement
         for platform in platforms:
             if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
-                if prev_position.y <= platform.upper_left.y - self.player_radius <= self.position.y:
+                if prev_position_y <= platform.upper_left.y - self.player_radius <= self.position.y:
                     self.position.y = platform.upper_left.y - self.player_radius
-                    self.velocity.y = 0
+                    self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.SPEED_MINIMUM else 0
                     self.jump_quota = Const.PLAYER_JUMP_QUOTA
                     break
 
-    def move_horizontal(self, direction: str):
+    def add_horizontal_velocity(self, direction: str):
         '''
         Add horizontal velocity to the player along the direction.
         '''

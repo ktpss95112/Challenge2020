@@ -112,7 +112,7 @@ class GameEngine:
             self.running = False
 
         elif isinstance(event, EventPlayerMove):
-            self.players[event.player_id].move_horizontal(event.direction)
+            self.players[event.player_id].add_horizontal_velocity(event.direction)
 
         elif isinstance(event, EventPlayerJump):
             self.players[event.player_id].jump()
@@ -136,7 +136,7 @@ class GameEngine:
                             if magnitude != 0:
                                 unit = (self.players[i].position - self.players[v].position).normalize()
                             else:
-                                unit = pg.Vector2(1,0)
+                                unit = pg.Vector2(1, 0)
                             self.players[i].be_attacked(unit, magnitude)
                             
         elif isinstance(event, EventPlayerRespawn):
@@ -175,7 +175,8 @@ class GameEngine:
             player.move_every_tick(self.platforms)
             if not Const.PLATFORM_DIE_RECT.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
-                
+        self.players_collision_detect()
+
     def update_objects(self):
         '''
         Update the objects not controlled by user.
@@ -194,6 +195,12 @@ class GameEngine:
         For example: scoreboard
         '''
         pass
+
+    def players_collision_detect(self):
+        for i in range(len(self.players)):
+            for j in range(i + 1, len(self.players)):
+                if (self.players[i].position - self.players[j].position).magnitude() <= (self.players[i].player_radius + self.players[j].player_radius) * 1.01:
+                    self.players[i].collision(self.players[j], self.platforms)
 
     def generate_item(self):
         # In every tick, if item is less than ITEMS_MAX_AMOUNT, it MAY generate one item
@@ -261,7 +268,7 @@ has-item:int
 be KOed time:int
 voltage:int
 position:vec2
-velosity; (there is no acceleration variable because acceleration is instant)
+velocity; (there is no acceleration variable because acceleration is instant)
 :vec2
 """
 
