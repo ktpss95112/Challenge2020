@@ -189,7 +189,10 @@ class GameEngine:
         self.generate_item()
         for item in self.items:
             item.move_every_tick(self.platforms)
-
+            pos=item.position
+            if pos.x < 0 or pos.x > Const.WINDOW_SIZE[0] or pos.y < 0 or pos.y > Const.WINDOW_SIZE[1] : 
+                self.items.remove(item)
+           
     def update_endgame(self):
         '''
         Update the objects in endgame scene.
@@ -206,9 +209,9 @@ class GameEngine:
                 OK = 1
                 pos=pg.Vector2( random.randint(50,1150) , random.randint(0,600)) 
                 for item in self.items :
-                    if abs( item.position.x - pos.x ) < Const.PLAYER_RADIUS*2 + Const.ITEM_RADIUS[new_item] + item.item_radius:
+                    if abs( item.position.x - pos.x ) < Const.PLAYER_RADIUS*2 + Const.ITEM_RADIUS[new_item-1] + item.item_radius:
                         OK = 0
-            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item] ) )
+            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item-1] ) )
              
 
     def run(self):
