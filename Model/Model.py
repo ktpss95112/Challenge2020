@@ -187,6 +187,8 @@ class GameEngine:
         For example: obstacles, items, special effects, platform
         '''
         self.generate_item()
+        for item in self.items:
+            item.move_every_tick(self.platforms)
 
     def update_endgame(self):
         '''
@@ -197,15 +199,17 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick,if item is less than ITEMS_MAX_AMOUNT,it MAY generate one item
-        if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1, 1000) > 990 : 
-            the_platform = random.choice( self.platforms )
-            platform_len = the_platform.bottom_right.x - the_platform.upper_left.x 
-            new_item = random.randint(1, Const.ITEM_SPECIES) # assume there are 7 types of item
-
-            pos = ( random.uniform( 0 , platform_len ) , -Const.ITEM_RADIUS[new_item - 1] ) + the_platform.upper_left
-
-            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item - 1] ) )
-            print("generate item " + str(new_item) + " at " + str(pos))
+        if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1, 1000) > 985 : 
+            new_item=random.randint(1,Const.ITEM_MAX_SPECIFIES)
+            OK=0
+            while OK == 0 :
+                OK = 1
+                pos=pg.Vector2( random.randint(50,1150) , random.randint(0,600)) 
+                for item in self.items :
+                    if abs( item.position.x - pos.x ) < Const.PLAYER_RADIUS*2 + Const.ITEM_RADIUS[new_item] + item.item_radius:
+                        OK = 0
+            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item] ) )
+             
 
     def run(self):
         '''
