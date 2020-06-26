@@ -25,6 +25,13 @@ PLAYER_JUMP_QUOTA = 3
 GRAVITY_ACCELERATION = 70 * FPS
 HORIZONTAL_ACCELERATION = 300 * FPS
 BE_ATTACKED_ACCELERATION = 1200 * FPS
+PLATFORM_DIE_RANGE = 1500
+PLAYER_RESTART_POSITION = [
+    pg.Vector2(700, 200),
+    pg.Vector2(700, 200),
+    pg.Vector2(700, 200),
+    pg.Vector2(700, 200)
+]
 
 # State machine constants
 STATE_POP = 0 # for convenience, not really a state which we can be in

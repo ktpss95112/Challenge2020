@@ -79,6 +79,12 @@ class GraphicalView:
         for platform in self.model.platforms:
             pg.draw.rect(self.screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
 
+        # draw timer        
+        font = pg.font.Font(None, 36)
+        timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
+        timer_pos = (Const.ARENA_SIZE[0] * 29 / 30, Const.ARENA_SIZE[1] * 1 / 30)
+        self.screen.blit(timer_surface, timer_surface.get_rect(center = timer_pos))    
+
         pg.display.flip()
 
     def render_stop(self):
