@@ -132,7 +132,7 @@ class GameEngine:
                                 unit = (self.players[i].position - self.players[v].position).normalize()
                             else:
                                 unit = pg.Vector2(1,0)
-                            self.players[i].be_attacked(unit)
+                            self.players[i].be_attacked(unit,magnitude)
                             
         elif isinstance(event, EventPlayerRespawn):
             pass
