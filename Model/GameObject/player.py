@@ -56,19 +56,8 @@ class Player:
             self.velocity = self.jump_speed * pg.Vector2(0, -1)
             self.jump_quota -= 1
 
-    def be_attacked(self , unitx , unity):
-        if unitx >= 0:
-            self.velocity.x += Const.BE_ATTACKED_ACCELERATION * unitx/ Const.FPS
-            self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
-        elif unitx < 0:
-            self.velocity.x -= Const.BE_ATTACKED_ACCELERATION * unitx/ Const.FPS
-            self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
-        if unity >= 0:
-            self.velocity.y += Const.BE_ATTACKED_ACCELERATION * unity / Const.FPS
-            self.velocity.y = self.velocity.y if self.velocity.y > 0 else 0
-        elif unity < 0:
-            self.velocity.y -= Const.BE_ATTACKED_ACCELERATION *unity  / Const.FPS
-            self.velocity.y = self.velocity.y if self.velocity.y < 0 else 0
+    def be_attacked(self , unit):
+        self.velocity += Const.BE_ATTACKED_ACCELERATION * unit/ Const.FPS
         self.position += self.velocity / Const.FPS
 
     def respawn(self):

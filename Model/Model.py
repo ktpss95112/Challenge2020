@@ -123,17 +123,18 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerAttack):
             keys = pg.key.get_pressed()
-            for k,v in Const.PLAYER_ATTACK_KEYS.items():
+            for k, v in Const.PLAYER_ATTACK_KEYS.items():
                 if keys[k]:
                     for i in range(4):
-                        magnitude = ((self.players[i].position.x - self.players[v].position.x)**2 +(self.players[i].position.y - self.players[v].position.y)**2)**0.5
+                        magnitude = (self.players[i].position - self.players[v].position).magnitude()
                         if i != v and magnitude < 3 * Const.PLAYER_RADIUS:
-                            unitx = (self.players[i].position.x - self.players[v].position.x) / magnitude
-                            unity = (self.players[i].position.y - self.players[v].position.y) / magnitude
-                            self.players[i].be_attacked(unitx , unity)
+                            if magnitude != 0:
+                                unit = (self.players[i].position - self.players[v].position).normalize()
+                                print(unit)
+                            else:
+                                unit = pg.Vector2(1,0)
+                            self.players[i].be_attacked(unit)
                             
-            pass
-        
         elif isinstance(event, EventPlayerRespawn):
             pass
 
@@ -148,7 +149,6 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerUseItem):
             pass
-
 
     def update_menu(self):
         '''
@@ -183,6 +183,7 @@ class GameEngine:
         For example: scoreboard
         '''
         pass
+
     def generate_item(self):
         # In every tick,if item is less than ITEMS_MAX_AMOUNT,it MAY generate one item
         if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1,1000) > 990 : 
