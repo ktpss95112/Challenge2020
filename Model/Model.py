@@ -132,7 +132,7 @@ class GameEngine:
                                 unit = (self.players[i].position - self.players[v].position).normalize()
                             else:
                                 unit = pg.Vector2(1,0)
-                            self.players[i].be_attacked(unit,magnitude)
+                            self.players[i].be_attacked(unit, magnitude)
                             
         elif isinstance(event, EventPlayerRespawn):
             pass
@@ -185,14 +185,14 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick,if item is less than ITEMS_MAX_AMOUNT,it MAY generate one item
-        if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1,1000) > 990 : 
+        if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1, 1000) > 990 : 
             the_platform = random.choice( self.platforms )
             platform_len = the_platform.bottom_right.x - the_platform.upper_left.x 
-            new_item = random.randint(1,7) # assume there are 7 types of item
+            new_item = random.randint(1, ITEM_SPECIES) # assume there are 7 types of item
 
-            pos = ( random.uniform( 0 , platform_len ) , Const.ITEM_RADIUS[new_item-1] ) + the_platform.upper_left
+            pos = ( random.uniform( 0 , platform_len ) , -Const.ITEM_RADIUS[new_item - 1] ) + the_platform.upper_left
 
-            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item-1] ) )
+            self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item - 1] ) )
 
     def run(self):
         '''
