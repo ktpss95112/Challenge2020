@@ -59,7 +59,6 @@ class Player:
 
     def be_attacked(self , unit):
         self.velocity += Const.BE_ATTACKED_ACCELERATION * unit/ Const.FPS
-        self.position += self.velocity / Const.FPS
 
     def respawn(self):
         self.position = pg.Vector2(Const.PLAYER_RESTART_POSITION[self.player_id])
