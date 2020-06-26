@@ -58,12 +58,10 @@ class Player:
             self.jump_quota -= 1
 
     def be_attacked(self , unit , magnitude):
-        if magnitude > 20:
+        if magnitude > Const.BE_ATTACKED_MAX_ACCELERATION_DISTANCE:
             self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / magnitude / Const.FPS
-        elif magnitude != 0:
-            self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / 20 / Const.FPS
         else:
-            self.velocity += Const.BE_ATTACKED_ACCELERATION * pg.Vector2(1,0) / 20 / Const.FPS
+            self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / Const.BE_ATTACKED_MAX_ACCELERATION_DISTANCE / Const.FPS
     def respawn(self):
         self.position = pg.Vector2(Const.PLAYER_RESTART_POSITION[self.player_id])
         self.velocity = pg.Vector2(0, 0)
