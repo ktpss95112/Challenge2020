@@ -2,7 +2,7 @@ import pygame as pg
 
 # model
 FPS = 60 # frame per second
-GAME_LENGTH = 30 * FPS
+GAME_LENGTH = 300 * FPS
 PLAYER_INIT_POSITION = [
     pg.Vector2(100, 700),
     pg.Vector2(300, 700),
