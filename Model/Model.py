@@ -140,14 +140,30 @@ class GameEngine:
         elif isinstance(event, EventPlayerDied):
             self.ev_manager.post(EventPlayerRespawn(event.player_id))
         
-        elif isinstance(event, EventPlayerItem):
-            pass
 
-        elif isinstance(event, EventPlayerPickItem):
+        elif isinstance(event, EventPlayerDied):
             pass
+        
+        elif isinstance(event, EventPlayerItem):
+            the_player = self.players[ event.player_id ]
+            print("player" + str(the_player) + " is at " + str(the_player.position))
+            if the_player.keep_item_id > 0 :
+                self.players[ event.players_id ].use_item()
+                self.ev_manager.post( EventUseItem( the_player , the_player.keep_item_id ) )
+            else :
+                for item in self.items:
+                    delta = item.position - the_player.position
+                    distance = ( delta * delta ) ** (1/2)
+                    print("distance " + 
+                    if distance <= item.item_radius - the_player.player_radius:
+                        self.players[ event.player_id ].keep_item_id = self.items[ event.item_id ].item_id
+                        self.items.remove(event.item_id)
+                        self.ev_manager.post( EventPlayerPickItem( the_player , item.item_id))
+        elif isinstance(event, EventPlayerPickItem):
+            print("player " + str(event.player_id) + " picked item " + str(event.item_id))
 
         elif isinstance(event, EventPlayerUseItem):
-            pass
+            print("player " + str(event.player_id) + " use item " + str(event.item_id))
 
     def update_menu(self):
         '''
@@ -187,11 +203,12 @@ class GameEngine:
         if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1, 1000) > 990 : 
             the_platform = random.choice( self.platforms )
             platform_len = the_platform.bottom_right.x - the_platform.upper_left.x 
-            new_item = random.randint(1, ITEM_SPECIES) # assume there are 7 types of item
+            new_item = random.randint(1, Const.ITEM_SPECIES) # assume there are 7 types of item
 
             pos = ( random.uniform( 0 , platform_len ) , -Const.ITEM_RADIUS[new_item - 1] ) + the_platform.upper_left
 
             self.items.append( Item( new_item , pos , Const.ITEM_RADIUS[new_item - 1] ) )
+            print("generate item " + str(new_item) + " at " + str(pos))
 
     def run(self):
         '''
@@ -261,3 +278,5 @@ class platform
 upper-left
 bottom-right
 """
+        
+
