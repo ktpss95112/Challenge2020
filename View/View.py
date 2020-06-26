@@ -78,6 +78,11 @@ class GraphicalView:
         # draw platforms
         for platform in self.model.platforms:
             pg.draw.rect(self.screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
+        
+        # draw items
+        for item in self.model.items:
+            center = list(map(int, item.position))
+            pg.draw.circle(self.screen, pg.Color('white'), center, item.item_radius)
 
         # draw timer        
         font = pg.font.Font(None, 36)
