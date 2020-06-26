@@ -17,7 +17,7 @@ class Player:
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
 
-    def move_every_tick(self, platforms: list, fps):
+    def move_every_tick(self, platforms: list):
         # Move the player
         prev_position = pg.Vector2(self.position)
         self.position += self.velocity / Const.FPS

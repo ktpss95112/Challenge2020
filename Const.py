@@ -18,7 +18,8 @@ DIRECTION_TO_VEC2 = {
     'right': pg.Vector2(1, 0),
 }
 PLATFORM_INIT_POSITION = [
-    [pg.Vector2(100, 730), pg.Vector2(700, 740)]
+    [pg.Vector2(100, 730), pg.Vector2(700, 740)],
+    [pg.Vector2(100, 500), pg.Vector2(400, 510)]
 ]
 PLAYER_JUMP_QUOTA = 3
 GRAVITY_ACCELERATION = 70 * FPS

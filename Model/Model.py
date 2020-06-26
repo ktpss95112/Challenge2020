@@ -155,7 +155,7 @@ class GameEngine:
         For example: position, remaining time of item used
         '''
         for player in self.players:
-            player.move_every_tick(self.platforms, self.clock.get_fps())
+            player.move_every_tick(self.platforms)
 
     def update_objects(self):
         '''
