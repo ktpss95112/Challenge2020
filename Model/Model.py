@@ -130,7 +130,6 @@ class GameEngine:
                         if i != v and magnitude < 3 * Const.PLAYER_RADIUS:
                             if magnitude != 0:
                                 unit = (self.players[i].position - self.players[v].position).normalize()
-                                print(unit)
                             else:
                                 unit = pg.Vector2(1,0)
                             self.players[i].be_attacked(unit)
