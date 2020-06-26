@@ -146,24 +146,21 @@ class GameEngine:
         
         elif isinstance(event, EventPlayerItem):
             the_player = self.players[ event.player_id ]
-            #print("player" + str(the_player) + " is at " + str(the_player.position))
             if the_player.keep_item_id > 0 :
-                self.players[ event.players_id ].use_item()
-                self.ev_manager.post( EventUseItem( the_player , the_player.keep_item_id ) )
+                self.players[ event.player_id ].use_item()
+                self.ev_manager.post( EventPlayerUseItem( the_player , the_player.keep_item_id ) )
             else :
                 for item in self.items:
                     delta = item.position - the_player.position
                     distance = ( delta * delta ) ** (1/2)
-                    #print("distance " + str(distance)) 
-                    if distance <= item.item_radius - the_player.player_radius:
-                        self.players[ event.player_id ].keep_item_id = self.items[ event.item_id ].item_id
-                        self.items.remove(event.item_id)
+                    if distance <= item.item_radius + the_player.player_radius:
+                        self.players[ event.player_id ].keep_item_id = item.item_id
+                        self.items.remove(item)
                         self.ev_manager.post( EventPlayerPickItem( the_player , item.item_id))
         elif isinstance(event, EventPlayerPickItem):
-            #print("player " + str(event.player_id) + " picked item " + str(event.item_id))
-
+            pass
         elif isinstance(event, EventPlayerUseItem):
-            #print("player " + str(event.player_id) + " use item " + str(event.item_id))
+            pass
 
     def update_menu(self):
         '''

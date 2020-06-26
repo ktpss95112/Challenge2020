@@ -66,3 +66,5 @@ class Player:
         self.position = pg.Vector2(Const.PLAYER_RESTART_POSITION[self.player_id])
         self.velocity = pg.Vector2(0, 0)
         self.voltage = 0
+    def use_item(self):
+        self.keep_item_id=0
