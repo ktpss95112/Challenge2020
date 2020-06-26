@@ -1,5 +1,8 @@
 *.pyc
 
+# for vscode
+.vscode/
+
 # for emacs
 *~
 \#*\#
