@@ -140,10 +140,6 @@ class GameEngine:
         elif isinstance(event, EventPlayerDied):
             self.ev_manager.post(EventPlayerRespawn(event.player_id))
         
-
-        elif isinstance(event, EventPlayerDied):
-            pass
-        
         elif isinstance(event, EventPlayerItem):
             the_player = self.players[ event.player_id ]
             #print("player" + str(the_player) + " is at " + str(the_player.position))
@@ -159,11 +155,12 @@ class GameEngine:
                         self.players[ event.player_id ].keep_item_id = self.items[ event.item_id ].item_id
                         self.items.remove(event.item_id)
                         self.ev_manager.post( EventPlayerPickItem( the_player , item.item_id))
+        
         elif isinstance(event, EventPlayerPickItem):
-            #print("player " + str(event.player_id) + " picked item " + str(event.item_id))
+            pass
 
         elif isinstance(event, EventPlayerUseItem):
-            #print("player " + str(event.player_id) + " use item " + str(event.item_id))
+            pass
 
     def update_menu(self):
         '''
