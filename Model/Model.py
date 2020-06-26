@@ -122,6 +122,17 @@ class GameEngine:
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventPlayerAttack):
+            keys = pg.key.get_pressed()
+            for k,v in Const.PLAYER_ATTACK_KEYS.items():
+                if keys[k]:
+                    for i in range(4):
+                        magnitude = ((self.players[i].position.x - self.players[v].position.x)**2 +(self.players[i].position.y - self.players[v].position.y)**2)**0.5
+                        if i != v and magnitude < 3 * Const.PLAYER_RADIUS:
+                            unitx = (self.players[i].position.x - self.players[v].position.x) / magnitude
+                            unity = (self.players[i].position.y - self.players[v].position.y) / magnitude
+                            self.players[i].be_attacked(unitx , unity)
+                            print(i)
+                            
             pass
         
         elif isinstance(event, EventPlayerRespawn):

@@ -24,6 +24,7 @@ PLATFORM_INIT_POSITION = [
 PLAYER_JUMP_QUOTA = 3
 GRAVITY_ACCELERATION = 70 * FPS
 HORIZONTAL_ACCELERATION = 300 * FPS
+BE_ATTACKED_ACCELERATION = 1200 * FPS
 
 # State machine constants
 STATE_POP = 0 # for convenience, not really a state which we can be in
