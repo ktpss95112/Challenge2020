@@ -198,8 +198,7 @@ class GameEngine:
     def players_collision_detect(self):
         for i in range(len(self.players)):
             for j in range(i + 1, len(self.players)):
-                if (self.players[i].position - self.players[j].position).magnitude() <= (self.players[i].player_radius + self.players[j].player_radius) * 1.01:
-                    self.players[i].collision(self.players[j], self.platforms)
+                self.players[i].collision(self.players[j], self.platforms)
 
     def generate_item(self):
         # In every tick, if item is less than ITEMS_MAX_AMOUNT, it MAY generate one item

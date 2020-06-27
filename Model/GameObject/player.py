@@ -23,11 +23,13 @@ class Player:
         displacement = self.velocity / Const.FPS
 
         # Modify the horizontal velocity
-        if self.velocity.x > 0:
-            self.velocity.x -= Const.HORIZONTAL_ACCELERATION / Const.FPS
+        if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
+            self.velocity.x = 0
+        elif self.velocity.x > 0:
+            self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
             self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
         elif self.velocity.x < 0:
-            self.velocity.x += Const.HORIZONTAL_ACCELERATION / Const.FPS
+            self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
             self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
 
         # Modify the vertical velocity
@@ -37,7 +39,9 @@ class Player:
         self.move(displacement, platforms)
 
     def collision(self, other, platforms: list):
-        # Collision with other player
+        # Deal with collision with other player
+        if (self.position - other.position).magnitude() >= (self.player_radius + other.player_radius) * 1.01:
+            return
         distance = other.position - self.position
         try:
             unit = distance.normalize()
@@ -62,22 +66,18 @@ class Player:
             if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
                 if prev_position_y <= platform.upper_left.y - self.player_radius <= self.position.y:
                     self.position.y = platform.upper_left.y - self.player_radius
-                    self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.SPEED_MINIMUM else 0
+                    self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
                     self.jump_quota = Const.PLAYER_JUMP_QUOTA
                     break
 
     def add_horizontal_velocity(self, direction: str):
-        '''
-        Add horizontal velocity to the player along the direction.
-        '''
+        # Add horizontal velocity to the player along the direction.
         self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
 
     def jump(self):
-        '''
-        Add vertical velocity to the player.
-        '''
+        # Add vertical velocity to the player.
         if self.jump_quota != 0:
-            self.velocity = self.jump_speed * pg.Vector2(0, -1)
+            self.velocity.y = -self.jump_speed
             self.jump_quota -= 1
 
     def be_attacked(self , unit , magnitude):
