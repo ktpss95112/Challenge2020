@@ -90,6 +90,7 @@ class Player:
         self.position = pg.Vector2(Const.PLAYER_RESTART_POSITION[self.player_id])
         self.velocity = pg.Vector2(0, 0)
         self.voltage = 0
+        self.jump_quota = Const.PLAYER_JUMP_QUOTA
     
     def use_item(self):
         self.keep_item_id = Const.NO_ITEM
