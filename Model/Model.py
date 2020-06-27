@@ -173,7 +173,7 @@ class GameEngine:
         '''
         for player in self.players:
             player.move_every_tick(self.platforms)
-            if not Const.PLATFORM_DIE_RECT.collidepoint(player.position):
+            if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
         self.players_collision_detect()
 
@@ -185,8 +185,7 @@ class GameEngine:
         self.generate_item()
         for item in self.items:
             item.move_every_tick(self.platforms)
-            pos = item.position
-            if pos.x < 0 or pos.x > Const.WINDOW_SIZE[0] or pos.y < 0 or pos.y > Const.WINDOW_SIZE[1] : 
+            if not Const.LIFE_BOUNDARY.collidepoint(item.position):
                 self.items.remove(item)
            
     def update_endgame(self):

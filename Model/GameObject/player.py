@@ -42,7 +42,7 @@ class Player:
         try:
             unit = distance.normalize()
         except ValueError:
-            return
+            unit = pg.Vector2(-0.1, 0)
 
         # Modify velocity
         velocity_delta = (other.velocity.dot(unit) - self.velocity.dot(unit)) * unit

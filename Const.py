@@ -22,7 +22,7 @@ PLATFORM_INIT_POSITION = [
     [pg.Vector2(100, 500), pg.Vector2(400, 510)]
 ]
 PLAYER_JUMP_QUOTA = 3
-PLATFORM_DIE_RECT = pg.Rect(-700, -2000, 2200, 3500)
+LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
 PLAYER_RESTART_POSITION = [
     pg.Vector2(700, 200),
     pg.Vector2(700, 200),
