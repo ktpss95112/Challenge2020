@@ -128,7 +128,6 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerAttack):
             v = event.player_id
-            print(self.players[v].velocity)
             for i in range(4):
                 magnitude = (self.players[i].position - self.players[v].position).magnitude()
                 if i != v and magnitude < 3.5 * Const.PLAYER_RADIUS:

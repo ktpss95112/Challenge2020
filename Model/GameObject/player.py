@@ -96,7 +96,7 @@ class Player:
             self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
         
     def respawn(self):
-        self.position = pg.Vector2(Const.PLAYER_RESTART_POSITION[self.player_id])
+        self.position = pg.Vector2(Const.PLAYER_RESPAWN_POSITION[self.player_id])
         self.velocity = pg.Vector2(0, 0)
         self.voltage = 0
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
