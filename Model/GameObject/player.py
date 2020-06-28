@@ -25,6 +25,8 @@ class Player:
         # Modify the horizontal velocity
         if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
             self.velocity.x = 0
+        elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
+            self.velocity.x /= 2
         elif self.velocity.x > 0:
             self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
             self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
