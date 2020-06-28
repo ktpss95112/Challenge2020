@@ -72,6 +72,8 @@ class GraphicalView:
 
         # draw players
         for player in self.model.players:
+            if player.invincible_time > 0:
+                pass
             center = list(map(int, player.position))
             pg.draw.circle(self.screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
             # temp voltage monitor

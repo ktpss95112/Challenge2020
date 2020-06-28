@@ -38,6 +38,10 @@ class Player:
         # Make sure that the player do not pass through the platform
         self.move(displacement, platforms)
 
+        # Maintain self.invincible_time
+        if self.invincible_time > 0:
+            self.invincible_time -= 1
+
     def collision(self, other, platforms: list):
         # Deal with collision with other player
         if (self.position - other.position).magnitude() >= (self.player_radius + other.player_radius) * 1.01:
@@ -81,17 +85,19 @@ class Player:
             self.jump_quota -= 1
 
     def be_attacked(self , unit , magnitude):
-        voltage_acceleration = self.voltage ** 1.35 + 100
-        self.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * unit / magnitude / Const.FPS
-        if self.voltage >= 100:
-            self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
-        self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
+        if self.invincible_time == 0:
+            voltage_acceleration = self.voltage ** 1.35 + 100
+            self.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * unit / magnitude / Const.FPS
+            if self.voltage >= 100:
+                self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
+            self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
         
     def respawn(self):
         self.position = pg.Vector2(Const.PLAYER_RESTART_POSITION[self.player_id])
         self.velocity = pg.Vector2(0, 0)
         self.voltage = 0
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
+        self.invincible_time = 2 * Const.FPS
     
     def use_item(self):
         self.keep_item_id = Const.NO_ITEM
