@@ -127,14 +127,12 @@ class GameEngine:
             self.timer = Const.GAME_LENGTH
 
         elif isinstance(event, EventPlayerAttack):
-            keys = pg.key.get_pressed()
-            for k, v in Const.PLAYER_ATTACK_KEYS.items():
-                if keys[k]:
-                    for i in range(4):
-                        magnitude = (self.players[i].position - self.players[v].position).magnitude()
-                        if i != v and magnitude < 3.5 * Const.PLAYER_RADIUS:
-                            unit = (self.players[i].position - self.players[v].position).normalize()
-                            self.players[i].be_attacked(unit, magnitude)
+            v = event.player_id
+            for i in range(4):
+                magnitude = (self.players[i].position - self.players[v].position).magnitude()
+                if i != v and magnitude < 3.5 * Const.PLAYER_RADIUS:
+                    unit = (self.players[i].position - self.players[v].position).normalize()
+                    self.players[i].be_attacked(unit, magnitude)
                             
         elif isinstance(event, EventPlayerRespawn):
             self.players[event.player_id].respawn()
