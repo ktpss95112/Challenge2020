@@ -21,7 +21,7 @@ class Item:
             self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
 
         # Modify the vertical velocity
-        self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
+        self.velocity.y += Const.GRAVITY_ACCELERATION_FOR_ITEM / Const.FPS
 
         # Make sure that the player do not pass through the platform
         for platform in platforms:
