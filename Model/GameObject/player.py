@@ -81,7 +81,7 @@ class Player:
             self.jump_quota -= 1
 
     def be_attacked(self , unit , magnitude):
-        voltage_acceleration = self.voltage**1.35 + 100
+        voltage_acceleration = self.voltage ** 1.35 + 100
         self.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * unit / magnitude / Const.FPS
         if self.voltage >= 100:
             self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
