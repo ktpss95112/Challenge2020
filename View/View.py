@@ -90,6 +90,11 @@ class GraphicalView:
         for item in self.model.items:
             center = list(map(int, item.position))
             pg.draw.circle(self.screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
+            # temp item id monitor
+            font = pg.font.Font(None, 15)
+            item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))
+            item_pos = item.position
+            self.screen.blit(item_surface, item_surface.get_rect(center = item_pos))
 
         # draw timer        
         font = pg.font.Font(None, 36)

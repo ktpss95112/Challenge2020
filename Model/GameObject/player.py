@@ -92,7 +92,6 @@ class Player:
             self.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * unit / magnitude / Const.FPS
             if self.voltage >= 100:
                 self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
-            print(self.velocity)
             self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
         
     def respawn(self):
