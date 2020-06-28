@@ -23,11 +23,11 @@ PLATFORM_INIT_POSITION = [
 ]
 PLAYER_JUMP_QUOTA = 3
 LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
-PLAYER_RESTART_POSITION = [
-    pg.Vector2(700, 200),
-    pg.Vector2(700, 200),
-    pg.Vector2(700, 200),
-    pg.Vector2(700, 200)
+PLAYER_RESPAWN_POSITION = [
+    pg.Vector2(600, 200),
+    pg.Vector2(600, 200),
+    pg.Vector2(600, 200),
+    pg.Vector2(600, 200)
 ]
 GRAVITY_ACCELERATION = 70 * FPS
 GRAVITY_ACCELERATION_FOR_ITEM = 40 * FPS
