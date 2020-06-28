@@ -89,7 +89,7 @@ class GraphicalView:
         # draw items
         for item in self.model.items:
             center = list(map(int, item.position))
-            pg.draw.circle(self.screen, pg.Color('white'), center, item.item_radius)
+            pg.draw.circle(self.screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
 
         # draw timer        
         font = pg.font.Font(None, 36)
