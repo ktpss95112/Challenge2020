@@ -86,7 +86,6 @@ class Player:
         if self.voltage >= 100:
             self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
         self.voltage += 10
-        print(self.voltage)
         
     def respawn(self):
         self.position = pg.Vector2(Const.PLAYER_RESTART_POSITION[self.player_id])
