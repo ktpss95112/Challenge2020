@@ -74,6 +74,11 @@ class GraphicalView:
         for player in self.model.players:
             center = list(map(int, player.position))
             pg.draw.circle(self.screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
+            # temp voltage monitor
+            font = pg.font.Font(None, 20)
+            voltage_surface = font.render(f"V = {player.voltage:d}", 1, pg.Color('white'))
+            voltage_pos = player.position
+            self.screen.blit(voltage_surface, voltage_surface.get_rect(center = voltage_pos))    
 
         # draw platforms
         for platform in self.model.platforms:
