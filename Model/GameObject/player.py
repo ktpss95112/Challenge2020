@@ -104,8 +104,10 @@ class Player:
     
     def use_item(self):
         if self.keep_item_id == Const.INVINCIBLE_BATTERY :
-            self.radius *= 2
+            self.player_radius *= 2
             self.invincible_time = 5 * Const.FPS
         elif self.keep_item_id == Const.RAINBOW_GROUNDER :
             self.voltage -= 10
+            if self.voltage < 0:
+                self.voltage = 0
         self.keep_item_id = Const.NO_ITEM
