@@ -62,7 +62,7 @@ class GraphicalView:
         font = pg.font.Font(None, 36)
         text_surface = font.render("Press [space] to start ...", 1, pg.Color('gray88'))
         text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
 
         pg.display.flip()
 
@@ -76,7 +76,7 @@ class GraphicalView:
             pg.draw.circle(self.screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
             # temp voltage monitor
             font = pg.font.Font(None, 20)
-            voltage_surface = font.render(f"V = {player.voltage:d}", 1, pg.Color('white'))
+            voltage_surface = font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
             voltage_pos = player.position
             self.screen.blit(voltage_surface, voltage_surface.get_rect(center = voltage_pos))    
 
@@ -102,7 +102,7 @@ class GraphicalView:
         font = pg.font.Font(None, 36)
         text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
         text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
         
         pg.display.flip()
 
@@ -113,6 +113,6 @@ class GraphicalView:
         font = pg.font.Font(None, 36)
         text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
         text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
 
         pg.display.flip()
