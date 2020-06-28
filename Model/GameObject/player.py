@@ -41,6 +41,8 @@ class Player:
         # Maintain self.invincible_time
         if self.invincible_time > 0:
             self.invincible_time -= 1
+            if self.invincible_time == 0:
+                self.radius = Const.PLAYER_RADIUS
 
     def collision(self, other, platforms: list):
         # Deal with collision with other player
@@ -101,4 +103,6 @@ class Player:
         self.invincible_time = 2 * Const.FPS
     
     def use_item(self):
+        if self.keep_item_id == Const.INVINCIBLE_BATTERY :
+            self.radius *= 2 
         self.keep_item_id = Const.NO_ITEM
