@@ -153,3 +153,6 @@ class EventPlayerPickItem(BaseEvent):
 
 class EventRestart(BaseEvent):
     name = 'GameRestart event'
+
+class EventToggleFullScreen(BaseEvent):
+    name = 'ToggleFullScreen event'
