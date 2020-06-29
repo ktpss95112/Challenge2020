@@ -22,7 +22,7 @@ class GraphicalView:
 
         self.model = model
 
-        self.screen = pg.display.set_mode(Const.WINDOW_SIZE)
+        self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
         pg.display.set_caption(Const.WINDOW_CAPTION)
         self.background.fill(Const.BACKGROUND_COLOR)
 
@@ -101,6 +101,23 @@ class GraphicalView:
         timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
         timer_pos = (Const.ARENA_SIZE[0] * 29 / 30, Const.ARENA_SIZE[1] * 1 / 30)
         self.screen.blit(timer_surface, timer_surface.get_rect(center = timer_pos))    
+        
+        #draw dashboard
+        fontsize = 24
+        posX = (Const.WINDOW_SIZE[0] * 7 / 8)
+        posY = (Const.WINDOW_SIZE[1] * 1 / 16)
+        font = pg.font.Font(None, fontsize)
+        for player_id in range(1, 5):
+            position = posX, posY
+            voltage = round(self.model.players[player_id - 1].voltage, 2)
+            item = self.model.players[player_id - 1].keep_item_id
+            text = [f"Player {player_id}", "Life:", f"Voltage: {voltage}", f"Item: {item}", "Score:"]
+            label = []
+            for line in text: 
+                label.append(font.render(line, True, pg.Color('white')))
+            for line in range(len(label)):
+                self.screen.blit(label[line],(position[0],position[1]+(line * (fontsize + 10))))
+            posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 25)
 
         pg.display.flip()
 

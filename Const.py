@@ -91,7 +91,7 @@ PLAYER_JUMP_KEYS = {
     pg.K_w: 0
 }
 PLAYER_ITEM_KEYS = {
-    pg.K_RCTRL: 3,
+    pg.K_RSHIFT: 3,
     pg.K_u: 2,
     pg.K_r: 1,
     pg.K_q: 0
