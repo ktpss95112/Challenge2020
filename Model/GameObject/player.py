@@ -53,22 +53,23 @@ class Player:
     def collision(self, other, platforms: list):
         # Deal with collision with other player
         distance = other.position - self.position
-        if  ( distance * ( self.velocity - other.velocity ) ) / distance.magnitude() / Const.FPS < ( distance.magnitude() - self.player_radius - other.player_radius) * 1.01:
-            return
         try:
             unit = distance.normalize()
         except ValueError:
             unit = pg.Vector2(-0.1, 0)
+        # Modify position
+        if distance.magnitude() > (self.player_radius + other.player_radius) * 1.01: 
+            return
+        displacement = -(self.player_radius + other.player_radius) * unit + distance
+        self.move(displacement, platforms)
+        other.move(-displacement, platforms)
+        delta_v = self.velocity - other.velocity 
 
         # Modify velocity
         velocity_delta = (other.velocity.dot(unit) - self.velocity.dot(unit)) * unit
         self.velocity += velocity_delta
         other.velocity -= velocity_delta
 
-        # Modify position
-        displacement = -(self.player_radius + other.player_radius) * unit + distance
-        self.move(displacement, platforms)
-        other.move(-displacement, platforms)
 
     def move(self, displacement: pg.Vector2, platforms: list):
         # Move and check if collide with platform
