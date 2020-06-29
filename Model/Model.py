@@ -202,11 +202,11 @@ class GameEngine:
             find_position = False
             while not find_position:
                 find_position = True
-                pos = pg.Vector2(random.randint(50,1150), random.randint(0,600))
+                pos = pg.Vector2(random.randint(50, 1150), random.randint(0, 600))
                 for item in self.items:
                     if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
                         find_position = False
-            self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item-1], Const.ITEM_DRAG[new_item - 1]))
+            self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
             
     def run(self):
         '''
