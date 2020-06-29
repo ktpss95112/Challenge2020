@@ -36,6 +36,10 @@ class Player:
 
         # Modify the vertical velocity
         self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
+        if self.velocity.y <= 2 * Const.VERTICAL_DRAG_EMERGE_SPEED:
+            self.velocity.y /= 2
+        elif self.velocity.y <= Const.VERTICAL_DRAG_EMERGE_SPEED:
+            self.velocity.y = Const.VERTICAL_DRAG_EMERGE_SPEED
 
         # Make sure that the player do not pass through the platform
         self.move(displacement, platforms)
@@ -85,7 +89,10 @@ class Player:
     def jump(self):
         # Add vertical velocity to the player.
         if self.jump_quota != 0:
-            self.velocity.y = -self.jump_speed
+            if self.velocity.y > 0:
+                self.velocity.y = -self.jump_speed
+            else:
+                self.velocity.y -= self.jump_speed
             self.jump_quota -= 1
 
     def be_attacked(self , unit , magnitude):
