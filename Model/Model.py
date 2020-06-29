@@ -144,7 +144,7 @@ class GameEngine:
         elif isinstance(event, EventPlayerItem):
             player = self.players[ event.player_id ]
             if player.keep_item_id > 0:
-                self.players[ event.player_id ].use_item()
+                self.players[ event.player_id ].use_item(self.players)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
             else:
                 for item in self.items:

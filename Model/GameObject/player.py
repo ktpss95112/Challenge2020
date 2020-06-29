@@ -110,7 +110,7 @@ class Player:
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         self.invincible_time = 2 * Const.FPS
     
-    def use_item(self):
+    def use_item(self, players):
         if self.keep_item_id == Const.INVINCIBLE_BATTERY :
             self.position.y -= 2 * Const.PLAYER_RADIUS - self.player_radius
             self.player_radius = 2 * Const.PLAYER_RADIUS
@@ -119,4 +119,9 @@ class Player:
             self.voltage -= 10
             if self.voltage < 0:
                 self.voltage = 0
+        elif self.keep_item_id == Const.ZAP_ZAP_ZAP :
+            self.voltage += 10
+            for other in players :
+                if ( self.position - other.position ).magnitude() < Const.ZAP_ZAP_ZAP_RANGE * self.player_radius and self != other :
+                    other.voltage += 50
         self.keep_item_id = Const.NO_ITEM
