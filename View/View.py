@@ -105,9 +105,9 @@ class GraphicalView:
         #draw dashboard
         fontsize = 24
         posX = (Const.WINDOW_SIZE[0] * 7 / 8)
-        posY = (Const.WINDOW_SIZE[1] * 1 / 16)
+        posY = (Const.WINDOW_SIZE[1] * 1 / 32)
         font = pg.font.Font(None, fontsize)
-        heart_image = pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png'))
+        heart_image = pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')).convert_alpha()
         heart_image = pg.transform.scale(heart_image, (16, 16))
         
         for player_id in range(1, 5):
@@ -118,16 +118,16 @@ class GraphicalView:
             item = self.model.players[player_id - 1].keep_item_id
             text = [f"Player {player_id}", "Life:", f"Voltage: {voltage}", f"Item: {item}", "Score:"]
             label = []
-            
+
             for line in text: 
                 label.append(font.render(line, True, pg.Color('white')))
             for line in range(len(label)):
-                self.screen.blit(label[line],(position[0],position[1]+(line * (fontsize + 10))))
+                self.screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
             for i in range(3):
                 self.screen.blit(heart_image, (heartposX, heartposY))
                 heartposX += 20
-            posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 25)
-
+                
+            posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
         pg.display.flip()
 
     def render_stop(self):
