@@ -166,11 +166,11 @@ class GameEngine:
         Update information of users
         For example: position, remaining time of item used
         '''
+        self.players_collision_detect()
         for player in self.players:
             player.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
-        self.players_collision_detect()
 
     def update_objects(self):
         '''

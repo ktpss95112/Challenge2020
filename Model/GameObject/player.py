@@ -52,9 +52,9 @@ class Player:
 
     def collision(self, other, platforms: list):
         # Deal with collision with other player
-        if (self.position - other.position).magnitude() >= (self.player_radius + other.player_radius) * 1.01:
-            return
         distance = other.position - self.position
+        if  ( distance * ( self.velocity - other.velocity ) ) / distance.magnitude() / Const.FPS < ( distance.magnitude() - self.player_radius - other.player_radius) * 1.01:
+            return
         try:
             unit = distance.normalize()
         except ValueError:
