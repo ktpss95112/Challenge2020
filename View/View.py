@@ -1,5 +1,5 @@
 import pygame as pg
-
+import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
 import Const
@@ -101,12 +101,16 @@ class GraphicalView:
         timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
         timer_pos = (Const.ARENA_SIZE[0] * 29 / 30, Const.ARENA_SIZE[1] * 1 / 30)
         self.screen.blit(timer_surface, timer_surface.get_rect(center = timer_pos))    
-        
+
         #draw dashboard
         fontsize = 24
         posX = (Const.WINDOW_SIZE[0] * 7 / 8)
         posY = (Const.WINDOW_SIZE[1] * 1 / 16)
         font = pg.font.Font(None, fontsize)
+        heart_image = pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png'))
+        heart_image = pg.transform.scale(heart_image, (24, 24))
+        heartposX = posX + 30
+                
         for player_id in range(1, 5):
             position = posX, posY
             voltage = round(self.model.players[player_id - 1].voltage, 2)
@@ -116,6 +120,7 @@ class GraphicalView:
             for line in text: 
                 label.append(font.render(line, True, pg.Color('white')))
             for line in range(len(label)):
+                self.screen.blit(heart_image, (posX, posY))
                 self.screen.blit(label[line],(position[0],position[1]+(line * (fontsize + 10))))
             posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 25)
 

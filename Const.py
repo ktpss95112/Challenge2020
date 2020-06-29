@@ -1,5 +1,5 @@
 import pygame as pg
-
+import os.path
 # model
 FPS = 60 # frame per second
 GAME_LENGTH = 300 * FPS
@@ -106,3 +106,8 @@ GAME_STOP_KEY = pg.K_SPACE
 GAME_CONTINUE_KEY = pg.K_SPACE
 GAME_RESTART_KEY = pg.K_SPACE
 GAME_FULLSCREEN_KEY = pg.K_F11
+
+# Path
+IMAGE_PATH = os.path.join('View', 'img')
+SOUND_PATH = os.path.join('View', 'sound')
+VIDEO_PATH = os.path.join('View', 'video')
