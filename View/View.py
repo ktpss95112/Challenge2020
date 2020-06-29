@@ -10,6 +10,7 @@ class GraphicalView:
     Draws the state of GameEngine onto the screen.
     '''
     background = pg.Surface(Const.ARENA_SIZE)
+    fullscreen = True
 
     def __init__(self, ev_manager: EventManager, model: GameEngine):
         '''
@@ -47,6 +48,9 @@ class GraphicalView:
             elif cur_state == Const.STATE_PLAY: self.render_play()
             elif cur_state == Const.STATE_STOP: self.render_stop()
             elif cur_state == Const.STATE_ENDGAME: self.render_endgame()
+        
+        elif isinstance(event, EventToggleFullScreen):
+            self.toggle_fullscreen()
 
     def display_fps(self):
         '''
@@ -149,3 +153,30 @@ class GraphicalView:
         self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
 
         pg.display.flip()
+
+    def toggle_fullscreen(self):
+        # save screen content before toggling
+        screen = pg.display.get_surface()
+        tmp = screen.convert()
+        caption = pg.display.get_caption()
+        cursor = pg.mouse.get_cursor()
+
+        w, h = screen.get_width(), screen.get_height()
+        flags = screen.get_flags()
+        bits = screen.get_bitsize()
+
+        pg.display.quit()
+        pg.display.init()
+
+        # toggle fullscreen
+        self.fullscreen = not self.fullscreen
+        screen = pg.display.set_mode((w, h), flags ^ pg.FULLSCREEN, bits)
+        
+        # restore screen content
+        screen.blit(tmp, (0, 0))
+        pg.display.set_caption(*caption)
+        
+        pg.key.set_mods(0)
+        pg.mouse.set_cursor(*cursor)
+
+        self.screen = screen
