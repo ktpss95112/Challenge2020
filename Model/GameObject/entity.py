@@ -12,7 +12,8 @@ class PistolBullet(Entity):
     def __init__(self, position, direction): #direction is a unit pg.vec2 
         self.position = position
         self.velocity = Const.BULLET_VELOCITY * direction
-        self.timer = 1000 / Const.BULLET_VELOCITY def update_every_tick(self, players):
+        self.timer = 1000 / Const.BULLET_VELOCITY 
+    def update_every_tick(self, players):
         self.timer -= 1/Const.FPS
         self.position += self.velocity / Const.FPS
         print("bullet flying")
