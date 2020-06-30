@@ -114,19 +114,23 @@ class GameEngine:
             self.running = False
 
         elif isinstance(event, EventPlayerMove):
-            self.players[event.player_id].add_horizontal_velocity(event.direction)
+            if self.players[event.player_id].is_alive():
+                self.players[event.player_id].add_horizontal_velocity(event.direction)
 
         elif isinstance(event, EventPlayerJump):
-            self.players[event.player_id].jump()
+            if self.players[event.player_id].is_alive():
+                self.players[event.player_id].jump()
 
         elif isinstance(event, EventTimesUp):
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventPlayerAttack):
             v = event.player_id
+            if not self.players[v].is_alive():
+                return
             for i in range(4):
                 magnitude = (self.players[i].position - self.players[v].position).magnitude()
-                if i != v and magnitude < 3.5 * Const.PLAYER_RADIUS:
+                if i != v and magnitude < 3.5 * Const.PLAYER_RADIUS and self.players[i].is_alive():
                     unit = (self.players[i].position - self.players[v].position).normalize()
                     self.players[i].be_attacked(unit, magnitude)
                     # record
@@ -139,19 +143,23 @@ class GameEngine:
         elif isinstance(event, EventPlayerDied):
             # update KO amount
             die_id = event.player_id
+            if not self.players[die_id].is_alive():
+                return
             atk_id = self.players[die_id].last_being_attacked_by
             t = self.players[die_id].last_being_attacked_time_elapsed
             if atk_id != -1 and t - self.timer < Const.VALID_KO_TIME:
-                print(t)
-                print(self.timer)
                 self.players[die_id].be_KO_amount += 1
                 self.players[atk_id].KO_amount += 1
             
             self.players[die_id].keep_item_id = Const.NO_ITEM
-            self.ev_manager.post(EventPlayerRespawn(die_id))
+            self.players[die_id].life -= 1
+            if self.players[die_id].life > 0:
+                self.ev_manager.post(EventPlayerRespawn(die_id))
         
         elif isinstance(event, EventPlayerItem):
             player = self.players[ event.player_id ]
+            if not player.is_alive():
+                return
             if player.keep_item_id > 0:
                 self.players[ event.player_id ].use_item(self.players)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
@@ -212,9 +220,11 @@ class GameEngine:
         # Less reliable
         for i in range(len(self.players)):
             for j in range(i + 1, len(self.players)):
-                self.players[i].collision(self.players[j], self.platforms)
+                if self.players[i].is_alive() and self.players[j].is_alive():
+                    self.players[i].collision(self.players[j], self.platforms)
 
     def first_collision(self, origin_fps):
+        # haven't add is_alive() detection
         p1 = -1
         p2 = -1
         min_collision_time = 1

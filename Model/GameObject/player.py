@@ -4,6 +4,7 @@ import Const
 class Player:
     def __init__(self, player_id):
         self.player_id = player_id
+        self.life = Const.PLAYER_LIFE
         self.player_radius = Const.PLAYER_RADIUS
         self.last_being_attacked_by = -1
         self.last_being_attacked_time_elapsed = 0
@@ -17,6 +18,9 @@ class Player:
         self.normal_speed = Const.PLAYER_NORMAL_SPEED # speed gain when players try to move left and right
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
+
+    def is_alive(self):
+        return self.life > 0
 
     def move_every_tick(self, platforms: list):
         # Calcultate the distance to move

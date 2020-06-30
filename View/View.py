@@ -72,6 +72,8 @@ class GraphicalView:
 
         # draw players
         for player in self.model.players:
+            if not player.is_alive():
+                continue
             if player.invincible_time > 0:
                 pass
             center = list(map(int, player.position))
@@ -116,11 +118,19 @@ class GraphicalView:
     def render_endgame(self):
         # draw background
         self.screen.fill(Const.BACKGROUND_COLOR)
-        # TODO: print score board
-        # print text
+        # draw score board
         font = pg.font.Font(None, 36)
+        text_surface = font.render(f"id KO beKO", 1, pg.Color('gray88'))
+        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 10)
+        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
+
+        for player in self.model.players:
+            text_surface = font.render(f"{player.player_id:2d} {player.KO_amount:2d} {player.be_KO_amount:2d}", 1, pg.Color('gray88'))
+            text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 10 * (player.player_id + 2))
+            self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
+        # draw text
         text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
-        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
+        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 10 * 8)
         self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
 
         pg.display.flip()
