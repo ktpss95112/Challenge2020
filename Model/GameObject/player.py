@@ -119,7 +119,9 @@ class Player:
         self.voltage = 0
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         self.invincible_time = 2 * Const.FPS
-    
+        self.last_being_attacked_by = -1
+        self.last_being_attacked_time_elapsed = 0
+
     def use_item(self, players):
         if self.keep_item_id == Const.INVINCIBLE_BATTERY :
             self.position.y -= 2 * Const.PLAYER_RADIUS - self.player_radius

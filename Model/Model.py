@@ -129,13 +129,26 @@ class GameEngine:
                 if i != v and magnitude < 3.5 * Const.PLAYER_RADIUS:
                     unit = (self.players[i].position - self.players[v].position).normalize()
                     self.players[i].be_attacked(unit, magnitude)
+                    # record
+                    self.players[i].last_being_attacked_by = v
+                    self.players[i].last_being_attacked_time_elapsed = self.timer
                             
         elif isinstance(event, EventPlayerRespawn):
             self.players[event.player_id].respawn()
 
         elif isinstance(event, EventPlayerDied):
-            self.players[event.player_id].keep_item_id = Const.NO_ITEM
-            self.ev_manager.post(EventPlayerRespawn(event.player_id))
+            # update KO amount
+            die_id = event.player_id
+            atk_id = self.players[die_id].last_being_attacked_by
+            t = self.players[die_id].last_being_attacked_time_elapsed
+            if atk_id != -1 and t - self.timer < Const.VALID_KO_TIME:
+                print(t)
+                print(self.timer)
+                self.players[die_id].be_KO_amount += 1
+                self.players[atk_id].KO_amount += 1
+            
+            self.players[die_id].keep_item_id = Const.NO_ITEM
+            self.ev_manager.post(EventPlayerRespawn(die_id))
         
         elif isinstance(event, EventPlayerItem):
             player = self.players[ event.player_id ]
