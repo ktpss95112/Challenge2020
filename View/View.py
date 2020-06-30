@@ -35,9 +35,14 @@ class GraphicalView:
 
         # convert images
         view_staticobjects.init_staticobjects()
-        
-        self.scoreboard = view_staticobjects.View_scoreboard(self.model)
 
+
+        # static objects
+        self.scoreboard = view_staticobjects.View_scoreboard(self.model)
+        self.players = view_staticobjects.View_players(self.model)
+        self.platform = view_staticobjects.View_platform(self.model)
+        self.items = view_staticobjects.View_items(self.model)
+        self.timer = view_staticobjects.View_timer(self.model)
 
     def notify(self, event):
         '''
@@ -77,41 +82,19 @@ class GraphicalView:
         pg.display.flip()
 
     def render_play(self):
-        # draw background
-        self.screen.fill(Const.BACKGROUND_COLOR)
+        
+        # draw platforms
+        self.platform.draw(self.screen)
 
         # draw players
-        for player in self.model.players:
-            if player.invincible_time > 0:
-                pass
-            center = list(map(int, player.position))
-            pg.draw.circle(self.screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
-            # temp voltage monitor
-            font = pg.font.Font(None, 20)
-            voltage_surface = font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
-            voltage_pos = player.position
-            self.screen.blit(voltage_surface, voltage_surface.get_rect(center = voltage_pos))    
-
-        # draw platforms
-        for platform in self.model.platforms:
-            pg.draw.rect(self.screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
+        self.players.draw(self.screen)        
         
         # draw items
-        for item in self.model.items:
-            center = list(map(int, item.position))
-            pg.draw.circle(self.screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
-            # temp item id monitor
-            font = pg.font.Font(None, 15)
-            item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))
-            item_pos = item.position
-            self.screen.blit(item_surface, item_surface.get_rect(center = item_pos))
-
+        self.items.draw(self.screen)
+        
         # draw timer        
-        font = pg.font.Font(None, 36)
-        timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
-        timer_pos = (Const.ARENA_SIZE[0] * 29 / 30, Const.ARENA_SIZE[1] * 1 / 30)
-        self.screen.blit(timer_surface, timer_surface.get_rect(center = timer_pos))    
-
+        self.timer.draw(self.screen)
+        
         #draw scoreboard
         self.scoreboard.draw(self.screen)
         
@@ -123,7 +106,6 @@ class GraphicalView:
         text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
         text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
         self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
-        
         pg.display.flip()
 
     def render_endgame(self):

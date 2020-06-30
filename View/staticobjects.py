@@ -31,7 +31,7 @@ class __Object_base():
         self.model = model
 
 
-class View_background(__Object_base):
+class View_platform(__Object_base):
     # background = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'background.png')), 1)
     # priced_market = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'market.png')), 0.3)
     
@@ -41,10 +41,9 @@ class View_background(__Object_base):
         # cls.priced_market = cls.priced_market.convert()
         pass
     def draw(self, screen): 
-        # screen.fill(Const.COLOR_WHITE)
-        # screen.blit(self.background, (0, 0))
-        # screen.blit(self.priced_market, (322, 328))
-        pass
+        screen.fill(Const.BACKGROUND_COLOR)
+        for platform in self.model.platforms:
+            pg.draw.rect(screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
 
 class View_menu(__Object_base):
     # menu = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'menu.png')), 1)
@@ -129,7 +128,7 @@ class View_players(__Object_base):
         # cls.images_color = tuple( _image.convert_alpha() for _image in cls.images_color)
         pass
     def __init__(self, model):
-        # self.model = model
+        self.model = model
         # self.color_switch = [0, 0, 0, 0]
         # self.images = tuple(
         #     view_utils.scaled_surface(
@@ -144,27 +143,24 @@ class View_players(__Object_base):
         #     for player in self.model.player_list
         # )
         # self.theworld_player = None
-        pass
     def set_theworld_player(self, player_index):
         #self.theworld_player = player_index
         pass
-    def draw(self, screen, theworld=False):
-        # players = self.model.player_list
-        # for _i in range(len(players)):
-        #     if theworld and _i != self.theworld_player: continue
-
-        #     angle = ((8 - players[_i].direction_no) % 8 - 3) * 45
-        #     image = pg.transform.rotate(self.images[_i], angle)
-        #     if not players[_i].is_invincible: image = pg.transform.rotate(self.images[_i], angle)
-        #     else:
-        #         if players[_i].name == 'master':
-        #             image = pg.transform.rotate(self.image_captainkaoshiung, angle)
-        #         else:
-        #             image = pg.transform.rotate(self.images_color[self.color_switch[_i]%19], angle)
-        #             self.color_switch[_i] += 1
-        #     screen.blit(image, image.get_rect(center=players[_i].position))
-        #     if players[_i].freeze: screen.blit(self.image_freeze, players[_i].position+[-17, -50])
+    def draw(self, screen):
+        # draw players
+        for player in self.model.players:
+            if player.invincible_time > 0:
+                pass
+            center = list(map(int, player.position))
+            pg.draw.circle(screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
+            # temp voltage monitor
+            font = pg.font.Font(None, 20)
+            voltage_surface = font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
+            voltage_pos = player.position
+            screen.blit(voltage_surface, voltage_surface.get_rect(center = voltage_pos))    
         pass
+
+
 
 
 class View_scoreboard(__Object_base):
@@ -215,12 +211,40 @@ class View_items(__Object_base):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
+        for item in self.model.items:
+            center = list(map(int, item.position))
+            pg.draw.circle(screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
+            # temp item id monitor
+            font = pg.font.Font(None, 15)
+            item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))
+            item_pos = item.position
+            screen.blit(item_surface, item_surface.get_rect(center = item_pos))
+
+class View_timer(__Object_base):
+    images = {
+        'Heart'       :view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.2)
+    }
+
+    @classmethod
+    def init_convert(cls):
+        #cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
         pass
+    def draw(self, screen):
+        # for market in self.model.priced_market_list:
+        #     if market.item:
+        #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
+        font = pg.font.Font(None, 36)
+        timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
+        timer_pos = (Const.ARENA_SIZE[0] * 29 / 30, Const.ARENA_SIZE[1] * 1 / 30)
+        screen.blit(timer_surface, timer_surface.get_rect(center = timer_pos))    
+        
+
 
 def init_staticobjects():
-    View_background.init_convert()
+    View_platform.init_convert()
     View_players.init_convert()
     View_items.init_convert()
     View_scoreboard.init_convert()
     View_menu.init_convert()
     View_characters.init_convert()
+    View_timer.init_convert()
