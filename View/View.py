@@ -44,7 +44,8 @@ class GraphicalView:
 
         # convert images
         view_staticobjects.init_staticobjects()
-
+        view_animations.init_animation()
+        
         # animations
         self.animation_list = []
 
