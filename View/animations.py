@@ -23,6 +23,7 @@ from math import sin, cos, sqrt
 
 from Events.EventManager import *
 from Model.Model import GameEngine
+from Model.GameObject.player import Player
 import Const
 
 '''
@@ -104,8 +105,21 @@ class Animation_player_attack(Animation_raster):
         for _i in range(1, 21)
     )
 
-    def __init__(self, **pos):
-        super().__init__(2, 2*len(self.frames), **pos)
+    def __init__(self, player: Player):
+        self._timer = 0
+        self.delay_of_frames = 2
+        self.frame_index_to_draw = 0
+        self.expire_time = 2*len(self.frames)
+        self.expired = False
+        self.player = player
+
+    def draw(self, screen, update=True):
+        screen.blit(
+            self.frames[self.frame_index_to_draw],
+            self.frames[self.frame_index_to_draw].get_rect(center=self.player.position),
+        )
+
+        if update: self.update()
 
 
 def init_animation():

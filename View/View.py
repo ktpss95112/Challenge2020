@@ -80,8 +80,7 @@ class GraphicalView:
             self.toggle_fullscreen()
 
         elif isinstance(event, EventPlayerAttack):
-            Position = self.model.players[event.player_id].position
-            self.animation_list.append(view_animations.Animation_player_attack(center=Position))
+            self.animation_list.append(view_animations.Animation_player_attack(self.model.players[event.player_id]))
 
     def display_fps(self):
         '''
