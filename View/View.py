@@ -39,7 +39,6 @@ class GraphicalView:
         pg.font.init()
         pg.display.set_caption(Const.WINDOW_CAPTION)
         self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
-
         self.clock = pg.time.Clock()
         self.is_initialized = True
 
@@ -135,7 +134,6 @@ class GraphicalView:
         tmp = screen.convert()
         caption = pg.display.get_caption()
         cursor = pg.mouse.get_cursor()
-        
         w, h = screen.get_width(), screen.get_height()
         flags = screen.get_flags()
         bits = screen.get_bitsize()
