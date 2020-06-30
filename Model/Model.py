@@ -80,6 +80,7 @@ class GameEngine:
         self.players = [Player(0), Player(1), Player(2), Player(3)]
         self.items = []
         self.platforms = [ Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION ]
+        self.timer = Const.GAME_LENGTH
 
     def notify(self, event: BaseEvent):
         '''
@@ -120,12 +121,6 @@ class GameEngine:
 
         elif isinstance(event, EventTimesUp):
             self.state_machine.push(Const.STATE_ENDGAME)
-
-        elif isinstance(event, EventRestart):
-            self.state_machine.clear()
-            self.ev_manager.post(EventInitialize())
-            self.ev_manager.post(EventStateChange(Const.STATE_PLAY))
-            self.timer = Const.GAME_LENGTH
 
         elif isinstance(event, EventPlayerAttack):
             v = event.player_id
@@ -248,7 +243,6 @@ class GameEngine:
         '''
         self.running = True
         self.ev_manager.post(EventInitialize())
-        self.timer = Const.GAME_LENGTH
         while self.running:
             self.ev_manager.post(EventEveryTick())
             self.clock.tick(Const.FPS)

@@ -46,7 +46,7 @@ STATE_POP = 0 # for convenience, not really a state which we can be in
 STATE_MENU = 1
 STATE_PLAY = 2
 STATE_STOP = 3
-STATE_ENDGAME = 4
+STATE_ENDGAME = 4 # show score board and handle restart
 
 
 # view

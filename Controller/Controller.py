@@ -84,8 +84,11 @@ class Controller:
                 self.model.state_machine.pop()
 
     def ctrl_endgame(self, key_down_events):
+        # detect restart event
         for event_pg in key_down_events:
             if event_pg.key == Const.GAME_RESTART_KEY:
-                self.model.ev_manager.post(EventRestart())
+                self.model.state_machine.clear()
+                self.ev_manager.post(EventInitialize())
+                self.ev_manager.post(EventStateChange(Const.STATE_PLAY))
 
                 
