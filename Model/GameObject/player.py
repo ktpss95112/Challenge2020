@@ -138,6 +138,6 @@ class Player:
         elif self.keep_item_id == Const.ZAP_ZAP_ZAP :
             self.voltage += 10
             for other in players :
-                if ( self.position - other.position ).magnitude() < Const.ZAP_ZAP_ZAP_RANGE * self.player_radius and self != other :
+                if abs( self.position.x - other.position.x ) < Const.ZAP_ZAP_ZAP_RANGE * self.player_radius and self != other :
                     other.voltage += 50
         self.keep_item_id = Const.NO_ITEM
