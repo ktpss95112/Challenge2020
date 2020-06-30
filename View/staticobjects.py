@@ -231,25 +231,30 @@ class View_scoreboard(__Object_base):
 
 class View_items(__Object_base):
     images = {
-        'Heart'       :view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.2)
+        1: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
+        2: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.2),
+        3: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.1),
+        4: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2),
+        5: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
+        6: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.05),
+        7: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.02)
     }
 
     @classmethod
     def init_convert(cls):
-        #cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
-        pass
+        cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
+
     def draw(self, screen):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
         for item in self.model.items:
-            center = list(map(int, item.position))
-            pg.draw.circle(screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
-            # temp item id monitor
-            font = pg.font.Font(None, 15)
-            item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))
-            item_pos = item.position
-            screen.blit(item_surface, item_surface.get_rect(center = item_pos))
+            screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position))
+            #pg.draw.circle(screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
+            #font = pg.font.Font(None, 15)
+            #item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))
+            #item_pos = item.position
+            #screen.blit(item_surface, item_surface.get_rect(center = item_pos))
 
 class View_timer(__Object_base):
     images = {
