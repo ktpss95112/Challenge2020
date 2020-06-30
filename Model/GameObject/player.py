@@ -70,6 +70,15 @@ class Player:
         self.velocity += velocity_delta
         other.velocity -= velocity_delta
 
+    def collision_reliable(self, other, collision_time): # collsition time is a percentage of FPS
+        self.position += self.velocity / Const.FPS * collision_time
+        other.position += other.velocity / Const.FPS * collision_time
+        unit = (other.position - self.position)
+        velocity_delta = (other.velocity - self.velocity).dot(unit) * unit
+        self.velocity += velocity_delta
+        other.velocity -= velocity_delta
+        self.position -= self.velocity / Const.FPS * collision_time
+        other.position -= other.velocity / Const.FPS * collision_time
 
     def move(self, displacement: pg.Vector2, platforms: list):
         # Move and check if collide with platform

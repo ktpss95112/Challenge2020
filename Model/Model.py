@@ -1,6 +1,7 @@
 import random
 
 import pygame as pg
+import math
 
 from Events.EventManager import *
 from Model.GameObject.player import Player
@@ -191,10 +192,41 @@ class GameEngine:
         pass
 
     def players_collision_detect(self):
-        for k in range(len(self.players)):
-            for i in range(len(self.players)):
-                for j in range(i + 1, len(self.players)):
-                    self.players[i].collision(self.players[j], self.platforms)
+        # More reliable
+        '''
+        origin_fps = 0
+        player1, player2, collision_fps = self.first_collision(origin_fps)
+        while collision_fps != -1:
+            player1.collision_reliable(player2, collision_fps)
+            origin_fps = collision_fps
+            player1, player2, collision_fps = self.first_collision(origin_fps)
+        '''
+        # Less reliable
+        for i in range(len(self.players)):
+            for j in range(i + 1, len(self.players)):
+                self.players[i].collision(self.players[j], self.platforms)
+
+    def first_collision(self, origin_fps):
+        p1 = -1
+        p2 = -1
+        min_collision_time = 1
+        for i in range(len(self.players)):
+            for j in range(i + 1, len(self.players)):
+                distance = self.players[i].position - self.players[j].position
+                rel_velocity = self.players[j].velocity - self.players[i].velocity
+                if distance.dot(rel_velocity) <= 0:
+                    continue
+                normal_vector = pg.Vector2(-rel_velocity.y, rel_velocity.x)
+                min_distance_squared = ((normal_vector.dot(self.players[i].position) - normal_vector.dot(self.players[j].position)) / normal_vector.magnitude()) ** 2
+                collision_distance = self.players[i].player_radius + self.players[j].player_radius
+                collision_time = (math.sqrt(distance * distance - min_distance_squared) - math.sqrt(collision_distance * collision_distance - min_distance_squared)) / (rel_velocity / Const.FPS).magnitude()
+                if origin_fps < collision_time <= min_collision_time:
+                    min_collision_time = collision_time
+                    p1, p2 = i, j
+
+        if p1 == -1:
+            return self.players[0], self.players[0], -1
+        return self.players[p1], self.players[p2], min_collision_time
 
     def generate_item(self):
         # In every tick, if item is less than ITEMS_MAX_AMOUNT, it MAY generate one item
