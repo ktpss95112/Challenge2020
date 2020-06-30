@@ -64,16 +64,19 @@ class View_menu(__Object_base):
 
         words_1 = titlefont.render     ('Electroshock', True, pg.Color('white'))
         words_2 = titlesmallfont.render('presented by 2020 NTU CSIE CAMP', True, pg.Color('white'))
-
+        words_3 = titlesmallfont.render('press [space] to start game', True, pg.Color('white'))
         (size_x_1, size_y_1) = words_1.get_size()
         (size_x_2, size_y_2) = words_2.get_size()
-        pos_x_1 = (Const.WINDOW_SIZE[0] - size_x_1)/2
-        pos_y_1 = (Const.WINDOW_SIZE[1] - size_y_1 - 450)/2
-        pos_x_2 = (Const.WINDOW_SIZE[0] - size_x_2)/2
-        pos_y_2 = (Const.WINDOW_SIZE[1] - size_y_2)/2
-
+        (size_x_3, size_y_3) = words_3.get_size()
+        pos_x_1 = (Const.WINDOW_SIZE[0] - size_x_1) / 2
+        pos_y_1 = (Const.WINDOW_SIZE[1] - size_y_1 - 450) / 2
+        pos_x_2 = (Const.WINDOW_SIZE[0] - size_x_2) / 2
+        pos_y_2 = (Const.WINDOW_SIZE[1] - size_y_2) / 2
+        pos_x_3 = (Const.WINDOW_SIZE[0] - size_x_3) / 2
+        pos_y_3 = (Const.WINDOW_SIZE[1] - size_y_3 + 50) / 2
         screen.blit(words_1, (pos_x_1, pos_y_1))
         screen.blit(words_2, (pos_x_2, pos_y_2))
+        screen.blit(words_3, (pos_x_3, pos_y_3))
 
 class View_stop(__Object_base):
     @classmethod
@@ -99,7 +102,7 @@ class View_endgame(__Object_base):
         # draw text
         font = pg.font.Font(Const.notosans_font, 36)
         text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
-        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
+        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
         screen.blit(text_surface, text_surface.get_rect(center = text_center))
 
 
@@ -250,7 +253,7 @@ class View_items(__Object_base):
 
 class View_timer(__Object_base):
     images = {
-        'Heart'       :view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.2)
+        'Heart' : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.2)
     }
 
     @classmethod
@@ -263,10 +266,9 @@ class View_timer(__Object_base):
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
         font = pg.font.Font(None, 36)
         timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
-        timer_pos = (Const.ARENA_SIZE[0] * 29 / 30, Const.ARENA_SIZE[1] * 1 / 30)
+        timer_pos = (Const.WINDOW_SIZE[0] * 1 / 10, Const.WINDOW_SIZE[1] * 1 / 10)
         screen.blit(timer_surface, timer_surface.get_rect(center = timer_pos))    
         
-
 
 def init_staticobjects():
     View_platform.init_convert()

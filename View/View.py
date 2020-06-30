@@ -122,7 +122,7 @@ class GraphicalView:
         tmp = screen.convert()
         caption = pg.display.get_caption()
         cursor = pg.mouse.get_cursor()
-
+        
         w, h = screen.get_width(), screen.get_height()
         flags = screen.get_flags()
         bits = screen.get_bitsize()
