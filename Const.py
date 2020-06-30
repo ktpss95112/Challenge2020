@@ -3,6 +3,7 @@ import os.path
 
 # Font
 notosans_font = os.path.join('Font', 'Noto', 'NotoSansCJK-Black.ttc')
+digitalt_font = os.path.join('Font', 'digitalt', 'Digitalt.ttf')
 
 # model
 FPS = 60 # frame per second

@@ -2,7 +2,7 @@ import pygame as pg
 import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
-import View.staticobjects    as view_staticobjects
+import View.staticobjects as view_staticobjects
 import Const
 
 
@@ -19,23 +19,31 @@ class GraphicalView:
         For more specific objects related to a game instance
             , they should be initialized in GraphicalView.initialize()
         '''
+
         self.ev_manager = ev_manager
         ev_manager.register_listener(self)
 
         self.model = model
-
-        self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
-        pg.display.set_caption(Const.WINDOW_CAPTION)
-        self.background.fill(Const.BACKGROUND_COLOR)
+        self.is_initialized = False
+        self.screen = None
+        self.clock = None
+        self.last_update = 0
+        
 
     def initialize(self):
         '''
         This method is called when a new game is instantiated.
         '''
+        pg.init()
+        pg.font.init()
+        pg.display.set_caption(Const.WINDOW_CAPTION)
+        self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
+
+        self.clock = pg.time.Clock()
+        self.is_initialized = True
 
         # convert images
         view_staticobjects.init_staticobjects()
-
 
         # static objects
         self.scoreboard = view_staticobjects.View_scoreboard(self.model)
@@ -43,6 +51,10 @@ class GraphicalView:
         self.platform = view_staticobjects.View_platform(self.model)
         self.items = view_staticobjects.View_items(self.model)
         self.timer = view_staticobjects.View_timer(self.model)
+        self.menu = view_staticobjects.View_menu(self.model)
+        self.stop = view_staticobjects.View_stop(self.model)
+        self.endgame = view_staticobjects.View_endgame(self.model)
+
 
     def notify(self, event):
         '''
@@ -70,20 +82,13 @@ class GraphicalView:
         pg.display.set_caption(f'{Const.WINDOW_CAPTION} - FPS: {self.model.clock.get_fps():.2f}')
 
     def render_menu(self):
-        # draw background
-        self.screen.fill(Const.BACKGROUND_COLOR)
-
-        # draw text
-        font = pg.font.Font(None, 36)
-        text_surface = font.render("Press [space] to start ...", 1, pg.Color('gray88'))
-        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
-
+        # draw menu
+        self.menu.draw(self.screen)
         pg.display.flip()
 
     def render_play(self):
         
-        # draw platforms
+        # draw platform
         self.platform.draw(self.screen)
 
         # draw players
@@ -94,29 +99,21 @@ class GraphicalView:
         
         # draw timer        
         self.timer.draw(self.screen)
-        
+
         #draw scoreboard
         self.scoreboard.draw(self.screen)
         
         pg.display.flip()
 
     def render_stop(self):
-        # draw text
-        font = pg.font.Font(None, 36)
-        text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
-        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
+        # draw stop menu
+        self.stop.draw(self.screen)
         pg.display.flip()
 
     def render_endgame(self):
-        # draw background
-        self.screen.fill(Const.BACKGROUND_COLOR)
-        # draw text
-        font = pg.font.Font(None, 36)
-        text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
-        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
-
+        
+        # draw endgame menu
+        self.endgame.draw(self.screen)
         pg.display.flip()
 
     def toggle_fullscreen(self):

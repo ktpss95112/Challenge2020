@@ -55,24 +55,52 @@ class View_menu(__Object_base):
         # cls.base = cls.base.convert_alpha()
         pass
     def draw(self, screen):
-        screen.blit(self.menu, (0, 0))
-        screen.blit(self.base, (10, 645))
+        # screen.blit(self.menu, (0, 0))
+        # screen.blit(self.base, (10, 645))
+        screen.fill(Const.BACKGROUND_COLOR)
+        
+        titlefont = pg.font.Font(Const.digitalt_font, 125)
+        titlesmallfont = pg.font.Font(Const.notosans_font, 20)
 
-        titlefont = pg.font.Font(Const.digitalt_font, 250)
-        titlesmallfont = pg.font.Font(Const.notosans_font, 40)
-
-        words_1 = titlefont.render     ('Electroshock',                             True, Const.COLOR_BLACK)
-        words_2 = titlesmallfont.render('presented by 2020 NTU CSIE CAMP', True, Const.COLOR_BLACK)
+        words_1 = titlefont.render     ('Electroshock', True, pg.Color('white'))
+        words_2 = titlesmallfont.render('presented by 2020 NTU CSIE CAMP', True, pg.Color('white'))
 
         (size_x_1, size_y_1) = words_1.get_size()
         (size_x_2, size_y_2) = words_2.get_size()
-        pos_x_1 = (Const.screen_size[0] - size_x_1)/2
-        pos_y_1 = (Const.screen_size[1] - size_y_1 - 450)/2
-        pos_x_2 = (Const.screen_size[0] - size_x_2)/2
-        pos_y_2 = (Const.screen_size[1] - size_y_2)/2
-    
+        pos_x_1 = (Const.WINDOW_SIZE[0] - size_x_1)/2
+        pos_y_1 = (Const.WINDOW_SIZE[1] - size_y_1 - 450)/2
+        pos_x_2 = (Const.WINDOW_SIZE[0] - size_x_2)/2
+        pos_y_2 = (Const.WINDOW_SIZE[1] - size_y_2)/2
+
         screen.blit(words_1, (pos_x_1, pos_y_1))
         screen.blit(words_2, (pos_x_2, pos_y_2))
+
+class View_stop(__Object_base):
+    @classmethod
+    def init_convert(cls):
+        # cls.menu = cls.menu.convert()
+        # cls.base = cls.base.convert_alpha()
+        pass
+    def draw(self, screen):
+        font = pg.font.Font(Const.notosans_font, 36)
+        text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
+        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
+        screen.blit(text_surface, text_surface.get_rect(center = text_center))
+
+class View_endgame(__Object_base):
+    @classmethod
+    def init_convert(cls):
+        # cls.menu = cls.menu.convert()
+        # cls.base = cls.base.convert_alpha()
+        pass
+    def draw(self, screen):
+        # draw background
+        self.screen.fill(Const.BACKGROUND_COLOR)
+        # draw text
+        font = pg.font.Font(Const.notosans_font, 36)
+        text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
+        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
+        screen.blit(text_surface, text_surface.get_rect(center = text_center))
 
 
 class View_characters(__Object_base):
