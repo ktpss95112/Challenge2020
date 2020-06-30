@@ -41,6 +41,7 @@ BE_ATTACKED_ACCELERATION = 1200 * FPS
 BE_ATTACKED_MAX_ACCELERATION_DISTANCE = 20
 VOLTAGE_INCREASE_CONST = 300
 VALID_KO_TIME = 3 * FPS
+PLAYER_LIFE = 5
 
 # State machine constants
 STATE_POP = 0 # for convenience, not really a state which we can be in
