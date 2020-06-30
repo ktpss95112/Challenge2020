@@ -6,6 +6,7 @@ import math
 from Events.EventManager import *
 from Model.GameObject.player import Player
 from Model.GameObject.item import Item
+from Model.GameObject.entity import *
 from Model.GameObject.platform import Platform
 import Const
 
@@ -79,6 +80,7 @@ class GameEngine:
         self.state_machine.push(Const.STATE_MENU)
         self.players = [Player(0), Player(1), Player(2), Player(3)]
         self.items = []
+        self.entities = []
         self.platforms = [ Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION ]
         self.timer = Const.GAME_LENGTH
 
@@ -153,7 +155,7 @@ class GameEngine:
         elif isinstance(event, EventPlayerItem):
             player = self.players[ event.player_id ]
             if player.keep_item_id > 0:
-                self.players[ event.player_id ].use_item(self.players)
+                self.players[ event.player_id ].use_item(self.players, self.entities)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
             else:
                 for item in self.items:
@@ -187,10 +189,15 @@ class GameEngine:
         For example: obstacles, items, special effects, platform
         '''
         self.generate_item()
+       
         for item in self.items:
             item.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(item.position):
                 self.items.remove(item)
+
+        for entity in self.entities:
+            if entity.update_every_tick(self.players) == False :
+                self.entities.remove(entity)
            
     def update_endgame(self):
         '''

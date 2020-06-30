@@ -1,5 +1,6 @@
 import pygame as pg
 import Const
+from Model.GameObject.entity import *
 
 class Player:
     def __init__(self, player_id):
@@ -122,7 +123,7 @@ class Player:
         self.last_being_attacked_by = -1
         self.last_being_attacked_time_elapsed = 0
 
-    def use_item(self, players):
+    def use_item(self, players, entities):
         if self.keep_item_id == Const.INVINCIBLE_BATTERY :
             self.position.y -= 2 * Const.PLAYER_RADIUS - self.player_radius
             self.player_radius = 2 * Const.PLAYER_RADIUS
@@ -131,6 +132,12 @@ class Player:
             self.voltage -= 10
             if self.voltage < 0:
                 self.voltage = 0
+        elif self.keep_item_id == Const.BANANA_PISTOL :
+            direction = pg.Vector2(1,0)
+            pos = self.position + direction * ( self.player_radius * 1.05 )
+            entities.append( PistolBullet(pos, direction) )
+        elif self.keep_item_id == Const.CANCER_BOMB :
+            entities.append( CancerBomb(pg.Vector2(self.position.x,self.position.y)) )
         elif self.keep_item_id == Const.ZAP_ZAP_ZAP :
             self.voltage += 10
             for other in players :
