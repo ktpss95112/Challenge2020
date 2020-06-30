@@ -3,6 +3,7 @@ import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
 import View.staticobjects as view_staticobjects
+import View.animations as view_animations
 import Const
 
 
@@ -45,6 +46,9 @@ class GraphicalView:
         # convert images
         view_staticobjects.init_staticobjects()
 
+        # animations
+        self.animation_list = []
+
         # static objects
         self.scoreboard = view_staticobjects.View_scoreboard(self.model)
         self.players = view_staticobjects.View_players(self.model)
@@ -75,6 +79,10 @@ class GraphicalView:
         elif isinstance(event, EventToggleFullScreen):
             self.toggle_fullscreen()
 
+        elif isinstance(event, EventPlayerAttack):
+            Position = self.model.players[event.player_id].position
+            self.animation_list.append(view_animations.Animation_player_attack(center=Position))
+
     def display_fps(self):
         '''
         Display the current fps on the window caption.
@@ -102,6 +110,11 @@ class GraphicalView:
 
         #draw scoreboard
         self.scoreboard.draw(self.screen)
+
+        # draw animation
+        for ani in self.animation_list:
+            if ani.expired: self.animation_list.remove(ani)
+            else          : ani.draw(self.screen)
         
         pg.display.flip()
 
