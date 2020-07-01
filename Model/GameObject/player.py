@@ -149,13 +149,13 @@ class Player:
             pos = self.position + self.direction * ( self.player_radius + Const. BULLET_RADIUS) * 1.02
             entities.append( PistolBullet(pos, self.direction) )
 
-            pos = self.position - self.direction * ( self.player_radius + Const. BANANA_PEEL_RADIUS) * 1.02 - pg.Vector2(0,-1) * self.player_radius
+            pos = self.position - self.direction * ( self.player_radius + Const. BANANA_PEEL_RADIUS) * 1.02 
             entities.append( BananaPeel(pos))
 
         elif self.keep_item_id == Const.CANCER_BOMB :
             entities.append( CancerBomb(pg.Vector2(self.position.x,self.position.y)) )
         elif self.keep_item_id == Const.BANANA_PEEL :
-            pos = self.position - self.direction * ( self.player_radius + Const. BANANA_PEEL_RADIUS) * 1.02 - pg.Vector2(0,-1) * self.player_radius
+            pos = self.position - self.direction * ( self.player_radius + Const. BANANA_PEEL_RADIUS) * 1.02 
             entities.append( BananaPeel(pos))
              
         elif self.keep_item_id == Const.ZAP_ZAP_ZAP :
