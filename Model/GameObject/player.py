@@ -11,6 +11,7 @@ class Player:
         self.last_being_attacked_time_elapsed = 0
         self.invincible_time = 0
         self.KO_amount = 0
+        self.can_not_control_time = 0
         self.be_KO_amount = 0
         self.voltage = 0
         self.direction = pg.Vector2(1,0)
@@ -33,10 +34,10 @@ class Player:
             self.velocity.x = 0
         elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
             self.velocity.x /= 2
-        elif self.velocity.x > 0:
+        elif self.velocity.x > 0 and self.can_not_control_time <= 0:
             self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
             self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
-        elif self.velocity.x < 0:
+        elif self.velocity.x < 0 and self.can_not_control_time <= 0:
             self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
             self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
 
@@ -145,10 +146,18 @@ class Player:
             if self.voltage < 0:
                 self.voltage = 0
         elif self.keep_item_id == Const.BANANA_PISTOL :
-            pos = self.position + self.direction * ( self.player_radius * 1.05 )
+            pos = self.position + self.direction * ( self.player_radius + Const. BULLET_RADIUS) * 1.02
             entities.append( PistolBullet(pos, self.direction) )
+
+            pos = self.position - self.direction * ( self.player_radius + Const. BANANA_PEEL_RADIUS) * 1.02 - pg.Vector2(0,-1) * self.player_radius
+            entities.append( BananaPeel(pos))
+
         elif self.keep_item_id == Const.CANCER_BOMB :
             entities.append( CancerBomb(pg.Vector2(self.position.x,self.position.y)) )
+        elif self.keep_item_id == Const.BANANA_PEEL :
+            pos = self.position - self.direction * ( self.player_radius + Const. BANANA_PEEL_RADIUS) * 1.02 - pg.Vector2(0,-1) * self.player_radius
+            entities.append( BananaPeel(pos))
+             
         elif self.keep_item_id == Const.ZAP_ZAP_ZAP :
             self.voltage += 10
             for other in players :
