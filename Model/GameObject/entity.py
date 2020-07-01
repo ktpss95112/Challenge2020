@@ -93,6 +93,7 @@ class BigBlackHole(Entity):
         self.user = user
 
     def update_every_tick(self, players, platforms):
+        # for simplicity, black hole attracts all players and does not attract items now.
         self.timer -= 1 / Const.FPS
         if self.timer <= 0:
             return False
