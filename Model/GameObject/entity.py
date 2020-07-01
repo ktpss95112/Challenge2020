@@ -20,6 +20,8 @@ class PistolBullet(Entity):
         if self.timer <= 0:
             return False
         for player in players:
+            if player.invincible_time > 0 or not player.is_alive():
+                continue
             if (player.position - self.position).magnitude() < player.player_radius + Const.BULLET_RADIUS:
                 #print("someone got shoot")
                 player.voltage += Const.BULLET_ATK
@@ -53,6 +55,8 @@ class BananaPeel(Entity):
             return False
 
         for player in players:
+            if player.invincible_time > 0 or not player.is_alive():
+                continue
             if (player.position - self.position).magnitude() < player.player_radius + Const.BANANA_PEEL_RADIUS:
                 player.can_not_control_time = Const.BANANA_PEEL_AFFECT_TIME
                 return False
@@ -81,6 +85,8 @@ class CancerBomb(Entity):
         self.timer -= 1 / Const.FPS
         if self.timer <= 0:
             for player in players:
+                if player.invincible_time > 0 or not player.is_alive():
+                    continue
                 if (player.position - self.position).magnitude() <=  Const.BOMB_EXPLODE_RADIUS:
                     player.voltage += Const.BOMB_ATK
             return False
@@ -98,11 +104,12 @@ class BigBlackHole(Entity):
         if self.timer <= 0:
             return False
         for player in players:
-            if player.is_alive():
-                if (self.position - player.position).magnitude() > Const.PLAYER_RADIUS + 10:
-                    unit = (self.position - player.position).normalize()
-                    magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - player.position).magnitude() ** 0.3
-                    player.velocity += magnitude * unit / Const.FPS
-                else:
-                    player.velocity = pg.Vector2((0, 0))
+            if player.invincible_time > 0 or not player.is_alive():
+                continue
+            if (self.position - player.position).magnitude() > Const.PLAYER_RADIUS + 10:
+                unit = (self.position - player.position).normalize()
+                magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - player.position).magnitude() ** 0.3
+                player.velocity += magnitude * unit / Const.FPS
+            else:
+                player.velocity = pg.Vector2((0, 0))
         return True
