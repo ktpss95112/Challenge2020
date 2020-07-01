@@ -84,7 +84,6 @@ class CancerBomb(Entity):
             for player in players:
                 if (player.position - self.position).magnitude() <=  Const.BOMB_EXPLODE_RADIUS:
                     player.voltage += Const.BOMB_ATK
-            print("EXPLOSION! " + str(self.position))
             return False
         return True
 

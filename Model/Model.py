@@ -102,6 +102,14 @@ class GameEngine:
                 self.timer -= 1
                 if self.timer == 0:
                     self.ev_manager.post(EventTimesUp())
+                # check alive player
+                cnt = 0
+                for player in self.players:
+                    if player.is_alive():
+                        cnt += 1
+                if cnt <= 1:
+                    self.ev_manager.post(EventTimesUp())
+
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
