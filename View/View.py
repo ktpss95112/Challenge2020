@@ -103,13 +103,22 @@ class GraphicalView:
             center = list(map(int, entity.position))
             pg.draw.circle(self.screen, Const.ITEM_COLOR[item.item_id], center, 10)
         
-        # draw lives board 
+        # draw temp score board 
         font = pg.font.Font(None, 36)
         for player in self.model.players:
-            lives_surface = font.render(f"player{player.player_id :d} lives left: {player.life :d}", 1, Const.PLAYER_COLOR[player.player_id])
-            lives_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (1 + player.player_id) / 30)
+            player_surface = font.render(f"player{player.player_id :d}:", 1, Const.PLAYER_COLOR[player.player_id])
+            player_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (1 + 4 * player.player_id) / 30)
+            self.screen.blit(player_surface, player_surface.get_rect(center = player_pos))
+            lives_surface = font.render(f"                lives left: {player.life :d}", 1, Const.PLAYER_COLOR[player.player_id])
+            lives_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (2 + 4 * player.player_id) / 30)
             self.screen.blit(lives_surface, lives_surface.get_rect(center = lives_pos))
-
+            KO_surface = font.render(f"                KO: {player.KO_amount :d}", 1, Const.PLAYER_COLOR[player.player_id])
+            KO_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (3 + 4 * player.player_id) / 30)
+            self.screen.blit(KO_surface, KO_surface.get_rect(center = KO_pos))
+            be_KO_surface = font.render(f"                be KO: {player.be_KO_amount :d}", 1, Const.PLAYER_COLOR[player.player_id])
+            be_KO_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (4 + 4 * player.player_id) / 30)
+            self.screen.blit(be_KO_surface, be_KO_surface.get_rect(center = be_KO_pos))
+            
         # draw timer        
         font = pg.font.Font(None, 36)
         timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
@@ -133,14 +142,20 @@ class GraphicalView:
         
         # draw score board
         font = pg.font.Font(None, 36)
-        text_surface = font.render(f"id KO beKO", 1, pg.Color('gray88'))
-        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 10)
-        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
-
         for player in self.model.players:
-            text_surface = font.render(f"{player.player_id :2d} {player.KO_amount :2d} {player.be_KO_amount :2d}", 1, Const.PLAYER_COLOR[player.player_id])
-            text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 10 * (player.player_id + 2))
-            self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
+            player_surface = font.render(f"player{player.player_id :d}:", 1, Const.PLAYER_COLOR[player.player_id])
+            player_pos = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] * (1 + 4 * player.player_id) / 25)
+            self.screen.blit(player_surface, player_surface.get_rect(center = player_pos))
+            lives_surface = font.render(f"                lives left: {player.life :d}", 1, Const.PLAYER_COLOR[player.player_id])
+            lives_pos = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] * (2 + 4 * player.player_id) / 25)
+            self.screen.blit(lives_surface, lives_surface.get_rect(center = lives_pos))
+            KO_surface = font.render(f"                KO: {player.KO_amount :d}", 1, Const.PLAYER_COLOR[player.player_id])
+            KO_pos = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] * (3 + 4 * player.player_id) / 25)
+            self.screen.blit(KO_surface, KO_surface.get_rect(center = KO_pos))
+            be_KO_surface = font.render(f"                be KO: {player.be_KO_amount :d}", 1, Const.PLAYER_COLOR[player.player_id])
+            be_KO_pos = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] * (4 + 4 * player.player_id) / 25)
+            self.screen.blit(be_KO_surface, be_KO_surface.get_rect(center = be_KO_pos))
+
 
         # draw text
         text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
