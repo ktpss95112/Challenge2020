@@ -142,10 +142,12 @@ class Player:
             self.position.y -= 2 * Const.PLAYER_RADIUS - self.player_radius
             self.player_radius = 2 * Const.PLAYER_RADIUS
             self.invincible_time = 5 * Const.FPS
+        
         elif self.keep_item_id == Const.RAINBOW_GROUNDER :
             self.voltage -= 10
             if self.voltage < 0:
                 self.voltage = 0
+        
         elif self.keep_item_id == Const.BANANA_PISTOL :
             pos = self.position + self.direction * ( self.player_radius + Const. BULLET_RADIUS) * 1.02
             entities.append( PistolBullet(pos, self.direction) )
@@ -155,6 +157,7 @@ class Player:
 
         elif self.keep_item_id == Const.CANCER_BOMB :
             entities.append( CancerBomb(pg.Vector2(self.position.x,self.position.y)) )
+        
         elif self.keep_item_id == Const.BANANA_PEEL :
             pos = self.position - self.direction * ( self.player_radius + Const. BANANA_PEEL_RADIUS) * 1.02 - pg.Vector2(0,-1) * self.player_radius
             entities.append( BananaPeel(pos))
@@ -164,4 +167,7 @@ class Player:
             for other in players :
                 if abs( self.position.x - other.position.x ) < Const.ZAP_ZAP_ZAP_RANGE * self.player_radius and self != other :
                     other.voltage += 50
+
+        elif self.keep_item_id == Const.BIG_BLACK_HOLE :
+            entities.append( BigBlackHole(pg.Vector2(self.position.x,self.position.y), self.player_id) )
         self.keep_item_id = Const.NO_ITEM

@@ -30,7 +30,6 @@ class PistolBullet(Entity):
         return True
 
 
-
 class BananaPeel(Entity):
 #Make the player temparorily can't control move direction,the player wouldn't be affect by drag force while affected.
     def __init__(self, position): #direction is a unit pg.vec2 
@@ -96,6 +95,14 @@ class BigBlackHole(Entity):
 
     def update_every_tick(self, players, platforms):
         self.timer -= 1 / Const.FPS
-        if self.timer <= 0 :
-            return False 
+        if self.timer <= 0:
+            return False
+        for player in players:
+            if player.is_alive():
+                if (self.position - player.position).magnitude() > Const.PLAYER_RADIUS + 10:
+                    unit = (self.position - player.position).normalize()
+                    magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - player.position).magnitude() ** 0.3
+                    player.velocity += magnitude * unit / Const.FPS
+                else:
+                    player.velocity = pg.Vector2((0, 0))
         return True
