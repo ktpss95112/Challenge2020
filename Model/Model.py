@@ -136,7 +136,7 @@ class GameEngine:
                 return
             for i in range(4):
                 magnitude = (self.players[i].position - self.players[v].position).magnitude()
-                if i != v and magnitude < 3.5 * Const.PLAYER_RADIUS and self.players[i].is_alive():
+                if i != v and magnitude < Const.ATTACK_RADIUS_MULTIPLE_CONSTANT * Const.PLAYER_RADIUS and self.players[i].is_alive():
                     unit = (self.players[i].position - self.players[v].position).normalize()
                     self.players[i].be_attacked(unit, magnitude)
                     # record
