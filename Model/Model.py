@@ -220,7 +220,7 @@ class GameEngine:
                 self.items.remove(item)
 
         for entity in self.entities:
-            if entity.update_every_tick(self.players) == False :
+            if entity.update_every_tick(self.players, self.platforms) == False :
                 self.entities.remove(entity)
            
     def update_endgame(self):

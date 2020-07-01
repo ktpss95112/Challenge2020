@@ -13,7 +13,7 @@ class PistolBullet(Entity):
         self.position = position
         self.velocity = Const.BULLET_VELOCITY * direction
         self.timer = 1000 / Const.BULLET_VELOCITY 
-    def update_every_tick(self, players):
+    def update_every_tick(self, players, platforms):
         self.timer -= 1/Const.FPS
         self.position += self.velocity / Const.FPS
         #print("bullet flying, " + str(self.position))
@@ -32,11 +32,23 @@ class PistolBullet(Entity):
 
 
 class BananaPeel(Entity):
+#Make the player temparorily can't control move direction,the player wouldn't be affect by drag force while affected.
     def __init__(self, position): #direction is a unit pg.vec2 
         self.position = position
         self.timer = Const.BANANA_PEEL_TIME
-    def update_every_tick(self, players):
-           
+        self.velocity = pg.Vector2(0,0)
+    def update_every_tick(self, players,platforms):
+       #---------gravity-------
+        self.velocity.y += Const.GRAVITY_ACCELERATION /Const.FPS
+        prev_position_y = self.position.y
+        self.position += self.velocity / Const.FPS
+        for platform in platforms:
+            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
+                if prev_position_y <= platform.upper_left.y - Const.BANANA_PEEL_RADIUS <= self.position.y:
+                    self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
+                    self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
+                    break
+        #------------------------
         self.timer -= 1/Const.FPS
         if self.timer <= 0:
             return False
@@ -53,9 +65,20 @@ class CancerBomb(Entity):
     def __init__(self, position):
         self.position = position
         self.timer = Const.BOMB_TIME
-        print("create bomb")
+        self.velocity = pg.Vector2(0,0) 
 
-    def update_every_tick(self, players):
+    def update_every_tick(self, players, platforms):
+       #---------gravity-------
+        self.velocity.y += Const.GRAVITY_ACCELERATION /Const.FPS
+        prev_position_y = self.position.y
+        self.position += self.velocity / Const.FPS
+        for platform in platforms:
+            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
+                if prev_position_y <= platform.upper_left.y - Const.BANANA_PEEL_RADIUS <= self.position.y:
+                    self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
+                    self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
+                    break
+        #------------------------
         self.timer -= 1 / Const.FPS
         if self.timer <= 0:
             for player in players:
@@ -71,7 +94,7 @@ class BigBlackHole(Entity):
         self.timer = Const.BLACK_HOLE_TIME
         self.user = user
 
-    def update_every_tick(self, players, items):
+    def update_every_tick(self, players, platforms):
         self.timer -= 1 / Const.FPS
         if self.timer <= 0 :
             return False 

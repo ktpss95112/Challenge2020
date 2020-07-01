@@ -101,7 +101,7 @@ class GraphicalView:
         # draw entities
         for entity in self.model.entities:
             center = list(map(int, entity.position))
-            pg.draw.circle(self.screen, Const.ITEM_COLOR[item.item_id], center, 10)
+            pg.draw.circle(self.screen, Const.ITEM_COLOR[2], center, 10)
         
         # draw temp score board 
         font = pg.font.Font(None, 36)
