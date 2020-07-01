@@ -98,6 +98,11 @@ class GraphicalView:
             item_pos = item.position
             self.screen.blit(item_surface, item_surface.get_rect(center = item_pos))
 
+        # draw entities
+        for entity in self.model.entities:
+            center = list(map(int, entity.position))
+            pg.draw.circle(self.screen, Const.ITEM_COLOR[item.item_id], center, 10)
+
         # draw timer        
         font = pg.font.Font(None, 36)
         timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))

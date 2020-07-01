@@ -118,6 +118,10 @@ class GameEngine:
         elif isinstance(event, EventPlayerMove):
             if self.players[event.player_id].is_alive():
                 self.players[event.player_id].add_horizontal_velocity(event.direction)
+                if(event.direction == 'left'):
+                    self.players[event.player_id].direction = pg.Vector2(-1,0)
+                elif (event.direction == 'right'):
+                    self.players[event.player_id].direction = pg.Vector2(1,0)
 
         elif isinstance(event, EventPlayerJump):
             if self.players[event.player_id].is_alive():

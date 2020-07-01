@@ -12,15 +12,16 @@ class PistolBullet(Entity):
     def __init__(self, position, direction): #direction is a unit pg.vec2 
         self.position = position
         self.velocity = Const.BULLET_VELOCITY * direction
-        self.timer = 1000 / Const.BULLET_VELOCITY def update_every_tick(self, players):
+        self.timer = 1000 / Const.BULLET_VELOCITY 
+    def update_every_tick(self, players):
         self.timer -= 1/Const.FPS
         self.position += self.velocity / Const.FPS
-        print("bullet flying")
+        #print("bullet flying, " + str(self.position))
         if self.timer <= 0:
             return False
         for player in players:
             if (player.position - self.position).magnitude() < player.player_radius + Const.BULLET_RADIUS:
-                print("someone got shoot")
+                #print("someone got shoot")
                 player.voltage += Const.BULLET_ATK
                 #prevent remove failture
                 self.position = pg.Vector2(-1000,-2000)
@@ -60,11 +61,13 @@ class CancerBomb(Entity):
         return True
 
 class BigBlackHole(Entity):
-    def __init__(self, position):
+    def __init__(self, position, user):
         self.position = position
         self.timer = Const.BLACK_HOLE_TIME
+        self.user = user
 
-    def update_every_tick(self, players):
+    def update_every_tick(self, players, items):
         self.timer -= 1 / Const.FPS
-        #Implement later
-        return False 
+        if self.timer <= 0 :
+            return False 
+        return True

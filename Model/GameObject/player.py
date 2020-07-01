@@ -13,6 +13,7 @@ class Player:
         self.KO_amount = 0
         self.be_KO_amount = 0
         self.voltage = 0
+        self.direction = pg.Vector2(1,0)
         self.keep_item_id = Const.NO_ITEM
         self.position = pg.Vector2(Const.PLAYER_INIT_POSITION[player_id]) # is a pg.Vector2 (Const.PLAYER_INIT_POSITION is not update now!)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
@@ -137,9 +138,8 @@ class Player:
             if self.voltage < 0:
                 self.voltage = 0
         elif self.keep_item_id == Const.BANANA_PISTOL :
-            direction = pg.Vector2(1,0)
-            pos = self.position + direction * ( self.player_radius * 1.05 )
-            entities.append( PistolBullet(pos, direction) )
+            pos = self.position + self.direction * ( self.player_radius * 1.05 )
+            entities.append( PistolBullet(pos, self.direction) )
         elif self.keep_item_id == Const.CANCER_BOMB :
             entities.append( CancerBomb(pg.Vector2(self.position.x,self.position.y)) )
         elif self.keep_item_id == Const.ZAP_ZAP_ZAP :
