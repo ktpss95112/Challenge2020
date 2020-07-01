@@ -20,6 +20,7 @@ class Player:
         self.normal_speed = Const.PLAYER_NORMAL_SPEED # speed gain when players try to move left and right
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
+        self.score = 0
 
     def is_alive(self):
         return self.life > 0
