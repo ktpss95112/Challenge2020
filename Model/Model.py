@@ -116,7 +116,7 @@ class GameEngine:
             self.running = False
 
         elif isinstance(event, EventPlayerMove):
-            if self.players[event.player_id].is_alive():
+            if self.players[event.player_id].is_alive() and self.players[event.player_id].can_not_control_time <= 0 :
                 self.players[event.player_id].add_horizontal_velocity(event.direction)
                 if(event.direction == 'left'):
                     self.players[event.player_id].direction = pg.Vector2(-1,0)
@@ -191,6 +191,7 @@ class GameEngine:
         '''
         self.players_collision_detect()
         for player in self.players:
+            player.can_not_control_time -= 1/Const.FPS
             player.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
@@ -205,6 +206,7 @@ class GameEngine:
             if player.KO_amount == highest_KO_amount:
                 player.score += 50
 
+        
     def update_objects(self):
         '''
         Update the objects not controlled by user.

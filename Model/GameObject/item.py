@@ -9,7 +9,7 @@ class Item:
         self.velocity = pg.Vector2(0,0)
         self.drag = drag
     def move_every_tick(self, platforms: list):
-        # Move the player
+        # Move the item
         prev_position = pg.Vector2(self.position)
         self.position += self.velocity / Const.FPS
 
@@ -24,7 +24,7 @@ class Item:
         # Modify the vertical velocity
         self.velocity.y += (Const.GRAVITY_ACCELERATION - self.drag * self.velocity.y ** 2) / Const.FPS
 
-        # Make sure that the player do not pass through the platform
+        # Make sure that the item does not pass through the platform
         for platform in platforms:
             if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
                 if prev_position.y <= platform.upper_left.y - self.item_radius <= self.position.y:

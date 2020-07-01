@@ -32,14 +32,19 @@ class PistolBullet(Entity):
 
 
 class BananaPeel(Entity):
-    def __init__(self, position, direction): #direction is a unit pg.vec2 
+    def __init__(self, position): #direction is a unit pg.vec2 
         self.position = position
         self.timer = Const.BANANA_PEEL_TIME
     def update_every_tick(self, players):
-        
+           
         self.timer -= 1/Const.FPS
-        if timer <= 0:
+        if self.timer <= 0:
             return False
+
+        for player in players:
+            if (player.position - self.position).magnitude() < player.player_radius + Const.BANANA_PEEL_RADIUS:
+                player.can_not_control_time = Const.BANANA_PEEL_AFFECT_TIME
+                return False
         #Implement later
         return True
 
