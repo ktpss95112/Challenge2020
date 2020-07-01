@@ -163,7 +163,7 @@ class GameEngine:
                 self.ev_manager.post(EventPlayerRespawn(die_id))
         
         elif isinstance(event, EventPlayerItem):
-            player = self.players[ event.player_id ]
+            player = self.players[event.player_id]
             if not player.is_alive():
                 return
             if player.keep_item_id > 0:
@@ -173,7 +173,7 @@ class GameEngine:
                 for item in self.items:
                     distance = (item.position - player.position).magnitude()
                     if distance <= item.item_radius + player.player_radius:
-                        self.players[ event.player_id ].keep_item_id = item.item_id
+                        self.players[event.player_id].keep_item_id = item.item_id
                         self.items.remove(item)
                         self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
 
@@ -283,7 +283,7 @@ class GameEngine:
             find_position = False
             while not find_position:
                 find_position = True
-                pos = pg.Vector2(random.randint(50,1150), random.randint(0,600))
+                pos = pg.Vector2(random.randint(50, Const.ARENA_SIZE[0]), random.randint(0, 600))
                 for item in self.items:
                     if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
                         find_position = False
