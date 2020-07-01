@@ -49,7 +49,7 @@ class Player:
 
         # Make sure that the player do not pass through the platform
         self.move(displacement, platforms)
-
+        
         # Maintain self.invincible_time
         if self.invincible_time > 0:
             self.invincible_time -= 1
@@ -69,7 +69,6 @@ class Player:
         displacement = -(self.player_radius + other.player_radius) * unit + distance
         self.move(displacement, platforms)
         other.move(-displacement, platforms)
-        delta_v = self.velocity - other.velocity 
 
         # Modify velocity
         velocity_delta = (other.velocity.dot(unit) - self.velocity.dot(unit)) * unit
@@ -77,14 +76,22 @@ class Player:
         other.velocity -= velocity_delta
 
     def collision_reliable(self, other, collision_time): # collsition time is a percentage of FPS
+        # Collsion for reliable version
         self.position += self.velocity / Const.FPS * collision_time
         other.position += other.velocity / Const.FPS * collision_time
-        unit = (other.position - self.position)
+        unit = (other.position - self.position).normalize()
         velocity_delta = (other.velocity - self.velocity).dot(unit) * unit
         self.velocity += velocity_delta
         other.velocity -= velocity_delta
         self.position -= self.velocity / Const.FPS * collision_time
         other.position -= other.velocity / Const.FPS * collision_time
+
+    def bounce_reliable(self, collision_time):
+        # Bounce when hitting platform for reliable version
+        self.jump_quota = Const.PLAYER_JUMP_QUOTA
+        self.position += self.velocity / Const.FPS * collision_time
+        self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT
+        self.position -= self.velocity / Const.FPS * collision_time
 
     def move(self, displacement: pg.Vector2, platforms: list):
         # Move and check if collide with platform
