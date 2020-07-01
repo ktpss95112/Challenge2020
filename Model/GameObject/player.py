@@ -165,7 +165,8 @@ class Player:
         elif self.keep_item_id == Const.ZAP_ZAP_ZAP :
             self.voltage += 10
             for other in players :
-                if abs( self.position.x - other.position.x ) < Const.ZAP_ZAP_ZAP_RANGE * self.player_radius and self != other :
+                if abs( self.position.x - other.position.x ) < Const.ZAP_ZAP_ZAP_RANGE * self.player_radius and self != other\
+                        and other.is_alive() and other.invincible_time <= 0:
                     other.voltage += 50
 
         elif self.keep_item_id == Const.BIG_BLACK_HOLE :
