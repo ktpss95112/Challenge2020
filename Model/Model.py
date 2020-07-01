@@ -102,6 +102,14 @@ class GameEngine:
                 self.timer -= 1
                 if self.timer == 0:
                     self.ev_manager.post(EventTimesUp())
+                # check alive player
+                cnt = 0
+                for player in self.players:
+                    if player.is_alive():
+                        cnt += 1
+                if cnt <= 1:
+                    self.ev_manager.post(EventTimesUp())
+
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
@@ -156,7 +164,7 @@ class GameEngine:
             if atk_id != -1 and t - self.timer < Const.VALID_KO_TIME:
                 self.players[die_id].be_KO_amount += 1
                 self.players[atk_id].KO_amount += 1
-            
+                
             self.players[die_id].keep_item_id = Const.NO_ITEM
             self.players[die_id].life -= 1
             if self.players[die_id].life > 0:
@@ -167,7 +175,7 @@ class GameEngine:
             if not player.is_alive():
                 return
             if player.keep_item_id > 0:
-                self.players[ event.player_id ].use_item(self.players, self.entities)
+                self.players[event.player_id].use_item(self.players, self.entities)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
             else:
                 for item in self.items:
@@ -195,6 +203,17 @@ class GameEngine:
             player.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
+        highest_KO_amount = 0
+        for player in self.players:
+            if player.KO_amount > highest_KO_amount:
+                highest_KO_amount = player.KO_amount
+        for player in self.players:
+            player.score = player.KO_amount * 30 - player.be_KO_amount * 15
+            if player.be_KO_amount == 0:
+                player.score += 100
+            if player.KO_amount == highest_KO_amount:
+                player.score += 50
+
         
     def update_objects(self):
         '''
@@ -218,7 +237,7 @@ class GameEngine:
         For example: scoreboard
         '''
         pass
-
+            
     def players_collision_detect(self):
         # More reliable
         origin_fps = -2
