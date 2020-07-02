@@ -55,6 +55,7 @@ class GraphicalView:
         self.platform = view_staticobjects.View_platform(self.model)
         self.items = view_staticobjects.View_items(self.model)
         self.timer = view_staticobjects.View_timer(self.model)
+        self.entities = view_staticobjects.View_entities(self.model)
         self.menu = view_staticobjects.View_menu(self.model)
         self.stop = view_staticobjects.View_stop(self.model)
         self.endgame = view_staticobjects.View_endgame(self.model)
@@ -103,6 +104,9 @@ class GraphicalView:
         
         # draw items
         self.items.draw(self.screen)
+
+        # draw entities
+        self.entities.draw(self.screen)
         
         # draw timer        
         self.timer.draw(self.screen)

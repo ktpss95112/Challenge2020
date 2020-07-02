@@ -151,41 +151,13 @@ class View_characters(__Object_base):
 
 
 class View_players(__Object_base):
-    # images_color = tuple(
-    #     view_utils.scaled_surface(
-    #         pg.image.load(os.path.join(Const.IMAGE_PATH, f'player_color{_rainbow}.png')),
-    #         0.2
-    #     )
-    #     for _rainbow in range(0, 19)
-    # )
-    # image_freeze = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'freeze.png')),0.5)
-    # image_koreanfish = view_utils.scaled_surface(pg.image.load( os.path.join(Const.IMAGE_PATH, 'koreanfish.png') ), 0.2)
-    # image_captainkaoshiung = view_utils.scaled_surface(pg.image.load( os.path.join(Const.IMAGE_PATH, 'koreanfish_leader.png') ), 0.2)
     @classmethod
     def init_convert(cls):
-        # cls.images = tuple( _image.convert_alpha() for _image in cls.images )
-        # cls.image_freeze = cls.image_freeze.convert_alpha()
-        # cls.images_color = tuple( _image.convert_alpha() for _image in cls.images_color)
         pass
 
     def __init__(self, model):
         self.model = model
-        # self.color_switch = [0, 0, 0, 0]
-        # self.images = tuple(
-        #     view_utils.scaled_surface(
-        #         view_utils.replace_color(
-        #             os.path.join(Const.IMAGE_PATH, 'player_outfit.png'),
-        #             Const.COLOR_WHITE,
-        #             player.color
-        #         ),
-        #         0.2
-        #     ).convert_alpha() if player.name != 'master'
-        #     else self.image_koreanfish
-        #     for player in self.model.player_list
-        # )
-        # self.theworld_player = None
     def set_theworld_player(self, player_index):
-        #self.theworld_player = player_index
         pass
 
     def draw(self, screen):
@@ -202,6 +174,21 @@ class View_players(__Object_base):
             screen.blit(voltage_surface, voltage_surface.get_rect(center = voltage_pos))
         pass
 
+
+class View_entities(__Object_base):
+    @classmethod
+    def init_convert(cls):
+        pass
+    def __init__(self, model):
+        self.model = model
+    def set_theworld_player(self, player_index):
+        pass
+    def draw(self, screen):
+        # draw players
+        for entity in self.model.entities:
+            center = list(map(int, entity.position))
+            pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
+        pass
 
 class View_scoreboard(__Object_base):
     images = {
@@ -290,6 +277,7 @@ def init_staticobjects():
     View_platform.init_convert()
     View_players.init_convert()
     View_items.init_convert()
+    View_entities.init_convert()
     View_scoreboard.init_convert()
     View_menu.init_convert()
     View_characters.init_convert()
