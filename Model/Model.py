@@ -191,7 +191,8 @@ class GameEngine:
             self.state_machine.push(Const.STATE_STOP)
 
         elif isinstance(event, EventContinue):
-            self.state_machine.pop()
+            if self.state_machine.peek() == Const.STATE_STOP:
+                self.state_machine.pop()
 
         elif isinstance(event, EventRestart):
             self.state_machine.clear()
