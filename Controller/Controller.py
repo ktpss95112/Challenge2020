@@ -98,6 +98,7 @@ class Controller:
                 self.check_screen_keys(event_pg.key)
 
     def ctrl_endgame(self, key_down_events):
+        # detect restart event
         for event_pg in key_down_events:
             if event_pg.key == Const.GAME_RESTART_KEY:
                 self.model.ev_manager.post(EventRestart())
