@@ -138,7 +138,7 @@ class Helper(object):
                 if current_distance < minimum_distance:
                     minimum_distance = current_distance
                     nearest_id = player.player_id
-        return player_id
+        return nearest_id
     
     def get_highest_voltage_player(self):    # when the highest_voltage_player not only one?
         highest_voltage_id = 0
