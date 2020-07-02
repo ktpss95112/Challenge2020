@@ -102,7 +102,7 @@ class GameEngine:
                 self.timer -= 1
                 if self.timer == 0:
                     self.ev_manager.post(EventTimesUp())
-                # check alive player
+                # check number of alive players
                 cnt = 0
                 for player in self.players:
                     if player.is_alive():
@@ -139,49 +139,51 @@ class GameEngine:
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventPlayerAttack):
-            v = event.player_id
-            if not self.players[v].is_alive():
+            attacker = self.players[event.player_id]
+            if not attacker.is_alive():
                 return
-            for i in range(4):
-                magnitude = (self.players[i].position - self.players[v].position).magnitude()
-                if i != v and magnitude < Const.ATTACK_RADIUS_MULTIPLE_CONSTANT * Const.PLAYER_RADIUS and self.players[i].is_alive():
-                    unit = (self.players[i].position - self.players[v].position).normalize()
-                    self.players[i].be_attacked(unit, magnitude)
-                    # record
-                    self.players[i].last_being_attacked_by = v
-                    self.players[i].last_being_attacked_time_elapsed = self.timer
+            for player in self.players:
+                magnitude = (player.position - attacker.position).magnitude()
+                # make sure that player is not attacker and player is alive
+                if player.player_id == attacker.player_id or not player.is_alive():
+                    continue
+                # attack if they are close enough
+                if magnitude < Const.ATTACK_RADIUS:
+                    unit = (player.position - attacker.position).normalize()
+                    player.be_attacked(unit, magnitude)
+                    player.last_being_attacked_by = attacker.player_id
+                    player.last_being_attacked_time_elapsed = self.timer
                             
         elif isinstance(event, EventPlayerRespawn):
             self.players[event.player_id].respawn()
 
         elif isinstance(event, EventPlayerDied):
+            died_player = self.players[event.player_id]
             # update KO amount
-            die_id = event.player_id
-            if not self.players[die_id].is_alive():
-                return
-            atk_id = self.players[die_id].last_being_attacked_by
-            t = self.players[die_id].last_being_attacked_time_elapsed
-            if atk_id != -1 and t - self.timer < Const.VALID_KO_TIME:
-                self.players[die_id].be_KO_amount += 1
+            atk_id = died_player.last_being_attacked_by
+            atk_t = died_player.last_being_attacked_time_elapsed
+            if atk_id != -1 and atk_t - self.timer < Const.VALID_KO_TIME:
+                died_player.be_KO_amount += 1
                 self.players[atk_id].KO_amount += 1
-                
-            self.players[die_id].keep_item_id = Const.NO_ITEM
-            self.players[die_id].life -= 1
-            if self.players[die_id].life > 0:
-                self.ev_manager.post(EventPlayerRespawn(die_id))
+            # update item and life    
+            died_player.keep_item_id = Const.NO_ITEM
+            died_player.life -= 1
+            # respawn if player has life left
+            if died_player.is_alive():
+                self.ev_manager.post(EventPlayerRespawn(died_player.player_id))
         
         elif isinstance(event, EventPlayerItem):
             player = self.players[event.player_id]
             if not player.is_alive():
                 return
             if player.keep_item_id > 0:
-                self.players[event.player_id].use_item(self.players, self.entities)
+                player.use_item(self.players, self.entities)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
             else:
                 for item in self.items:
                     distance = (item.position - player.position).magnitude()
                     if distance <= item.item_radius + player.player_radius:
-                        self.players[event.player_id].keep_item_id = item.item_id
+                        player.keep_item_id = item.item_id
                         self.items.remove(item)
                         self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
 
@@ -205,14 +207,19 @@ class GameEngine:
     def update_players(self):
         '''
         Update information of users
-        For example: position, remaining time of item used
+        For example: position, remaining time of item used and score
         '''
+        # update position
         self.players_collision_detect()
         for player in self.players:
-            player.can_not_control_time -= 1/Const.FPS
+            # skip dead players
+            if not player.is_alive():
+                continue
+            player.can_not_control_time -= 1 / Const.FPS
             player.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
+        # update score
         highest_KO_amount = 0
         for player in self.players:
             if player.KO_amount > highest_KO_amount:
