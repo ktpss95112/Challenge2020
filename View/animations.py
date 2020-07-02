@@ -12,18 +12,16 @@ while True:
 
     for ani in animations:
         ani.draw(screen)
-    
+
     tick += 1
 '''
+import os
 import pygame as pg
-import numpy as np
-import os.path, threading, random
-import View.utils as view_utils
-from math import sin, cos, sqrt
 
 from Events.EventManager import *
 from Model.Model import GameEngine
 from Model.GameObject.player import Player
+from View.utils import scaled_surface
 import Const
 
 '''
@@ -47,7 +45,7 @@ class Animation_base():
     def __init__(self, delay_of_frames, **pos):
         self._timer = 0
         self.expired = False
-    
+
     def update(self):
         pass
 
@@ -63,7 +61,7 @@ class Animation_raster(Animation_base):
     @classmethod
     def init_convert(cls):
         cls.frames = tuple( _frame.convert_alpha() for _frame in cls.frames )
-    
+
     def __init__(self, delay_of_frames, expire_time, **pos):
         self._timer = 0
         self.delay_of_frames = delay_of_frames
@@ -85,7 +83,7 @@ class Animation_raster(Animation_base):
         # self.pos[ next(iter(self.pos)) ] = pg.math.Vector2(next_pos)
         # or
         # self.pos[ next(iter(self.pos)) ] += pg.math.Vector2(dx, dy)
-            
+
     # the "update" argument is for the purpose of GraphicalView.theworld_background in View/main.py
     def draw(self, screen, update=True):
         screen.blit(
@@ -94,11 +92,11 @@ class Animation_raster(Animation_base):
         )
 
         if update: self.update()
-        
+
 
 class Animation_player_attack(Animation_raster):
     frames = tuple(
-        view_utils.scaled_surface(
+        scaled_surface(
             pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')),
             _i * 0.01
         )
@@ -124,5 +122,5 @@ class Animation_player_attack(Animation_raster):
 
 def init_animation():
     Animation_player_attack.init_convert()
-    
+
 
