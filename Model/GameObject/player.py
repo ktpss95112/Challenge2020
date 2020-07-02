@@ -138,37 +138,37 @@ class Player:
         self.last_being_attacked_time_elapsed = 0
 
     def use_item(self, players, entities):
-        if self.keep_item_id == Const.INVINCIBLE_BATTERY :
+        if self.keep_item_id == Const.INVINCIBLE_BATTERY:
             self.position.y -= 2 * Const.PLAYER_RADIUS - self.player_radius
             self.player_radius = 2 * Const.PLAYER_RADIUS
             self.invincible_time = 5 * Const.FPS
         
-        elif self.keep_item_id == Const.RAINBOW_GROUNDER :
+        elif self.keep_item_id == Const.RAINBOW_GROUNDER:
             self.voltage -= 10
             if self.voltage < 0:
                 self.voltage = 0
         
-        elif self.keep_item_id == Const.BANANA_PISTOL :
-            pos = self.position + self.direction * ( self.player_radius + Const. BULLET_RADIUS) * 1.02
+        elif self.keep_item_id == Const.BANANA_PISTOL:
+            pos = self.position + self.direction * ( self.player_radius + Const.BULLET_RADIUS) * 1.02
             entities.append( PistolBullet(pos, self.direction) )
 
-            pos = self.position - self.direction * ( self.player_radius + Const. BANANA_PEEL_RADIUS) * 1.02 
+            pos = self.position - self.direction * ( self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
             entities.append( BananaPeel(pos))
 
-        elif self.keep_item_id == Const.CANCER_BOMB :
+        elif self.keep_item_id == Const.CANCER_BOMB:
             entities.append( CancerBomb(pg.Vector2(self.position.x,self.position.y)) )
         
-        elif self.keep_item_id == Const.BANANA_PEEL :
-            pos = self.position - self.direction * ( self.player_radius + Const. BANANA_PEEL_RADIUS) * 1.02 
+        elif self.keep_item_id == Const.BANANA_PEEL:
+            pos = self.position - self.direction * ( self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
             entities.append( BananaPeel(pos))
              
-        elif self.keep_item_id == Const.ZAP_ZAP_ZAP :
+        elif self.keep_item_id == Const.ZAP_ZAP_ZAP:
             self.voltage += 10
             for other in players :
                 if abs( self.position.x - other.position.x ) < Const.ZAP_ZAP_ZAP_RANGE * self.player_radius and self != other\
                         and other.is_alive() and other.invincible_time <= 0:
                     other.voltage += 50
 
-        elif self.keep_item_id == Const.BIG_BLACK_HOLE :
-            entities.append( BigBlackHole(pg.Vector2(self.position.x,self.position.y), self.player_id) )
+        elif self.keep_item_id == Const.BIG_BLACK_HOLE:
+            entities.append( BigBlackHole(pg.Vector2(self.position.x, self.position.y), self.player_id) )
         self.keep_item_id = Const.NO_ITEM
