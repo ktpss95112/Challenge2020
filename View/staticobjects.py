@@ -213,14 +213,20 @@ class View_scoreboard(__Object_base):
             position = posX, posY
             voltage = round(self.model.players[player_id - 1].voltage, 2)
             item = self.model.players[player_id - 1].keep_item_id
-            text = [f"Player {player_id}", "Life:", f"Voltage: {voltage}", f"Item: {item}", "Score:"]
+            score = self.model.players[player_id - 1].score
+            text = [f"Player {player_id}", "Life: ", f"Voltage: {voltage}", f"Item: {item}", f"Score: {score}"]
             label = []
 
             for line in text:
                 label.append(self.namefont.render(line, True, pg.Color('white')))
+            
+            # draw words
             for line in range(len(label)):
                 screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
-            for i in range(3):
+            
+            # draw heart
+            lives = self.model.players[player_id - 1].life
+            for i in range(lives):
                 screen.blit(heart_image, (heartposX, heartposY))
                 heartposX += 20
             posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
