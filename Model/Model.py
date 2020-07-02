@@ -185,6 +185,16 @@ class GameEngine:
                         self.items.remove(item)
                         self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
 
+        elif isinstance(event, EventStop):
+            self.state_machine.push(Const.STATE_STOP)
+
+        elif isinstance(event, EventContinue):
+            self.state_machine.pop()
+
+        elif isinstance(event, EventRestart):
+            self.state_machine.clear()
+            self.initialize()
+
     def update_menu(self):
         '''
         Update the objects in welcome scene.

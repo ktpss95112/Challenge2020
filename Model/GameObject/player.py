@@ -27,6 +27,8 @@ class Player:
         return self.life > 0
 
     def move_every_tick(self, platforms: list):
+        if not self.is_alive():
+            return
         # Calcultate the distance to move
         displacement = self.velocity / Const.FPS
 
