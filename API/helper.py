@@ -116,9 +116,7 @@ class Helper(object):
 
     # get item information
     def get_all_item_position(self):
-        itemlist = []
-        for i in range(Const.ITEM_SPECIES + 1):
-            itemlist.append([])
+        itemlist = [ [] for i in range(Const.ITEM_SPECIES + 1) ]
         for item in self.model.items:
             itemlist[item.item_id].append(tuple(item.position))
 
