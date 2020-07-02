@@ -153,7 +153,8 @@ class View_characters(__Object_base):
 class View_players(__Object_base):
     @classmethod
     def init_convert(cls):
-        pass
+        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 15)
+
 
     def __init__(self, model):
         self.model = model
@@ -167,9 +168,9 @@ class View_players(__Object_base):
                 pass
             center = list(map(int, player.position))
             pg.draw.circle(screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
+            
             # temp voltage monitor
-            font = pg.font.Font(None, 20)
-            voltage_surface = font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
+            voltage_surface = self.font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
             voltage_pos = player.position
             screen.blit(voltage_surface, voltage_surface.get_rect(center = voltage_pos))
         pass
@@ -261,14 +262,14 @@ class View_timer(__Object_base):
     @classmethod
     def init_convert(cls):
         #cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
-        pass
+        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 24)
+
 
     def draw(self, screen):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
-        font = pg.font.Font(None, 36)
-        timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
+        timer_surface = self.font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
         timer_pos = (Const.WINDOW_SIZE[0] * 1 / 10, Const.WINDOW_SIZE[1] * 1 / 10)
         screen.blit(timer_surface, timer_surface.get_rect(center = timer_pos))
 
