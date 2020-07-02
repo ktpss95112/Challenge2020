@@ -136,6 +136,7 @@ class Player:
         self.invincible_time = 2 * Const.FPS
         self.last_being_attacked_by = -1
         self.last_being_attacked_time_elapsed = 0
+        self.player_radius = Const.PLAYER_RADIUS
 
     def use_item(self, players, entities):
         if self.keep_item_id == Const.INVINCIBLE_BATTERY:
