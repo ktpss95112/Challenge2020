@@ -2,8 +2,8 @@ import pygame as pg
 import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
-import View.staticobjects as view_staticobjects
-import View.animations as view_animations
+import View.staticobjects 
+import View.animations 
 import Const
 
 
@@ -43,22 +43,22 @@ class GraphicalView:
         self.is_initialized = True
 
         # convert images
-        view_staticobjects.init_staticobjects()
-        view_animations.init_animation()
+        View.staticobjects.init_staticobjects()
+        View.animations.init_animation()
         
         # animations
         self.animation_list = []
 
         # static objects
-        self.scoreboard = view_staticobjects.View_scoreboard(self.model)
-        self.players = view_staticobjects.View_players(self.model)
-        self.platform = view_staticobjects.View_platform(self.model)
-        self.items = view_staticobjects.View_items(self.model)
-        self.timer = view_staticobjects.View_timer(self.model)
-        self.entities = view_staticobjects.View_entities(self.model)
-        self.menu = view_staticobjects.View_menu(self.model)
-        self.stop = view_staticobjects.View_stop(self.model)
-        self.endgame = view_staticobjects.View_endgame(self.model)
+        self.scoreboard = View.staticobjects.View_scoreboard(self.model)
+        self.players = View.staticobjects.View_players(self.model)
+        self.platform = View.staticobjects.View_platform(self.model)
+        self.items = View.staticobjects.View_items(self.model)
+        self.timer = View.staticobjects.View_timer(self.model)
+        self.entities = View.staticobjects.View_entities(self.model)
+        self.menu = View.staticobjects.View_menu(self.model)
+        self.stop = View.staticobjects.View_stop(self.model)
+        self.endgame = View.staticobjects.View_endgame(self.model)
 
 
     def notify(self, event):
@@ -81,7 +81,7 @@ class GraphicalView:
             self.toggle_fullscreen()
 
         elif isinstance(event, EventPlayerAttack):
-            self.animation_list.append(view_animations.Animation_player_attack(self.model.players[event.player_id]))
+            self.animation_list.append(View.animations.Animation_player_attack(self.model.players[event.player_id]))
 
     def display_fps(self):
         '''
