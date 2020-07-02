@@ -1,10 +1,6 @@
 import pygame as pg
 import os.path
 
-# Font
-notosans_font = os.path.join('Font', 'Noto', 'NotoSansCJK-Black.ttc')
-digitalt_font = os.path.join('Font', 'digitalt', 'Digitalt.ttf')
-
 # model
 FPS = 60 # frame per second
 GAME_LENGTH = 300 * FPS
@@ -137,3 +133,4 @@ GAME_FULLSCREEN_KEY = pg.K_F11
 IMAGE_PATH = os.path.join('View', 'img')
 SOUND_PATH = os.path.join('View', 'sound')
 VIDEO_PATH = os.path.join('View', 'video')
+FONT_PATH = os.path.join('View', 'fonts')
