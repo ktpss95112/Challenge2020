@@ -3,7 +3,7 @@ import Const
 from Model.GameObject.entity import *
 
 class Player:
-    def __init__(self, player_id):
+    def __init__(self, player_id, is_AI = False, player_name = "manual"):
         self.player_id = player_id
         self.life = Const.PLAYER_LIFE
         self.player_radius = Const.PLAYER_RADIUS
@@ -22,6 +22,8 @@ class Player:
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         self.score = 0
+        self.is_AI = is_AI
+        self.player_name = player_name
 
     def is_alive(self):
         return self.life > 0

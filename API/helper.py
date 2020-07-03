@@ -37,6 +37,9 @@ class Helper(object):
     def get_self_voltage(self):
         return self.model.players[self.player_id].voltage
 
+    def get_self_radius(self):
+        return self.model.players[self.player_id].player_radius
+
     def get_self_is_invincible(self):
         return (self.model.players[self.player_id].invincible_time > 0)
     
@@ -68,6 +71,9 @@ class Helper(object):
     def get_all_voltage(self):
         return [player.voltage for player in self.model.players]
 
+    def get_all_radius(self):
+        return [player.player_radius for player in self.model.players]
+
     def get_all_is_invincible(self):
         return [player.invincible_time > 0 for player in self.model.players]
     
@@ -98,6 +104,9 @@ class Helper(object):
 
     def get_other_voltage(self, index):
         return self.model.players[index].voltage
+
+    def get_other_radius(self, index):
+        return self.model.players[index].player_radius
 
     def get_other_is_invincible(self, index):
         return (self.model.players[index].invincible_time > 0)
@@ -156,7 +165,39 @@ class Helper(object):
                 highest_score_id = player.player_id
         return highest_score_id
 
-    # def get_distance(p, q):
-    # def get_position_vector(p, q):
-    # def get_distance_to_closest_land():
-    # def get_position_vector_to_closest_land():
+    def get_distance(self, p1, p2):
+        return (Vec(p1) - Vec(p2)).length()
+    '''
+    def get_distance_to_closest_land(self):
+        minimum_distance = 10000 ** 2
+        distance = 0
+        for platform in self.model.platforms:
+            if self.model.players[self.player_id].position.x > platform.upper_left.x and self.model.players[self.player_id].position.x < platform.bottom_right.x:
+                distance =  abs(self.model.players[self.player_id].position.y - platform.upper_left.y)
+            else:
+                distance = min(get_distance(self.model.players[self.player_id].position, platform.upper_left), get_distance(self.model.players[self.player_id].position, platform.bottom_right))
+            if distance < minimum_distance:
+                minimum_distance = distance
+        return minimum_distance
+    
+    def get_position_vector_to_closest_land(self):
+        minimum_distance = 10000 ** 2
+        distance = 0
+        minimum_vector = tuple(10000, 10000)
+        vector = tuple(0, 0)
+        for platform in self.model.platforms:
+            if self.model.players[self.player_id].position.x > platform.upper_left.x and self.model.players[self.player_id].position.x < platform.bottom_right.x:
+                distance =  abs(self.model.players[self.player_id].position.y - platform.upper_left.y)
+                vector = tuple(0, platform.upper_left.y - self.model.players[self.player_id].position.y)
+            else:
+                if get_distance(self.model.players[self.player_id].position, platform.upper_left) > get_distance(self.model.players[self.player_id].position, platform.bottom_right)):
+                    distance = get_distance(self.model.players[self.player_id].position, platform.bottom_right)
+                    vector = tuple(platform.bottom_right - self.model.players[self.player_id].position)
+                else:
+                    distance = get_distance(self.model.players[self.player_id].position, platform.upper_left)
+                    vector = tuple(platform.upper_left - self.model.players[self.player_id].position)
+            if distance < minimum_distance:
+                minimum_distance = distance
+                minimum_vector = vector
+        return minimum_vector
+    '''
