@@ -16,6 +16,7 @@ class PistolBullet(Entity):
         self.position = position
         self.velocity = Const.BULLET_VELOCITY * direction
         self.timer = Const.BULLET_TIME
+    
     def update_every_tick(self, players, items, platforms):
         self.timer -= 1
         self.position += self.velocity / Const.FPS
@@ -25,10 +26,13 @@ class PistolBullet(Entity):
         for player in players:
             if player.invincible_time > 0 or not player.is_alive():
                 continue
-            if (player.position - self.position).magnitude() < player.player_radius + Const.BULLET_RADIUS:
-                #print("someone got shoot")
-                player.voltage += Const.BULLET_ATK
-                #prevent remove failture
+            vec = player.position - self.position
+            magnitude = vec.magnitude() * 10
+            if vec.magnitude() < player.player_radius + Const.BULLET_RADIUS:
+                # print("someone got shoot")
+                unit = vec.normalize()
+                player.be_attacked(unit, magnitude)
+                # prevent remove failure
                 self.position = pg.Vector2(-1000, -2000)
                 self.velocity = pg.Vector2(0, 0)
                 return False
@@ -55,6 +59,8 @@ class BananaPeel(Entity):
                     break
         #------------------------
         self.timer -= 1/Const.FPS
+
+
 class BigBlackHole(Entity):
     def __init__(self, position, user):
         self.position = position
@@ -92,6 +98,7 @@ class BigBlackHole(Entity):
                     random.uniform(-Const.BLACK_HOLE_FLOATING_VELOCITY, Const.BLACK_HOLE_FLOATING_VELOCITY)))
         return True
 
+
 class CancerBomb(Entity):
     def __init__(self, position):
         self.position = position
@@ -118,6 +125,7 @@ class CancerBomb(Entity):
                     player.voltage += Const.BOMB_ATK
             return False
         return True
+
 
 class BananaPeel(Entity):
     # Make the player temparorily can't control move direction,the player wouldn't be affect by drag force while affected.
