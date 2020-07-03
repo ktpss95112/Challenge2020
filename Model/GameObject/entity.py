@@ -5,14 +5,17 @@ import pygame as pg
 class Entity:
     def __init__(self, position):
         self.position = position
+
     def update_every_tick(self, players):
-        return False 
+        return False
+
 
 class PistolBullet(Entity):
-    def __init__(self, position, direction): #direction is a unit pg.vec2 
+    def __init__(self, position, direction): #direction is a unit pg.vec2
         self.position = position
         self.velocity = Const.BULLET_VELOCITY * direction
-        self.timer = 1000 / Const.BULLET_VELOCITY 
+        self.timer = 1000 / Const.BULLET_VELOCITY
+
     def update_every_tick(self, players, platforms):
         self.timer -= 1/Const.FPS
         self.position += self.velocity / Const.FPS
@@ -26,18 +29,19 @@ class PistolBullet(Entity):
                 #print("someone got shoot")
                 player.voltage += Const.BULLET_ATK
                 #prevent remove failture
-                self.position = pg.Vector2(-1000,-2000)
-                self.velocity = pg.Vector2(0,0)
+                self.position = pg.Vector2(-1000, -2000)
+                self.velocity = pg.Vector2(0, 0)
                 return False
         return True
 
 
 class BananaPeel(Entity):
 #Make the player temparorily can't control move direction,the player wouldn't be affect by drag force while affected.
-    def __init__(self, position): #direction is a unit pg.vec2 
+    def __init__(self, position): #direction is a unit pg.vec2
         self.position = position
         self.timer = Const.BANANA_PEEL_TIME
         self.velocity = pg.Vector2(0,0)
+
     def update_every_tick(self, players,platforms):
        #---------gravity-------
         self.velocity.y += Const.GRAVITY_ACCELERATION /Const.FPS
@@ -63,12 +67,12 @@ class BananaPeel(Entity):
         #Implement later
         return True
 
-                 
+
 class CancerBomb(Entity):
     def __init__(self, position):
         self.position = position
         self.timer = Const.BOMB_TIME
-        self.velocity = pg.Vector2(0,0) 
+        self.velocity = pg.Vector2(0,0)
 
     def update_every_tick(self, players, platforms):
        #---------gravity-------
