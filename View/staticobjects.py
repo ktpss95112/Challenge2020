@@ -32,8 +32,6 @@ class __Object_base():
 
 
 class View_platform(__Object_base):
-    # background = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'background.png')), 1)
-    # priced_market = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'market.png')), 0.3)
 
     @classmethod
     def init_convert(cls):
@@ -82,6 +80,7 @@ class View_menu(__Object_base):
 
 
 class View_stop(__Object_base):
+
     @classmethod
     def init_convert(cls):
         # cls.menu = cls.menu.convert()
@@ -96,6 +95,7 @@ class View_stop(__Object_base):
 
 
 class View_endgame(__Object_base):
+
     @classmethod
     def init_convert(cls):
         # cls.menu = cls.menu.convert()
@@ -111,46 +111,8 @@ class View_endgame(__Object_base):
         text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
         screen.blit(text_surface, text_surface.get_rect(center = text_center))
 
-
-class View_characters(__Object_base):
-    # images = tuple(
-    #     view_utils.scaled_surface(
-    #         pg.image.load(os.path.join(Const.IMAGE_PATH, f'move_{_index}.png')),
-    #         0.6
-    #     )
-    #     for _index in map(str, range(1, 8))
-    # )
-    # image_oil = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'oil_black.png')),0.4)
-
-    @classmethod
-    def init_convert(cls):
-        # cls.images = tuple( _image.convert_alpha() for _image in cls.images )
-        # cls.image_oil = pg.Surface.convert_alpha( cls.image_oil )
-        pass
-
-    def __init__(self, model):
-        # self.model = model
-        # self.picture_switch = (0, 1, 2, 1, 2, 1, 2, 1, 2, 3, 4, 5, 4, 5, 4, 5, 4, 5, 6)
-        # self.position_switch = (130, 240, 350, 460, 570, 680, 790, 900, 1010,
-        #                         1010, 900, 790, 680, 570, 460, 350, 240, 130, 120)
-        # self.index = 0
-        # self.counter = 0
-        pass
-
-    def draw(self, screen):
-        # image = self.images[self.picture_switch[self.index]]
-        # screen.blit(image, [self.position_switch[self.index], 520])
-        # if self.index < 10:
-        #     screen.blit(self.image_oil, (1220, 700))
-        # if self.counter == 20:
-        #     self.index += 1
-        #     self.index %= 19
-        # self.counter %= 20
-        # self.counter += 1
-        pass
-
-
 class View_players(__Object_base):
+
     @classmethod
     def init_convert(cls):
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 15)
@@ -158,6 +120,7 @@ class View_players(__Object_base):
 
     def __init__(self, model):
         self.model = model
+
     def set_theworld_player(self, player_index):
         pass
 
@@ -168,7 +131,7 @@ class View_players(__Object_base):
                 pass
             center = list(map(int, player.position))
             pg.draw.circle(screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
-            
+
             # temp voltage monitor
             voltage_surface = self.font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
             voltage_pos = player.position
@@ -177,13 +140,17 @@ class View_players(__Object_base):
 
 
 class View_entities(__Object_base):
+
     @classmethod
     def init_convert(cls):
         pass
+
     def __init__(self, model):
         self.model = model
+
     def set_theworld_player(self, player_index):
         pass
+
     def draw(self, screen):
         # draw players
         for entity in self.model.entities:
@@ -192,6 +159,7 @@ class View_entities(__Object_base):
         pass
 
 class View_scoreboard(__Object_base):
+
     images = {
         'Heart'       :view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.03125)
     }
@@ -219,11 +187,11 @@ class View_scoreboard(__Object_base):
 
             for line in text:
                 label.append(self.namefont.render(line, True, pg.Color('white')))
-            
+
             # draw words
             for line in range(len(label)):
                 screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
-            
+
             # draw heart
             lives = self.model.players[player_id - 1].life
             for i in range(lives):
@@ -231,16 +199,15 @@ class View_scoreboard(__Object_base):
                 heartposX += 20
             posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
 
-
 class View_items(__Object_base):
     images = {
-        1: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
-        2: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.2),
-        3: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.1),
-        4: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2),
-        5: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
-        6: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.05),
-        7: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.02)
+        BANANA_PISTOL: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
+        BIG_BLACK_HOLE: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.2),
+        CANCER_BOMB: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.1),
+        ZAP_ZAP_ZAP: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2),
+        BANANA_PEEL: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
+        RAINBOW_GROUNDER: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.05),
+        INVINCIBLE_BATTERY: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.02)
     }
 
     @classmethod
