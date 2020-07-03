@@ -176,19 +176,9 @@ class GameEngine:
             player = self.players[event.player_id]
             if not player.is_alive():
                 return
-            if player.keep_item_id > 0:
+            if player.keep_item_id > 0 :
                 player.use_item(self.players, self.entities)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
-            # modified: if a player touch an item, it will pick it up automatically.
-            '''
-            else:
-                for item in self.items:
-                    distance = (item.position - player.position).magnitude()
-                    if distance <= item.item_radius + player.player_radius:
-                        player.keep_item_id = item.item_id
-                        self.items.remove(item)
-                        self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
-            '''
 
         elif isinstance(event, EventStop):
             self.state_machine.push(Const.STATE_STOP)
@@ -223,14 +213,16 @@ class GameEngine:
             player.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
-        # update items
+        # pick item if is close enough and player has no item
         for player in self.players:
+            if player.keep_item_id != Const.NO_ITEM:
+                continue
             for item in self.items:
-                    distance = (item.position - player.position).magnitude()
-                    if distance <= item.item_radius + player.player_radius:
-                        player.keep_item_id = item.item_id
-                        self.items.remove(item)
-                        self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
+                distance = (item.position - player.position).magnitude()
+                if distance <= item.item_radius + player.player_radius:
+                    player.keep_item_id = item.item_id
+                    self.items.remove(item)
+                    self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
         # update score
         highest_KO_amount = 0
         for player in self.players:
