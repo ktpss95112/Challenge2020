@@ -95,6 +95,9 @@ class Animation_raster(Animation_base):
 
 
 class Animation_player_attack(Animation_raster):
+    # TODO: do not load image for many times
+    #       load it once and resize (maybe in init_convert())
+    #       this would reduce IO and improve game loading time a lot
     frames = tuple(
         scaled_surface(
             pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')),
