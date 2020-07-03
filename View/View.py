@@ -142,6 +142,7 @@ class GraphicalView:
         pg.display.flip()
 
     def toggle_fullscreen(self):
+        self.ev_manager.post(EventStop())
         # save screen content before toggling
         screen = pg.display.get_surface()
         tmp = screen.convert()
@@ -169,3 +170,4 @@ class GraphicalView:
         pg.mouse.set_cursor(*cursor)
 
         self.screen = screen
+        self.ev_manager.post(EventContinue())
