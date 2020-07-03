@@ -1,4 +1,5 @@
 import pygame as pg
+import math
 import Const
 from Model.GameObject.entity import *
 
@@ -84,9 +85,9 @@ class Player:
         if self.player_radius + other.player_radius <= distance.magnitude():
             return False
         if self.position.y < other.position.y:
-            self.position = other.position + distance.normalize() * (self.player_radius + other.player_radius)
+            self.position.y = other.position.y - math.sqrt((self.player_radius + other.player_radius) ** 2 - (self.position.x - other.position.x) ** 2)
         else:
-            other.position = self.position - distance.normalize() * (self.player_radius + other.player_radius)
+            other.position.y = self.position.y - math.sqrt((self.player_radius + other.player_radius) ** 2 - (self.position.x - other.position.x) ** 2)
         return True
 
     def collision_reliable(self, other, collision_time): # collsition time is a percentage of FPS

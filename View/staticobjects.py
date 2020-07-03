@@ -7,7 +7,7 @@ import os.path
 import math
 
 import Model.GameObject.item as model_item
-from Model.GameObject.entity import CancerBomb , PistolBullet
+from Model.GameObject.entity import CancerBomb, PistolBullet
 import View.utils as view_utils
 import Const
 

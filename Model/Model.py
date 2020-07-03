@@ -203,7 +203,7 @@ class GameEngine:
         For example: position, remaining time of item used and score
         '''
         # update position
-        # self.overlap_detect()
+        self.overlap_detect()
         self.players_collision_detect()
         for player in self.players:
             # skip dead players
@@ -268,13 +268,17 @@ class GameEngine:
         Only use when players_collision_detect(self) doesn't work
         '''
         overlap = True
+        count = 0
         while overlap:
             overlap = False
+            count += 1
             for i in self.players:
                 for j in self.players:
                     if i.player_id < j.player_id and i.overlap_resolved(j):
                         overlap = True
                         print("hi")
+            if count == 4:
+                break
 
     def players_collision_detect(self):
         # More reliable
