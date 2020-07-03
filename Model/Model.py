@@ -98,18 +98,11 @@ class GameEngine:
             elif cur_state == Const.STATE_PLAY:
                 self.update_players()
                 self.update_objects()
-
                 self.timer -= 1
-                if self.timer == 0:
+                # check if game ends
+                cnt = sum(player.is_alive() for player in self.players)
+                if self.timer == 0 or cnt <= 1:
                     self.ev_manager.post(EventTimesUp())
-                # check number of alive players
-                cnt = 0
-                for player in self.players:
-                    if player.is_alive():
-                        cnt += 1
-                if cnt <= 1:
-                    self.ev_manager.post(EventTimesUp())
-
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
@@ -141,10 +134,6 @@ class GameEngine:
             player = self.players[event.player_id]
             if player.is_alive() and player.is_controllable() :
                 player.add_horizontal_velocity(event.direction)
-                if(event.direction == 'left'):
-                    player.direction = pg.Vector2(-1,0)
-                elif (event.direction == 'right'):
-                    player.direction = pg.Vector2(1,0)
 
         elif isinstance(event, EventPlayerJump):
             if self.players[event.player_id].is_alive():

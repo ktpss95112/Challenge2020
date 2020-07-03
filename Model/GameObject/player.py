@@ -141,6 +141,10 @@ class Player:
     def add_horizontal_velocity(self, direction: str):
         # Add horizontal velocity to the player along the direction.
         self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
+        if(direction == 'left'):
+            self.direction = pg.Vector2(-1, 0)
+        elif (direction == 'right'):
+            self.direction = pg.Vector2(1, 0)
 
     def jump(self):
         # Add vertical velocity to the player.
