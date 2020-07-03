@@ -8,6 +8,7 @@ import math
 
 import Model.GameObject.item as model_item
 from Model.GameObject.entity import CancerBomb , PistolBullet
+# TODO: refactor the following line
 import View.utils as view_utils
 import Const
 
@@ -42,6 +43,7 @@ class View_platform(__Object_base):
     def draw(self, screen):
         screen.fill(Const.BACKGROUND_COLOR)
         for platform in self.model.platforms:
+            # TODO: refactor the below line to be cleaner
             pg.draw.rect(screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
 
 
@@ -60,6 +62,7 @@ class View_menu(__Object_base):
         # screen.blit(self.base, (10, 645))
         screen.fill(Const.BACKGROUND_COLOR)
 
+        # TODO: use View.utils.PureText to render static words
         titlefont = pg.font.Font(os.path.join(Const.FONT_PATH, 'digitalt', 'Digitalt.ttf'), 125)
         titlesmallfont = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 20)
 
@@ -83,6 +86,7 @@ class View_menu(__Object_base):
 class View_endgame(__Object_base):
     @classmethod
     def init_convert(cls):
+        # TODO: use View.utils.PureText to render static words
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
         # cls.menu = cls.menu.convert()
         # cls.base = cls.base.convert_alpha()
@@ -95,7 +99,7 @@ class View_endgame(__Object_base):
         # draw text
         text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
         text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
-        screen.blit(text_surface, text_surface.get_rect(center = text_center))
+        screen.blit(text_surface, text_surface.get_rect(center=text_center))
 
 
 class View_players(__Object_base):
@@ -103,25 +107,21 @@ class View_players(__Object_base):
     def init_convert(cls):
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 15)
 
-    def __init__(self, model):
-        self.model = model
-
-    def set_theworld_player(self, player_index):
-        pass
-
     def draw(self, screen):
         # draw players
         for player in self.model.players:
             if player.invincible_time > 0:
                 pass
+
+            # TODO: refactor the following line (int(x), int(y))
             center = list(map(int, player.position))
             pg.draw.circle(screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
 
             # temp voltage monitor
+            # TODO: create a class MutableText() similar to PureText()
             voltage_surface = self.font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
             voltage_pos = player.position
-            screen.blit(voltage_surface, voltage_surface.get_rect(center = voltage_pos))
-        pass
+            screen.blit(voltage_surface, voltage_surface.get_rect(center=voltage_pos))
 
 
 class View_entities(__Object_base):
@@ -131,34 +131,32 @@ class View_entities(__Object_base):
         'bananabullet' : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
         'lightning'  : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2)
     }
+
     @classmethod
     def init_convert(cls):
         cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
-        pass
-
-    def __init__(self, model):
-        self.model = model
 
     def draw(self, screen):
         # draw players
         for entity in self.model.entities:
             if isinstance(entity, CancerBomb):
+                # TODO: remove redundant code
                 if (entity.timer <= 1 or int(entity.timer * 3)  % 2 == 0):
                     screen.blit(self.images['bomber_red'], self.images['bomber_red'].get_rect(center=entity.position))
                 else:
                     screen.blit(self.images['bomber'], self.images['bomber'].get_rect(center=entity.position))
             elif isinstance(entity, PistolBullet):
                 screen.blit(self.images['bananabullet'], self.images['bananabullet'].get_rect(center=entity.position))
+
             else:
+                # TODO: refactor the following code
                 center = list(map(int, entity.position))
                 pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
-        pass
 
 
 class View_scoreboard(__Object_base):
-
     images = {
-        'Heart'       :view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.03125)
+        'Heart': view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.03125)
     }
 
     @classmethod
@@ -176,15 +174,19 @@ class View_scoreboard(__Object_base):
             heartposX = posX + 43
             heartposY = posY + (fontsize + 14)
             position = posX, posY
+            # TODO: f'Voltage: {voltage:.2f}'
             voltage = round(self.model.players[player_id - 1].voltage, 2)
             item = self.model.players[player_id - 1].keep_item_id
             score = self.model.players[player_id - 1].score
             text = [f"Player {player_id}", "Life: ", f"Voltage: {voltage}", f"Item: {item}", f"Score: {score}"]
+            # TODO: no need to use a list to store the labels
             label = []
 
+            # TODO: merge the for loop with the following one
             for line in text:
                 label.append(self.namefont.render(line, True, pg.Color('white')))
 
+            # TODO: merge the for loop with the previous one
             # draw words
             for line in range(len(label)):
                 screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
@@ -239,9 +241,10 @@ class View_timer(__Object_base):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
+        # TODO: create a class MutableText() similar to PureText()
         timer_surface = self.font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
         timer_pos = (Const.WINDOW_SIZE[0] * 1 / 10, Const.WINDOW_SIZE[1] * 1 / 10)
-        screen.blit(timer_surface, timer_surface.get_rect(center = timer_pos))
+        screen.blit(timer_surface, timer_surface.get_rect(center=timer_pos))
 
 
 def init_staticobjects():

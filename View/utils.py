@@ -15,6 +15,7 @@ class PureText():
     def draw(self, screen):
         screen.blit(self.text_surface, self.pos_rect)
 
+
 def scaled_surface(surface, scale):
     '''
     example:
@@ -37,7 +38,7 @@ def replace_color(path, origin, target):
     data = np.array(im)   # "data" is a height x width x 4 numpy array
     red, green, blue, alpha = data.T # Temporarily unpack the bands for readability
     # Replace white with red... (leaves alpha values alone...)
-    origin_areas = (red == origin[0]) & (green ==  origin[1]) & (blue ==  origin[2]) 
+    origin_areas = (red == origin[0]) & (green ==  origin[1]) & (blue ==  origin[2])
     data[..., :-1][origin_areas.T] = target # Transpose back needed
     im = Image.fromarray(data)
     im2 = pg.image.fromstring(im.tobytes(), im.size, im.mode)
