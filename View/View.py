@@ -31,7 +31,6 @@ class GraphicalView:
         self.clock = None
         self.last_update = 0
 
-
     def initialize(self):
         '''
         This method is called when a new game is instantiated.

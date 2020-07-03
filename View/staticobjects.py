@@ -33,7 +33,6 @@ class __Object_base():
 
 
 class View_platform(__Object_base):
-
     @classmethod
     def init_convert(cls):
         # cls.background = cls.background.convert()
@@ -44,6 +43,7 @@ class View_platform(__Object_base):
         screen.fill(Const.BACKGROUND_COLOR)
         for platform in self.model.platforms:
             pg.draw.rect(screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
+
 
 class View_menu(__Object_base):
     # menu = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'menu.png')), 1)
@@ -81,9 +81,9 @@ class View_menu(__Object_base):
 
 
 class View_endgame(__Object_base):
-
     @classmethod
     def init_convert(cls):
+        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
         # cls.menu = cls.menu.convert()
         # cls.base = cls.base.convert_alpha()
         pass
@@ -91,18 +91,17 @@ class View_endgame(__Object_base):
     def draw(self, screen):
         # draw background
         screen.fill(Const.BACKGROUND_COLOR)
+
         # draw text
-        font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
         text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
         text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
         screen.blit(text_surface, text_surface.get_rect(center = text_center))
 
-class View_players(__Object_base):
 
+class View_players(__Object_base):
     @classmethod
     def init_convert(cls):
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 15)
-
 
     def __init__(self, model):
         self.model = model
@@ -152,6 +151,7 @@ class View_entities(__Object_base):
                 pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
         pass
 
+
 class View_scoreboard(__Object_base):
 
     images = {
@@ -193,6 +193,7 @@ class View_scoreboard(__Object_base):
                 heartposX += 20
             posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
 
+
 class View_items(__Object_base):
     images = {
         Const.BANANA_PISTOL     : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
@@ -230,7 +231,6 @@ class View_timer(__Object_base):
     def init_convert(cls):
         #cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 24)
-
 
     def draw(self, screen):
         # for market in self.model.priced_market_list:
