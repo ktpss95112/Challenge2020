@@ -4,7 +4,8 @@ import random
 
 # If update_every_tick return False,it should be removed from entity list
 class Entity:
-    def __init__(self, position):
+    def __init__(self, user_id, position):
+        self.user_id = user_id
         self.position = position
 
     def update_every_tick(self, players):
@@ -12,11 +13,10 @@ class Entity:
 
 
 class PistolBullet(Entity):
-    def __init__(self, position, direction, user_id): # direction is a unit pg.vec2
-        self.position = position
-        self.velocity = Const.BULLET_VELOCITY * direction
-        self.user_id = user_id
+    def __init__(self, user_id, position, direction): # direction is a unit pg.vec2
+        super().__init__(user_id, position)
         self.timer = Const.BULLET_TIME
+        self.velocity = Const.BULLET_VELOCITY * direction
     
     def update_every_tick(self, players, items, platforms, time):
         self.timer -= 1
@@ -40,33 +40,10 @@ class PistolBullet(Entity):
         return True
 
 
-class BananaPeel(Entity):
-#Make the player temparorily can't control move direction,the player wouldn't be affect by drag force while affected.
-    def __init__(self, position): #direction is a unit pg.vec2
-        self.position = position
-        self.timer = Const.BANANA_PEEL_TIME
-        self.velocity = pg.Vector2(0,0)
-
-    def update_every_tick(self, players,platforms):
-       # gravity effect
-        self.velocity.y += Const.GRAVITY_ACCELERATION /Const.FPS
-        prev_position_y = self.position.y
-        self.position += self.velocity / Const.FPS
-        for platform in platforms:
-            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
-                if prev_position_y <= platform.upper_left.y - Const.BANANA_PEEL_RADIUS <= self.position.y:
-                    self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
-                    self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
-                    break
-        self.timer -= 1
-
-
 class BigBlackHole(Entity):
-    def __init__(self, position, user_id):
-        self.position = position
+    def __init__(self, user_id, position):
+        super().__init__(user_id, position)
         self.timer = Const.BLACK_HOLE_TIME
-        self.radius = Const.BLACK_HOLE_RADIUS
-        self.user_id = user_id
 
     def update_every_tick(self, players, items, platforms, time):
         self.timer -= 1
@@ -100,8 +77,8 @@ class BigBlackHole(Entity):
 
 
 class CancerBomb(Entity):
-    def __init__(self, position):
-        self.position = position
+    def __init__(self, user_id, position):
+        super().__init__(user_id, position)
         self.timer = Const.BOMB_TIME
         self.velocity = pg.Vector2(0,0)
 
@@ -129,8 +106,8 @@ class CancerBomb(Entity):
 
 class BananaPeel(Entity):
     # Make the player temparorily can't control move direction,the player wouldn't be affect by drag force while affected.
-    def __init__(self, position): #direction is a unit pg.vec2
-        self.position = position
+    def __init__(self, user_id, position): #direction is a unit pg.vec2
+        super().__init__(user_id, position)
         self.timer = Const.BANANA_PEEL_TIME
         self.velocity = pg.Vector2(0,0)
 

@@ -171,30 +171,35 @@ class Player:
         self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
-        
+
     def respawn(self):
+        # status
+        self.player_radius = Const.PLAYER_RADIUS
+        self.voltage = 0
+        self.invincible_time = Const.RESPAWN_INVINCIBLE_TIME
+        self.uncontrollable_time = 0
+        self.attack_cool_down_time = 0
+        self.jump_quota = Const.PLAYER_JUMP_QUOTA
+        self.keep_item_id = Const.NO_ITEM
+        # move
         self.position = pg.Vector2(Const.PLAYER_RESPAWN_POSITION[self.player_id])
         self.velocity = pg.Vector2(0, 0)
-        self.voltage = 0
-        self.jump_quota = Const.PLAYER_JUMP_QUOTA
-        self.invincible_time = Const.RESPAWN_INVINCIBLE_TIME
+        # others
         self.last_being_attacked_by = -1
         self.last_being_attacked_time_elapsed = 0
-        self.player_radius = Const.PLAYER_RADIUS
-
+        
     def use_item(self, players, entities, time):
         if self.keep_item_id == Const.BANANA_PISTOL:
             pos = self.position + self.direction * (self.player_radius + Const.BULLET_RADIUS) * 1.02
-            entities.append(PistolBullet(pos, self.direction, self.player_id))
-
+            entities.append(PistolBullet(self.player_id, pos, self.direction))
             pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
-            entities.append(BananaPeel(pos))
+            entities.append(BananaPeel(self.player_id, pos))
 
         elif self.keep_item_id == Const.BIG_BLACK_HOLE:
-            entities.append(BigBlackHole(pg.Vector2(self.position.x, self.position.y), self.player_id))
+            entities.append(BigBlackHole(self.player_id, pg.Vector2(self.position.x, self.position.y)))
 
         elif self.keep_item_id == Const.CANCER_BOMB:
-            entities.append(CancerBomb(pg.Vector2(self.position.x, self.position.y)))
+            entities.append(CancerBomb(self.player_id, pg.Vector2(self.position.x, self.position.y)))
 
         elif self.keep_item_id == Const.ZAP_ZAP_ZAP:
             self.voltage += Const.ZAP_ZAP_ZAP_SELF_VOLTAGE_UP
@@ -205,7 +210,7 @@ class Player:
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
             pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
-            entities.append(BananaPeel(pos))
+            entities.append(BananaPeel(self.player_id, pos))
 
         elif self.keep_item_id == Const.RAINBOW_GROUNDER:
             self.voltage -= Const.RAINBOW_GROUNDER_VOLTAGE_DOWN

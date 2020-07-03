@@ -161,16 +161,14 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerDied):
             died_player = self.players[event.player_id]
+            died_player.life -= 1
             # update KO amount
             atk_id = died_player.last_being_attacked_by
             atk_t = died_player.last_being_attacked_time_elapsed
             if atk_id != -1 and atk_t - self.timer < Const.VALID_KO_TIME:
                 died_player.be_KO_amount += 1
                 self.players[atk_id].KO_amount += 1
-            # update item and life
-            died_player.keep_item_id = Const.NO_ITEM
-            died_player.life -= 1
-            # respawn if player has life left
+            # respawn if player has lives left
             if died_player.is_alive():
                 self.ev_manager.post(EventPlayerRespawn(died_player.player_id))
 
