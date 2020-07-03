@@ -1,6 +1,5 @@
-import random
-
 import pygame as pg
+import numpy as np
 import math
 
 from Events.EventManager import *
@@ -102,7 +101,7 @@ class GameEngine:
                 self.timer -= 1
                 if self.timer == 0:
                     self.ev_manager.post(EventTimesUp())
-                # check alive player
+                # check number of alive players
                 cnt = 0
                 for player in self.players:
                     if player.is_alive():
@@ -139,57 +138,53 @@ class GameEngine:
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventPlayerAttack):
-            v = event.player_id
-            if not self.players[v].is_alive():
+            attacker = self.players[event.player_id]
+            if not attacker.is_alive():
                 return
-            for i in range(4):
-                magnitude = (self.players[i].position - self.players[v].position).magnitude()
-                if i != v and magnitude < Const.ATTACK_RADIUS_MULTIPLE_CONSTANT * Const.PLAYER_RADIUS and self.players[i].is_alive():
-                    unit = (self.players[i].position - self.players[v].position).normalize()
-                    self.players[i].be_attacked(unit, magnitude)
-                    # record
-                    self.players[i].last_being_attacked_by = v
-                    self.players[i].last_being_attacked_time_elapsed = self.timer
+            for player in self.players:
+                magnitude = (player.position - attacker.position).magnitude()
+                # make sure that player is not attacker and player is alive
+                if player.player_id == attacker.player_id or not player.is_alive():
+                    continue
+                # attack if they are close enough
+                if magnitude < Const.ATTACK_RADIUS:
+                    unit = (player.position - attacker.position).normalize()
+                    player.be_attacked(unit, magnitude)
+                    player.last_being_attacked_by = attacker.player_id
+                    player.last_being_attacked_time_elapsed = self.timer
 
         elif isinstance(event, EventPlayerRespawn):
             self.players[event.player_id].respawn()
 
         elif isinstance(event, EventPlayerDied):
+            died_player = self.players[event.player_id]
             # update KO amount
-            die_id = event.player_id
-            if not self.players[die_id].is_alive():
-                return
-            atk_id = self.players[die_id].last_being_attacked_by
-            t = self.players[die_id].last_being_attacked_time_elapsed
-            if atk_id != -1 and t - self.timer < Const.VALID_KO_TIME:
-                self.players[die_id].be_KO_amount += 1
+            atk_id = died_player.last_being_attacked_by
+            atk_t = died_player.last_being_attacked_time_elapsed
+            if atk_id != -1 and atk_t - self.timer < Const.VALID_KO_TIME:
+                died_player.be_KO_amount += 1
                 self.players[atk_id].KO_amount += 1
-
-            self.players[die_id].keep_item_id = Const.NO_ITEM
-            self.players[die_id].life -= 1
-            if self.players[die_id].life > 0:
-                self.ev_manager.post(EventPlayerRespawn(die_id))
+            # update item and life
+            died_player.keep_item_id = Const.NO_ITEM
+            died_player.life -= 1
+            # respawn if player has life left
+            if died_player.is_alive():
+                self.ev_manager.post(EventPlayerRespawn(died_player.player_id))
 
         elif isinstance(event, EventPlayerItem):
             player = self.players[event.player_id]
             if not player.is_alive():
                 return
-            if player.keep_item_id > 0:
-                self.players[event.player_id].use_item(self.players, self.entities)
+            if player.keep_item_id > 0 :
+                player.use_item(self.players, self.entities)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
-            else:
-                for item in self.items:
-                    distance = (item.position - player.position).magnitude()
-                    if distance <= item.item_radius + player.player_radius:
-                        self.players[event.player_id].keep_item_id = item.item_id
-                        self.items.remove(item)
-                        self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
 
         elif isinstance(event, EventStop):
             self.state_machine.push(Const.STATE_STOP)
 
         elif isinstance(event, EventContinue):
-            self.state_machine.pop()
+            if self.state_machine.peek() == Const.STATE_STOP:
+                self.state_machine.pop()
 
         elif isinstance(event, EventRestart):
             self.state_machine.clear()
@@ -205,14 +200,30 @@ class GameEngine:
     def update_players(self):
         '''
         Update information of users
-        For example: position, remaining time of item used
+        For example: position, remaining time of item used and score
         '''
+        # update position
+        # self.overlap_detect()
         self.players_collision_detect()
         for player in self.players:
-            player.can_not_control_time -= 1/Const.FPS
+            # skip dead players
+            if not player.is_alive():
+                continue
+            player.can_not_control_time -= 1 / Const.FPS
             player.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
+        # pick item if is close enough and player has no item
+        for player in self.players:
+            if player.keep_item_id != Const.NO_ITEM:
+                continue
+            for item in self.items:
+                distance = (item.position - player.position).magnitude()
+                if distance <= item.item_radius + player.player_radius:
+                    player.keep_item_id = item.item_id
+                    self.items.remove(item)
+                    self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
+        # update score
         highest_KO_amount = 0
         for player in self.players:
             if player.KO_amount > highest_KO_amount:
@@ -238,7 +249,10 @@ class GameEngine:
                 self.items.remove(item)
 
         for entity in self.entities:
-            if entity.update_every_tick(self.players, self.platforms) == False :
+            if entity.update_every_tick(self.players, self.items, self.platforms) == False :
+                # tell view to draw explosion animation
+                if isinstance(entity, CancerBomb):
+                    self.ev_manager.post(EventBombExplode(entity.position))
                 self.entities.remove(entity)
 
     def update_endgame(self):
@@ -247,6 +261,20 @@ class GameEngine:
         For example: scoreboard
         '''
         pass
+
+    def overlap_detect(self):
+        '''
+        Bad implemetation of detecting overlap.
+        Only use when players_collision_detect(self) doesn't work
+        '''
+        overlap = True
+        while overlap:
+            overlap = False
+            for i in self.players:
+                for j in self.players:
+                    if i.player_id < j.player_id and i.overlap_resolved(j):
+                        overlap = True
+                        print("hi")
 
     def players_collision_detect(self):
         # More reliable
@@ -307,8 +335,8 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick, if item is less than ITEMS_MAX_AMOUNT, it MAY generate one item
-        if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1, 1000) > 985 :
-            new_item = random.randint(1, Const.ITEM_MAX_SPECIFIES)
+        if len(self.items) < Const.ITEMS_MAX_AMOUNT and random.randint(1, 1000) > 985 :
+            new_item = np.random.choice(np.arange(1, Const.ITEM_SPECIES + 1), p = Const.ITEM_PROBABILITY)
             find_position = False
             while not find_position:
                 find_position = True
