@@ -84,16 +84,16 @@ class Controller:
                     self.ev_manager.post(EventPlayerItem(v))
             # detect stop event
             if event_pg.key == Const.GAME_STOP_KEY:
-                self.ev_manager.post(EventStop())
+                self.ev_manager.post(EventStateChange(Const.STATE_STOP))
             else:
                 self.check_screen_keys(event_pg.key)
-        
+
     def ctrl_stop(self, key_down_events):
         # detect continue event
         for event_pg in key_down_events:
             if event_pg.key == Const.GAME_CONTINUE_KEY:
                 # pop out Const.GAME_STOP
-                self.ev_manager.post(EventContinue())
+                self.model.state_machine.pop()
             else:
                 self.check_screen_keys(event_pg.key)
 
@@ -104,4 +104,4 @@ class Controller:
                 self.model.ev_manager.post(EventRestart())
             else:
                 self.check_screen_keys(event_pg.key)
-                
+

@@ -2,8 +2,8 @@ import pygame as pg
 import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
-import View.staticobjects 
-import View.animations 
+import View.staticobjects
+import View.animations
 import Const
 
 
@@ -29,7 +29,7 @@ class GraphicalView:
         self.screen = None
         self.clock = None
         self.last_update = 0
-        
+
 
     def initialize(self):
         '''
@@ -45,7 +45,7 @@ class GraphicalView:
         # convert images
         View.staticobjects.init_staticobjects()
         View.animations.init_animation()
-        
+
         # animations
         self.animation_list = []
 
@@ -76,7 +76,7 @@ class GraphicalView:
             elif cur_state == Const.STATE_PLAY: self.render_play()
             elif cur_state == Const.STATE_STOP: self.render_stop()
             elif cur_state == Const.STATE_ENDGAME: self.render_endgame()
-        
+
         elif isinstance(event, EventToggleFullScreen):
             self.toggle_fullscreen()
 
@@ -95,20 +95,20 @@ class GraphicalView:
         pg.display.flip()
 
     def render_play(self):
-        
+
         # draw platform
         self.platform.draw(self.screen)
 
         # draw players
-        self.players.draw(self.screen)        
-        
+        self.players.draw(self.screen)
+
         # draw items
         self.items.draw(self.screen)
 
         # draw entities
         self.entities.draw(self.screen)
-        
-        # draw timer        
+
+        # draw timer
         self.timer.draw(self.screen)
 
         #draw scoreboard
@@ -118,7 +118,7 @@ class GraphicalView:
         for ani in self.animation_list:
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(self.screen)
-        
+
         pg.display.flip()
 
     def render_stop(self):
@@ -127,7 +127,7 @@ class GraphicalView:
         pg.display.flip()
 
     def render_endgame(self):
-        
+
         # draw endgame menu
         self.endgame.draw(self.screen)
         pg.display.flip()
@@ -155,7 +155,7 @@ class GraphicalView:
         # restore screen content
         screen.blit(tmp, (0, 0))
         pg.display.set_caption(*caption)
-        
+
         pg.key.set_mods(0)
         pg.mouse.set_cursor(*cursor)
 

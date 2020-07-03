@@ -7,6 +7,7 @@ import os.path
 import math
 
 import Model.GameObject.item as model_item
+from Model.GameObject.entity import CancerBomb
 import View.utils as view_utils
 import Const
 
@@ -140,22 +141,30 @@ class View_players(__Object_base):
 
 
 class View_entities(__Object_base):
-
+    images = {
+        'bomber'     : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
+        'bomber_red' : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber_red.png')), 0.15),
+        'lightning'  : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2)
+    }
     @classmethod
     def init_convert(cls):
+        cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
         pass
 
     def __init__(self, model):
         self.model = model
 
-    def set_theworld_player(self, player_index):
-        pass
-
     def draw(self, screen):
         # draw players
         for entity in self.model.entities:
-            center = list(map(int, entity.position))
-            pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
+            if isinstance(entity, CancerBomb):
+                if (entity.timer <= 1 or int(entity.timer * 3)  % 2 == 0):
+                    screen.blit(self.images['bomber_red'], self.images['bomber_red'].get_rect(center=entity.position))
+                else:
+                    screen.blit(self.images['bomber'], self.images['bomber'].get_rect(center=entity.position))
+            else:
+                center = list(map(int, entity.position))
+                pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
         pass
 
 class View_scoreboard(__Object_base):
@@ -201,12 +210,12 @@ class View_scoreboard(__Object_base):
 
 class View_items(__Object_base):
     images = {
-        Const.BANANA_PISTOL: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
-        Const.BIG_BLACK_HOLE: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.2),
-        Const.CANCER_BOMB: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.1),
-        Const.ZAP_ZAP_ZAP: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2),
-        Const.BANANA_PEEL: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
-        Const.RAINBOW_GROUNDER: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.05),
+        Const.BANANA_PISTOL     : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
+        Const.BIG_BLACK_HOLE    : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.2),
+        Const.CANCER_BOMB       : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
+        Const.ZAP_ZAP_ZAP       : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2),
+        Const.BANANA_PEEL       : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
+        Const.RAINBOW_GROUNDER  : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.05),
         Const.INVINCIBLE_BATTERY: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.02)
     }
 

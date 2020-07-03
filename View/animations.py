@@ -121,7 +121,8 @@ class Animation_player_attack(Animation_raster):
         )
 
         if update: self.update()
-        
+
+
 def init_animation():
     Animation_player_attack.init_convert()
 

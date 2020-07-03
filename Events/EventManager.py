@@ -87,7 +87,7 @@ class EventPlayerJump(BaseEvent):
 
     def __init__(self, player_id):
         self.player_id = player_id
-    
+
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} jump'
 
@@ -96,7 +96,7 @@ class EventPlayerAttack(BaseEvent):
 
     def __init__(self, player_id):
         self.player_id = player_id
-    
+
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} attack'
 
