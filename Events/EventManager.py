@@ -165,3 +165,9 @@ class EventRestart(BaseEvent):
 
 class EventToggleFullScreen(BaseEvent):
     name = 'ToggleFullScreen event'
+
+class EventBombExplode(BaseEvent):
+    name = 'BombExplode event'
+
+    def __init__(self, position):
+        self.position = position

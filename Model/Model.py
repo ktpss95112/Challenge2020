@@ -250,6 +250,9 @@ class GameEngine:
 
         for entity in self.entities:
             if entity.update_every_tick(self.players, self.items, self.platforms) == False :
+                # tell view to draw explosion animation
+                if isinstance(entity, CancerBomb):
+                    self.ev_manager.post(EventBombExplode(entity.position))
                 self.entities.remove(entity)
            
     def update_endgame(self):
