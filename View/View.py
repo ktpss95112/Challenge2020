@@ -2,8 +2,8 @@ import pygame as pg
 import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
-import View.staticobjects 
-import View.animations 
+import View.staticobjects
+import View.animations
 import Const
 
 
@@ -27,9 +27,10 @@ class GraphicalView:
         self.model = model
         self.is_initialized = False
         self.screen = None
+        self.stop_screen = None
         self.clock = None
         self.last_update = 0
-        
+
 
     def initialize(self):
         '''
@@ -39,13 +40,14 @@ class GraphicalView:
         pg.font.init()
         pg.display.set_caption(Const.WINDOW_CAPTION)
         self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
+        self.stop_screen = pg.Surface(Const.WINDOW_SIZE)
         self.clock = pg.time.Clock()
         self.is_initialized = True
 
         # convert images
         View.staticobjects.init_staticobjects()
         View.animations.init_animation()
-        
+
         # animations
         self.animation_list = []
 
@@ -57,9 +59,7 @@ class GraphicalView:
         self.timer = View.staticobjects.View_timer(self.model)
         self.entities = View.staticobjects.View_entities(self.model)
         self.menu = View.staticobjects.View_menu(self.model)
-        self.stop = View.staticobjects.View_stop(self.model)
         self.endgame = View.staticobjects.View_endgame(self.model)
-
 
     def notify(self, event):
         '''
@@ -76,12 +76,15 @@ class GraphicalView:
             elif cur_state == Const.STATE_PLAY: self.render_play()
             elif cur_state == Const.STATE_STOP: self.render_stop()
             elif cur_state == Const.STATE_ENDGAME: self.render_endgame()
-        
+
         elif isinstance(event, EventToggleFullScreen):
             self.toggle_fullscreen()
 
         elif isinstance(event, EventPlayerAttack):
             self.animation_list.append(View.animations.Animation_player_attack(self.model.players[event.player_id]))
+
+        elif isinstance(event, EventStop):
+            self.render_play(target=self.stop_screen, update=False)
 
     def display_fps(self):
         '''
@@ -94,40 +97,47 @@ class GraphicalView:
         self.menu.draw(self.screen)
         pg.display.flip()
 
-    def render_play(self):
-        
+    def render_play(self, target=None, update=True):
+        if target is None:
+            target = self.screen
+
         # draw platform
-        self.platform.draw(self.screen)
+        self.platform.draw(target)
 
         # draw players
-        self.players.draw(self.screen)        
-        
+        self.players.draw(target)
+
         # draw items
-        self.items.draw(self.screen)
+        self.items.draw(target)
 
         # draw entities
-        self.entities.draw(self.screen)
-        
-        # draw timer        
-        self.timer.draw(self.screen)
+        self.entities.draw(target)
+
+        # draw timer
+        self.timer.draw(target)
 
         #draw scoreboard
-        self.scoreboard.draw(self.screen)
+        self.scoreboard.draw(target)
 
         # draw animation
         for ani in self.animation_list:
             if ani.expired: self.animation_list.remove(ani)
-            else          : ani.draw(self.screen)
-        
+            else          : ani.draw(target, update)
+
         pg.display.flip()
 
     def render_stop(self):
-        # draw stop menu
-        self.stop.draw(self.screen)
+        self.screen.blit(self.stop_screen, (0, 0))
+
+        font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
+        text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
+        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
+        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+
         pg.display.flip()
 
     def render_endgame(self):
-        
+
         # draw endgame menu
         self.endgame.draw(self.screen)
         pg.display.flip()
@@ -155,7 +165,7 @@ class GraphicalView:
         # restore screen content
         screen.blit(tmp, (0, 0))
         pg.display.set_caption(*caption)
-        
+
         pg.key.set_mods(0)
         pg.mouse.set_cursor(*cursor)
 

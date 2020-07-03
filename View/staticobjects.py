@@ -79,21 +79,6 @@ class View_menu(__Object_base):
         screen.blit(words_3, (pos_x_3, pos_y_3))
 
 
-class View_stop(__Object_base):
-
-    @classmethod
-    def init_convert(cls):
-        # cls.menu = cls.menu.convert()
-        # cls.base = cls.base.convert_alpha()
-        pass
-
-    def draw(self, screen):
-        font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
-        text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
-        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
-        screen.blit(text_surface, text_surface.get_rect(center = text_center))
-
-
 class View_endgame(__Object_base):
 
     @classmethod
