@@ -71,6 +71,10 @@ class Player:
             if self.invincible_time == 0:
                 self.player_radius = Const.PLAYER_RADIUS
 
+        # Maintain self.can_not_control_time
+        if self.can_not_control_time > 0:
+            self.can_not_control_time -= 1
+
     def collision(self, other, platforms: list):
         # Deal with collision with other player
         distance = other.position - self.position
@@ -144,12 +148,11 @@ class Player:
             self.jump_quota -= 1
 
     def be_attacked(self , unit , magnitude):
-        if self.invincible_time == 0:
-            voltage_acceleration = self.voltage ** 1.35 + 100
-            self.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * unit / magnitude / Const.FPS
-            if self.voltage >= 100:
-                self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
-            self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
+        voltage_acceleration = self.voltage ** 1.35 + 100
+        self.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * unit / magnitude / Const.FPS
+        if self.voltage >= 100:
+            self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
+        self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
         
     def respawn(self):
         self.position = pg.Vector2(Const.PLAYER_RESPAWN_POSITION[self.player_id])

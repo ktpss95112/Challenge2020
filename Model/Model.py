@@ -124,12 +124,13 @@ class GameEngine:
             self.running = False
 
         elif isinstance(event, EventPlayerMove):
-            if self.players[event.player_id].is_alive() and self.players[event.player_id].can_not_control_time <= 0 :
-                self.players[event.player_id].add_horizontal_velocity(event.direction)
+            player = self.players[event.player_id]
+            if player.is_alive() and player.is_controllable() :
+                player.add_horizontal_velocity(event.direction)
                 if(event.direction == 'left'):
-                    self.players[event.player_id].direction = pg.Vector2(-1,0)
+                    player.direction = pg.Vector2(-1,0)
                 elif (event.direction == 'right'):
-                    self.players[event.player_id].direction = pg.Vector2(1,0)
+                    player.direction = pg.Vector2(1,0)
 
         elif isinstance(event, EventPlayerJump):
             if self.players[event.player_id].is_alive():
@@ -144,8 +145,8 @@ class GameEngine:
                 return
             for player in self.players:
                 magnitude = (player.position - attacker.position).magnitude()
-                # make sure that player is not attacker and player is alive
-                if player.player_id == attacker.player_id or not player.is_alive():
+                # make sure that player is not attacker and player is alive and not invincible
+                if player.player_id == attacker.player_id or not player.is_alive() or player.is_invincible():
                     continue
                 # attack if they are close enough
                 if magnitude < Const.ATTACK_RADIUS:
@@ -176,7 +177,7 @@ class GameEngine:
             player = self.players[event.player_id]
             if not player.is_alive():
                 return
-            if player.keep_item_id > 0 :
+            if player.keep_item_id != Const.NO_ITEM :
                 player.use_item(self.players, self.entities)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
 
@@ -210,11 +211,10 @@ class GameEngine:
             # skip dead players
             if not player.is_alive():
                 continue
-            player.can_not_control_time -= 1 / Const.FPS
             player.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
-        # update players' item
+        # update players' items
         for player in self.players:
             if player.keep_item_id != Const.NO_ITEM:
                 continue
