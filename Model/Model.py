@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+import random
 import math
 
 from Events.EventManager import *
@@ -97,18 +98,11 @@ class GameEngine:
             elif cur_state == Const.STATE_PLAY:
                 self.update_players()
                 self.update_objects()
-
                 self.timer -= 1
-                if self.timer == 0:
+                # check if game ends
+                cnt = sum(player.is_alive() for player in self.players)
+                if self.timer == 0 or cnt <= 1:
                     self.ev_manager.post(EventTimesUp())
-                # check number of alive players
-                cnt = 0
-                for player in self.players:
-                    if player.is_alive():
-                        cnt += 1
-                if cnt <= 1:
-                    self.ev_manager.post(EventTimesUp())
-
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
@@ -119,66 +113,6 @@ class GameEngine:
             else:
                 self.state_machine.push(event.state)
 
-        elif isinstance(event, EventQuit):
-            self.running = False
-
-        elif isinstance(event, EventPlayerMove):
-            if self.players[event.player_id].is_alive() and self.players[event.player_id].can_not_control_time <= 0 :
-                self.players[event.player_id].add_horizontal_velocity(event.direction)
-                if(event.direction == 'left'):
-                    self.players[event.player_id].direction = pg.Vector2(-1,0)
-                elif (event.direction == 'right'):
-                    self.players[event.player_id].direction = pg.Vector2(1,0)
-
-        elif isinstance(event, EventPlayerJump):
-            if self.players[event.player_id].is_alive():
-                self.players[event.player_id].jump()
-
-        elif isinstance(event, EventTimesUp):
-            self.state_machine.push(Const.STATE_ENDGAME)
-
-        elif isinstance(event, EventPlayerAttack):
-            attacker = self.players[event.player_id]
-            if not attacker.is_alive():
-                return
-            for player in self.players:
-                magnitude = (player.position - attacker.position).magnitude()
-                # make sure that player is not attacker and player is alive
-                if player.player_id == attacker.player_id or not player.is_alive():
-                    continue
-                # attack if they are close enough
-                if magnitude < Const.ATTACK_RADIUS:
-                    unit = (player.position - attacker.position).normalize()
-                    player.be_attacked(unit, magnitude)
-                    player.last_being_attacked_by = attacker.player_id
-                    player.last_being_attacked_time_elapsed = self.timer
-
-        elif isinstance(event, EventPlayerRespawn):
-            self.players[event.player_id].respawn()
-
-        elif isinstance(event, EventPlayerDied):
-            died_player = self.players[event.player_id]
-            # update KO amount
-            atk_id = died_player.last_being_attacked_by
-            atk_t = died_player.last_being_attacked_time_elapsed
-            if atk_id != -1 and atk_t - self.timer < Const.VALID_KO_TIME:
-                died_player.be_KO_amount += 1
-                self.players[atk_id].KO_amount += 1
-            # update item and life
-            died_player.keep_item_id = Const.NO_ITEM
-            died_player.life -= 1
-            # respawn if player has life left
-            if died_player.is_alive():
-                self.ev_manager.post(EventPlayerRespawn(died_player.player_id))
-
-        elif isinstance(event, EventPlayerItem):
-            player = self.players[event.player_id]
-            if not player.is_alive():
-                return
-            if player.keep_item_id > 0 :
-                player.use_item(self.players, self.entities)
-                self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
-
         elif isinstance(event, EventStop):
             self.state_machine.push(Const.STATE_STOP)
 
@@ -186,9 +120,54 @@ class GameEngine:
             if self.state_machine.peek() == Const.STATE_STOP:
                 self.state_machine.pop()
 
+        elif isinstance(event, EventTimesUp):
+            self.state_machine.push(Const.STATE_ENDGAME)
+
         elif isinstance(event, EventRestart):
             self.state_machine.clear()
             self.initialize()
+
+        elif isinstance(event, EventQuit):
+            self.running = False
+
+        elif isinstance(event, EventPlayerMove):
+            player = self.players[event.player_id]
+            if player.is_alive() and player.is_controllable() :
+                player.add_horizontal_velocity(event.direction)
+
+        elif isinstance(event, EventPlayerJump):
+            if self.players[event.player_id].is_alive():
+                self.players[event.player_id].jump()
+
+        elif isinstance(event, EventPlayerAttack):
+            attacker = self.players[event.player_id]
+            # can_attack() is in Controller.py, no need to recheck
+            if attacker.is_alive():
+                attacker.attack(self.players, self.timer)
+
+        elif isinstance(event, EventPlayerRespawn):
+            self.players[event.player_id].respawn()
+
+        elif isinstance(event, EventPlayerDied):
+            died_player = self.players[event.player_id]
+            died_player.life -= 1
+            # update KO amount
+            atk_id = died_player.last_being_attacked_by
+            atk_t = died_player.last_being_attacked_time_elapsed
+            if atk_id != -1 and atk_t - self.timer < Const.VALID_KO_TIME:
+                died_player.be_KO_amount += 1
+                self.players[atk_id].KO_amount += 1
+            # respawn if player has lives left
+            if died_player.is_alive():
+                self.ev_manager.post(EventPlayerRespawn(died_player.player_id))
+
+        elif isinstance(event, EventPlayerItem):
+            player = self.players[event.player_id]
+            if not player.is_alive():
+                return
+            if player.keep_item_id != Const.NO_ITEM :
+                player.use_item(self.players, self.entities, self.timer)
+                self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
 
     def update_menu(self):
         '''
@@ -209,11 +188,10 @@ class GameEngine:
             # skip dead players
             if not player.is_alive():
                 continue
-            player.can_not_control_time -= 1 / Const.FPS
             player.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
-        # pick item if is close enough and player has no item
+        # update players' items
         for player in self.players:
             if player.keep_item_id != Const.NO_ITEM:
                 continue
@@ -249,7 +227,7 @@ class GameEngine:
                 self.items.remove(item)
 
         for entity in self.entities:
-            if entity.update_every_tick(self.players, self.items, self.platforms) == False :
+            if entity.update_every_tick(self.players, self.items, self.platforms, self.timer) == False :
                 # tell view to draw explosion animation
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))
