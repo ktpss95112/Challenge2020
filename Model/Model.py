@@ -1,6 +1,5 @@
-import random
-
 import pygame as pg
+import numpy as np
 import math
 
 from Events.EventManager import *
@@ -333,8 +332,8 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick, if item is less than ITEMS_MAX_AMOUNT, it MAY generate one item
-        if len(self.items) < Const.ITEMS_MAX_AMOUNT and  random.randint(1, 1000) > 985 : 
-            new_item = random.randint(1, Const.ITEM_MAX_SPECIFIES)
+        if len(self.items) < Const.ITEMS_MAX_AMOUNT and random.randint(1, 1000) > 985 :
+            new_item = np.random.choice(np.arange(1, Const.ITEM_SPECIES + 1), p = Const.ITEM_PROBABILITY)
             find_position = False
             while not find_position:
                 find_position = True
