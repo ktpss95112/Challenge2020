@@ -7,7 +7,7 @@ import os.path
 import math
 
 import Model.GameObject.item as model_item
-from Model.GameObject.entity import CancerBomb
+from Model.GameObject.entity import CancerBomb , PistolBullet
 import View.utils as view_utils
 import Const
 
@@ -128,6 +128,7 @@ class View_entities(__Object_base):
     images = {
         'bomber'     : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
         'bomber_red' : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber_red.png')), 0.15),
+        'bananabullet' : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
         'lightning'  : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2)
     }
     @classmethod
@@ -146,6 +147,8 @@ class View_entities(__Object_base):
                     screen.blit(self.images['bomber_red'], self.images['bomber_red'].get_rect(center=entity.position))
                 else:
                     screen.blit(self.images['bomber'], self.images['bomber'].get_rect(center=entity.position))
+            elif isinstance(entity, PistolBullet):
+                screen.blit(self.images['bananabullet'], self.images['bananabullet'].get_rect(center=entity.position))
             else:
                 center = list(map(int, entity.position))
                 pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)

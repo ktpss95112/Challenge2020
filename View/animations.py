@@ -21,7 +21,7 @@ import pygame as pg
 from Events.EventManager import *
 from Model.Model import GameEngine
 from Model.GameObject.player import Player
-from View.utils import scaled_surface
+from View.utils import scaled_surface 
 import Const
 
 '''
