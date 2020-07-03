@@ -78,7 +78,10 @@ class GameEngine:
         '''
         self.clock = pg.time.Clock()
         self.state_machine.push(Const.STATE_MENU)
+
+        # TODO: change its expression ==> let every team have their own name
         self.players = [Player(0, is_AI = True, player_name = "AI"), Player(1, is_AI = False), Player(2, is_AI = False), Player(3, is_AI = False)]
+
         self.items = []
         self.entities = []
         self.platforms = [ Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION ]

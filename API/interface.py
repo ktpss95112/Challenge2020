@@ -56,6 +56,7 @@ class Interface(object):
             if player.player_name == "manual":
                 continue
             # load TeamAI .py file
+            # TODO: change the path
             try:
                 loadtmp = imp.load_source('', "./C:/code/Challenge2020/API/team_AI.py")
             except:
