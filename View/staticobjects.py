@@ -97,7 +97,7 @@ class View_endgame(__Object_base):
         screen.fill(Const.BACKGROUND_COLOR)
 
         # draw text
-        text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
+        text_surface = self.font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
         text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
         screen.blit(text_surface, text_surface.get_rect(center=text_center))
 
@@ -249,6 +249,7 @@ class View_timer(__Object_base):
 
 def init_staticobjects():
     View_platform.init_convert()
+    View_endgame.init_convert()
     View_players.init_convert()
     View_items.init_convert()
     View_entities.init_convert()
