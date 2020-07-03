@@ -58,7 +58,7 @@ class Interface(object):
             # load TeamAI .py file
             # TODO: change the path
             try:
-                loadtmp = imp.load_source('', "./C:/code/Challenge2020/API/team_AI.py")
+                loadtmp = imp.load_source('', f"./API/team_AI.py")
             except:
                 self.load_msg(str(player.player_id), player.player_name, "AI can't load")
                 player.player_name, player.is_AI = "Error", False
@@ -66,7 +66,6 @@ class Interface(object):
             self.load_msg(str(player.player_id), player.player_name, "Loading")
             # init TeamAI class
             try:
-                print(player.player_id)
                 self.player_AI[player.player_id] = loadtmp.TeamAI(Helper(self.model, player.player_id))
             except:
                 self.load_msg(str(player.player_id), player.player_name, "AI init crashed")
