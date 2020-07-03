@@ -141,19 +141,8 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerAttack):
             attacker = self.players[event.player_id]
-            if not attacker.is_alive():
-                return
-            for player in self.players:
-                magnitude = (player.position - attacker.position).magnitude()
-                # make sure that player is not attacker and player is alive and not invincible
-                if player.player_id == attacker.player_id or not player.is_alive() or player.is_invincible():
-                    continue
-                # attack if they are close enough
-                if magnitude < Const.ATTACK_RADIUS:
-                    unit = (player.position - attacker.position).normalize()
-                    player.be_attacked(unit, magnitude)
-                    player.last_being_attacked_by = attacker.player_id
-                    player.last_being_attacked_time_elapsed = self.timer
+            if attacker.is_alive():
+                attacker.attack(self.players, self.timer)
 
         elif isinstance(event, EventPlayerRespawn):
             self.players[event.player_id].respawn()
@@ -178,7 +167,7 @@ class GameEngine:
             if not player.is_alive():
                 return
             if player.keep_item_id != Const.NO_ITEM :
-                player.use_item(self.players, self.entities)
+                player.use_item(self.players, self.entities, self.timer)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
 
         elif isinstance(event, EventStop):
@@ -250,7 +239,7 @@ class GameEngine:
                 self.items.remove(item)
 
         for entity in self.entities:
-            if entity.update_every_tick(self.players, self.items, self.platforms) == False :
+            if entity.update_every_tick(self.players, self.items, self.platforms, self.timer) == False :
                 # tell view to draw explosion animation
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))

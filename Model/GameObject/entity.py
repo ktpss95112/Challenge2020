@@ -12,15 +12,16 @@ class Entity:
 
 
 class PistolBullet(Entity):
-    def __init__(self, position, direction): #direction is a unit pg.vec2
+    def __init__(self, position, direction, user_id): # direction is a unit pg.vec2
         self.position = position
         self.velocity = Const.BULLET_VELOCITY * direction
+        self.user_id = user_id
         self.timer = Const.BULLET_TIME
     
-    def update_every_tick(self, players, items, platforms):
+    def update_every_tick(self, players, items, platforms, time):
         self.timer -= 1
         self.position += self.velocity / Const.FPS
-        #print("bullet flying, " + str(self.position))
+        # print("bullet flying, " + str(self.position))
         if self.timer <= 0:
             return False
         for player in players:
@@ -31,7 +32,7 @@ class PistolBullet(Entity):
             if vec.magnitude() < player.player_radius + Const.BULLET_RADIUS:
                 # print("someone got shoot")
                 unit = vec.normalize()
-                player.be_attacked(unit, magnitude)
+                player.be_attacked(unit, magnitude, self.user_id, time)
                 # prevent remove failure
                 self.position = pg.Vector2(-1000, -2000)
                 self.velocity = pg.Vector2(0, 0)
@@ -47,7 +48,7 @@ class BananaPeel(Entity):
         self.velocity = pg.Vector2(0,0)
 
     def update_every_tick(self, players,platforms):
-       #---------gravity-------
+       # gravity effect
         self.velocity.y += Const.GRAVITY_ACCELERATION /Const.FPS
         prev_position_y = self.position.y
         self.position += self.velocity / Const.FPS
@@ -57,24 +58,23 @@ class BananaPeel(Entity):
                     self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
                     self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
                     break
-        #------------------------
-        self.timer -= 1/Const.FPS
+        self.timer -= 1
 
 
 class BigBlackHole(Entity):
-    def __init__(self, position, user):
+    def __init__(self, position, user_id):
         self.position = position
         self.timer = Const.BLACK_HOLE_TIME
         self.radius = Const.BLACK_HOLE_RADIUS
-        self.user = user
+        self.user_id = user_id
 
-    def update_every_tick(self, players, items, platforms):
+    def update_every_tick(self, players, items, platforms, time):
         self.timer -= 1
         if self.timer <= 0:
             return False
         # attract players
         for player in players:
-            if player.invincible_time > 0 or not player.is_alive() or player.player_id == self.user:
+            if player.is_invincible() or not player.is_alive() or player.player_id == self.user_id:
                 continue
             dist = (self.position - player.position).magnitude()
             # check whether player is outside BLACK_HOLE_EFFECT_RADIUS
@@ -105,7 +105,7 @@ class CancerBomb(Entity):
         self.timer = Const.BOMB_TIME
         self.velocity = pg.Vector2(0,0)
 
-    def update_every_tick(self, players, items, platforms):
+    def update_every_tick(self, players, items, platforms, time):
        # gravity effect
         self.velocity.y += Const.GRAVITY_ACCELERATION /Const.FPS
         prev_position_y = self.position.y
@@ -119,7 +119,7 @@ class CancerBomb(Entity):
         self.timer -= 1
         if self.timer <= 0:
             for player in players:
-                if player.invincible_time > 0 or not player.is_alive():
+                if player.is_invincible() or not player.is_alive():
                     continue
                 if (player.position - self.position).magnitude() <=  Const.BOMB_EXPLODE_RADIUS:
                     player.voltage += Const.BOMB_ATK
@@ -134,9 +134,9 @@ class BananaPeel(Entity):
         self.timer = Const.BANANA_PEEL_TIME
         self.velocity = pg.Vector2(0,0)
 
-    def update_every_tick(self, players, items, platforms):
+    def update_every_tick(self, players, items, platforms, time):
        # gravity effect
-        self.velocity.y += Const.GRAVITY_ACCELERATION /Const.FPS
+        self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
         prev_position_y = self.position.y
         self.position += self.velocity / Const.FPS
         for platform in platforms:
@@ -149,10 +149,10 @@ class BananaPeel(Entity):
         if self.timer <= 0:
             return False
         for player in players:
-            if player.invincible_time > 0 or not player.is_alive():
+            if player.is_invincible() or not player.is_alive():
                 continue
             if (player.position - self.position).magnitude() < player.player_radius + Const.BANANA_PEEL_RADIUS:
-                player.can_not_control_time = Const.BANANA_PEEL_AFFECT_TIME
+                player.uncontrollable_time = Const.BANANA_PEEL_AFFECT_TIME
                 return False
         return True
 

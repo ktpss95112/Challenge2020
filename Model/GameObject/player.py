@@ -13,7 +13,7 @@ class Player:
         self.voltage = 0
         self.keep_item_id = Const.NO_ITEM
         self.invincible_time = 0
-        self.can_not_control_time = 0
+        self.uncontrollable_time = 0
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         # move
         self.direction = pg.Vector2(1,0)
@@ -35,7 +35,7 @@ class Player:
         return self.invincible_time > 0
 
     def is_controllable(self):
-        return self.can_not_control_time == 0
+        return self.uncontrollable_time <= 0
 
     def move_every_tick(self, platforms: list):
         if not self.is_alive():
@@ -48,10 +48,10 @@ class Player:
             self.velocity.x = 0
         elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
             self.velocity.x /= 2
-        elif self.velocity.x > 0 and self.can_not_control_time <= 0:
+        elif self.velocity.x > 0 and self.is_controllable():
             self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
             self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
-        elif self.velocity.x < 0 and self.can_not_control_time <= 0:
+        elif self.velocity.x < 0 and self.is_controllable():
             self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
             self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
 
@@ -65,15 +65,13 @@ class Player:
         # Make sure that the player do not pass through the platform
         self.move(displacement, platforms)
         
-        # Maintain self.invincible_time
+        # Maintain invincible_time, uncontrollable_time
         if self.invincible_time > 0:
             self.invincible_time -= 1
             if self.invincible_time == 0:
                 self.player_radius = Const.PLAYER_RADIUS
-
-        # Maintain self.can_not_control_time
-        if self.can_not_control_time > 0:
-            self.can_not_control_time -= 1
+        if self.uncontrollable_time > 0:
+            self.uncontrollable_time -= 1
 
     def collision(self, other, platforms: list):
         # Deal with collision with other player
@@ -147,12 +145,25 @@ class Player:
                 self.velocity.y -= self.jump_speed
             self.jump_quota -= 1
 
-    def be_attacked(self , unit , magnitude):
+    def attack(self, players, time):
+        for player in players:
+            magnitude = (player.position - self.position).magnitude()
+            # make sure that player is not self and player is alive and not invincible
+            if player.player_id == self.player_id or not player.is_alive() or player.is_invincible():
+                continue
+            # attack if they are close enough
+            if magnitude < Const.ATTACK_RADIUS:
+                unit = (player.position - self.position).normalize()
+                player.be_attacked(unit, magnitude, self.player_id, time)
+
+    def be_attacked(self, unit, magnitude, attacker_id, time):
         voltage_acceleration = self.voltage ** 1.35 + 100
         self.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * unit / magnitude / Const.FPS
         if self.voltage >= 100:
             self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
         self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
+        self.last_being_attacked_by = attacker_id
+        self.last_being_attacked_time_elapsed = time
         
     def respawn(self):
         self.position = pg.Vector2(Const.PLAYER_RESPAWN_POSITION[self.player_id])
@@ -164,10 +175,10 @@ class Player:
         self.last_being_attacked_time_elapsed = 0
         self.player_radius = Const.PLAYER_RADIUS
 
-    def use_item(self, players, entities):
+    def use_item(self, players, entities, time):
         if self.keep_item_id == Const.BANANA_PISTOL:
             pos = self.position + self.direction * (self.player_radius + Const.BULLET_RADIUS) * 1.02
-            entities.append(PistolBullet(pos, self.direction))
+            entities.append(PistolBullet(pos, self.direction, self.player_id))
 
             pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
             entities.append(BananaPeel(pos))
@@ -183,7 +194,7 @@ class Player:
             for other in players :
                 if abs(self.position.x - other.position.x) < Const.ZAP_ZAP_ZAP_RANGE and self != other\
                         and other.is_alive() and not other.is_invincible():
-                    other.voltage += ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP
+                    other.voltage += Const.ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
             pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
