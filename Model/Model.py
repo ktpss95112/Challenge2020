@@ -203,7 +203,7 @@ class GameEngine:
         For example: position, remaining time of item used and score
         '''
         # update position
-        self.overlap_detect()
+        # self.overlap_detect()
         self.players_collision_detect()
         for player in self.players:
             # skip dead players

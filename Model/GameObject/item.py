@@ -34,7 +34,7 @@ class Item:
             self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
 
         # Modify the vertical velocity
-        self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
+        self.velocity.y += Const.GRAVITY_ACCELERATION_FOR_ITEM / Const.FPS
         if self.velocity.y <= 2 * Const.VERTICAL_DRAG_EMERGE_SPEED:
             self.velocity.y /= 2
         elif self.velocity.y <= Const.VERTICAL_DRAG_EMERGE_SPEED:

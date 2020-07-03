@@ -13,9 +13,9 @@ class PistolBullet(Entity):
     def __init__(self, position, direction): #direction is a unit pg.vec2 
         self.position = position
         self.velocity = Const.BULLET_VELOCITY * direction
-        self.timer = 1000 / Const.BULLET_VELOCITY 
+        self.timer = Const.BULLET_TIME
     def update_every_tick(self, players, items, platforms):
-        self.timer -= 1/Const.FPS
+        self.timer -= 1
         self.position += self.velocity / Const.FPS
         #print("bullet flying, " + str(self.position))
         if self.timer <= 0:
@@ -40,7 +40,7 @@ class BigBlackHole(Entity):
         self.user = user
 
     def update_every_tick(self, players, items, platforms):
-        self.timer -= 1 / Const.FPS
+        self.timer -= 1
         if self.timer <= 0:
             return False
         # attract players
@@ -86,7 +86,7 @@ class CancerBomb(Entity):
                     self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
                     self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
                     break
-        self.timer -= 1 / Const.FPS
+        self.timer -= 1
         if self.timer <= 0:
             for player in players:
                 if player.invincible_time > 0 or not player.is_alive():
@@ -114,7 +114,7 @@ class BananaPeel(Entity):
                     self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
                     self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
                     break
-        self.timer -= 1/Const.FPS
+        self.timer -= 1
         if self.timer <= 0:
             return False
         for player in players:
