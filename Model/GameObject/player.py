@@ -79,6 +79,16 @@ class Player:
         self.velocity += velocity_delta
         other.velocity -= velocity_delta
 
+    def overlap_resolved(self, other):
+        distance = self.position - other.position
+        if self.player_radius + other.player_radius <= distance.magnitude():
+            return False
+        if self.position.y < other.position.y:
+            self.position = other.position + distance.normalize() * (self.player_radius + other.player_radius)
+        else:
+            other.position = self.position - distance.normalize() * (self.player_radius + other.player_radius)
+        return True
+
     def collision_reliable(self, other, collision_time): # collsition time is a percentage of FPS
         # Collsion for reliable version
         self.position += self.velocity / Const.FPS * collision_time
