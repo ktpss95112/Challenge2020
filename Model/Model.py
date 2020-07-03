@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+import random
 import math
 
 from Events.EventManager import *
@@ -213,7 +214,7 @@ class GameEngine:
             player.move_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                 self.ev_manager.post(EventPlayerDied(player.player_id))
-        # pick item if is close enough and player has no item
+        # update players' item
         for player in self.players:
             if player.keep_item_id != Const.NO_ITEM:
                 continue

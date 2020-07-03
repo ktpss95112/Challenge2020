@@ -4,27 +4,38 @@ from Model.GameObject.entity import *
 
 class Player:
     def __init__(self, player_id):
+        # basic
+        self.name = ""
         self.player_id = player_id
+        # status
         self.life = Const.PLAYER_LIFE
         self.player_radius = Const.PLAYER_RADIUS
-        self.last_being_attacked_by = -1
-        self.last_being_attacked_time_elapsed = 0
-        self.invincible_time = 0
-        self.KO_amount = 0
-        self.can_not_control_time = 0
-        self.be_KO_amount = 0
         self.voltage = 0
-        self.direction = pg.Vector2(1,0)
         self.keep_item_id = Const.NO_ITEM
+        self.invincible_time = 0
+        self.can_not_control_time = 0
+        self.jump_quota = Const.PLAYER_JUMP_QUOTA
+        # move
+        self.direction = pg.Vector2(1,0)
         self.position = pg.Vector2(Const.PLAYER_INIT_POSITION[player_id]) # is a pg.Vector2 (Const.PLAYER_INIT_POSITION is not update now!)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
         self.normal_speed = Const.PLAYER_NORMAL_SPEED # speed gain when players try to move left and right
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
-        self.jump_quota = Const.PLAYER_JUMP_QUOTA
+        # others
+        self.last_being_attacked_by = -1
+        self.last_being_attacked_time_elapsed = 0
+        self.KO_amount = 0
+        self.be_KO_amount = 0
         self.score = 0
 
     def is_alive(self):
         return self.life > 0
+
+    def is_invincible(self):
+        return self.invincible_time > 0
+
+    def is_controllable(self):
+        return self.can_not_control_time == 0
 
     def move_every_tick(self, platforms: list):
         if not self.is_alive():
@@ -145,43 +156,44 @@ class Player:
         self.velocity = pg.Vector2(0, 0)
         self.voltage = 0
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
-        self.invincible_time = 2 * Const.FPS
+        self.invincible_time = Const.RESPAWN_INVINCIBLE_TIME
         self.last_being_attacked_by = -1
         self.last_being_attacked_time_elapsed = 0
         self.player_radius = Const.PLAYER_RADIUS
 
     def use_item(self, players, entities):
-        if self.keep_item_id == Const.INVINCIBLE_BATTERY:
-            self.position.y -= 2 * Const.PLAYER_RADIUS - self.player_radius
-            self.player_radius = 2 * Const.PLAYER_RADIUS
-            self.invincible_time = 5 * Const.FPS
-        
-        elif self.keep_item_id == Const.RAINBOW_GROUNDER:
-            self.voltage -= 10
-            if self.voltage < 0:
-                self.voltage = 0
-        
-        elif self.keep_item_id == Const.BANANA_PISTOL:
-            pos = self.position + self.direction * ( self.player_radius + Const.BULLET_RADIUS) * 1.02
+        if self.keep_item_id == Const.BANANA_PISTOL:
+            pos = self.position + self.direction * (self.player_radius + Const.BULLET_RADIUS) * 1.02
             entities.append(PistolBullet(pos, self.direction))
 
-            pos = self.position - self.direction * ( self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
+            pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
             entities.append(BananaPeel(pos))
-
-        elif self.keep_item_id == Const.CANCER_BOMB:
-            entities.append(CancerBomb(pg.Vector2(self.position.x,self.position.y)))
-        
-        elif self.keep_item_id == Const.BANANA_PEEL:
-            pos = self.position - self.direction * ( self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
-            entities.append(BananaPeel(pos))
-             
-        elif self.keep_item_id == Const.ZAP_ZAP_ZAP:
-            self.voltage += 10
-            for other in players :
-                if abs( self.position.x - other.position.x ) < Const.ZAP_ZAP_ZAP_RANGE * self.player_radius and self != other\
-                        and other.is_alive() and other.invincible_time <= 0:
-                    other.voltage += 50
 
         elif self.keep_item_id == Const.BIG_BLACK_HOLE:
             entities.append(BigBlackHole(pg.Vector2(self.position.x, self.position.y), self.player_id))
+
+        elif self.keep_item_id == Const.CANCER_BOMB:
+            entities.append(CancerBomb(pg.Vector2(self.position.x, self.position.y)))
+
+        elif self.keep_item_id == Const.ZAP_ZAP_ZAP:
+            self.voltage += Const.ZAP_ZAP_ZAP_SELF_VOLTAGE_UP
+            for other in players :
+                if abs(self.position.x - other.position.x) < Const.ZAP_ZAP_ZAP_RANGE and self != other\
+                        and other.is_alive() and not other.is_invincible():
+                    other.voltage += ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP
+                
+        elif self.keep_item_id == Const.BANANA_PEEL:
+            pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
+            entities.append(BananaPeel(pos))
+
+        elif self.keep_item_id == Const.RAINBOW_GROUNDER:
+            self.voltage -= Const.RAINBOW_GROUNDER_VOLTAGE_DOWN
+            if self.voltage < 0:
+                self.voltage = 0
+
+        elif self.keep_item_id == Const.INVINCIBLE_BATTERY:
+            self.position.y -= Const.INVINCIBLE_BATTERY_PLAYER_RADIUS - self.player_radius
+            self.player_radius = Const.INVINCIBLE_BATTERY_PLAYER_RADIUS
+            self.invincible_time = Const.INVINCIBLE_BATTERY_TIME
+
         self.keep_item_id = Const.NO_ITEM
