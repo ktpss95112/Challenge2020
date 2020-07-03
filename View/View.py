@@ -85,6 +85,9 @@ class GraphicalView:
         elif isinstance(event, EventStop):
             self.render_play(target=self.stop_screen, update=False)
 
+        elif isinstance(event, EventBombExplode):
+            self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
+
     def display_fps(self):
         '''
         Display the current fps on the window caption.

@@ -21,7 +21,7 @@ import pygame as pg
 from Events.EventManager import *
 from Model.Model import GameEngine
 from Model.GameObject.player import Player
-from View.utils import scaled_surface 
+from View.utils import scaled_surface
 import Const
 
 '''
@@ -122,8 +122,23 @@ class Animation_player_attack(Animation_raster):
 
         if update: self.update()
 
+class Animation_Bomb_Explode(Animation_raster):
+    frames = tuple(
+        scaled_surface(
+            pg.transform.rotate(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 2*_i),
+                0.01*_i
+            )
+            for _i in range(1, 36)
+    )
+
+    def __init__(self, **pos):
+        super().__init__(2, len(self.frames), **pos)
+
+
+
 
 def init_animation():
     Animation_player_attack.init_convert()
+    Animation_Bomb_Explode.init_convert()
 
 
