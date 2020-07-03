@@ -120,6 +120,20 @@ class GameEngine:
             else:
                 self.state_machine.push(event.state)
 
+        elif isinstance(event, EventStop):
+            self.state_machine.push(Const.STATE_STOP)
+
+        elif isinstance(event, EventContinue):
+            if self.state_machine.peek() == Const.STATE_STOP:
+                self.state_machine.pop()
+
+        elif isinstance(event, EventTimesUp):
+            self.state_machine.push(Const.STATE_ENDGAME)
+
+        elif isinstance(event, EventRestart):
+            self.state_machine.clear()
+            self.initialize()
+
         elif isinstance(event, EventQuit):
             self.running = False
 
@@ -136,11 +150,9 @@ class GameEngine:
             if self.players[event.player_id].is_alive():
                 self.players[event.player_id].jump()
 
-        elif isinstance(event, EventTimesUp):
-            self.state_machine.push(Const.STATE_ENDGAME)
-
         elif isinstance(event, EventPlayerAttack):
             attacker = self.players[event.player_id]
+            # can_attack() is in Controller.py, no need to recheck
             if attacker.is_alive():
                 attacker.attack(self.players, self.timer)
 
@@ -169,17 +181,6 @@ class GameEngine:
             if player.keep_item_id != Const.NO_ITEM :
                 player.use_item(self.players, self.entities, self.timer)
                 self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
-
-        elif isinstance(event, EventStop):
-            self.state_machine.push(Const.STATE_STOP)
-
-        elif isinstance(event, EventContinue):
-            if self.state_machine.peek() == Const.STATE_STOP:
-                self.state_machine.pop()
-
-        elif isinstance(event, EventRestart):
-            self.state_machine.clear()
-            self.initialize()
 
     def update_menu(self):
         '''

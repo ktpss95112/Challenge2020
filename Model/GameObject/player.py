@@ -14,6 +14,7 @@ class Player:
         self.keep_item_id = Const.NO_ITEM
         self.invincible_time = 0
         self.uncontrollable_time = 0
+        self.attack_cool_down_time = 0
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         # move
         self.direction = pg.Vector2(1,0)
@@ -36,6 +37,9 @@ class Player:
 
     def is_controllable(self):
         return self.uncontrollable_time <= 0
+
+    def can_attack(self):
+        return self.attack_cool_down_time <= 0
 
     def move_every_tick(self, platforms: list):
         if not self.is_alive():
@@ -65,13 +69,15 @@ class Player:
         # Make sure that the player do not pass through the platform
         self.move(displacement, platforms)
         
-        # Maintain invincible_time, uncontrollable_time
+        # Maintain invincible_time, uncontrollable_time, attack_cool_down_time
         if self.invincible_time > 0:
             self.invincible_time -= 1
             if self.invincible_time == 0:
                 self.player_radius = Const.PLAYER_RADIUS
         if self.uncontrollable_time > 0:
             self.uncontrollable_time -= 1
+        if self.attack_cool_down_time > 0:
+            self.attack_cool_down_time -= 1
 
     def collision(self, other, platforms: list):
         # Deal with collision with other player
@@ -146,6 +152,7 @@ class Player:
             self.jump_quota -= 1
 
     def attack(self, players, time):
+        self.attack_cool_down_time = Const.ATTACK_COOL_DOWN_TIME
         for player in players:
             magnitude = (player.position - self.position).magnitude()
             # make sure that player is not self and player is alive and not invincible
