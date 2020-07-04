@@ -81,7 +81,7 @@ class GameEngine:
         self.players = [Player(0), Player(1), Player(2), Player(3)]
         self.items = []
         self.entities = []
-        self.platforms = [ Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION ]
+        self.platforms = [Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION]
         self.timer = Const.GAME_LENGTH
 
     def notify(self, event: BaseEvent):
@@ -183,22 +183,19 @@ class GameEngine:
         self.overlap_detect()
         self.players_collision_detect()
         for player in self.players:
-            # skip dead players
-            if not player.is_alive():
-                continue
-            player.move_every_tick(self.platforms)
-            if not Const.LIFE_BOUNDARY.collidepoint(player.position):
-                self.ev_manager.post(EventPlayerDied(player.player_id))
+            if player.is_alive():
+                player.move_every_tick(self.platforms)
+                if not Const.LIFE_BOUNDARY.collidepoint(player.position):
+                    self.ev_manager.post(EventPlayerDied(player.player_id))
         # update players' items
         for player in self.players:
-            if player.keep_item_id != Const.NO_ITEM:
-                continue
-            for item in self.items:
-                distance = (item.position - player.position).magnitude()
-                if distance <= item.item_radius + player.player_radius:
-                    player.keep_item_id = item.item_id
-                    self.items.remove(item)
-                    self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
+            if not player.has_item():
+                for item in self.items:
+                    distance = (item.position - player.position).magnitude()
+                    if distance <= item.item_radius + player.player_radius:
+                        player.keep_item_id = item.item_id
+                        self.items.remove(item)
+                        self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
         # update score
         highest_KO_amount = 0
         for player in self.players:

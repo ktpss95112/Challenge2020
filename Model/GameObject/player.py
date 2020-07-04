@@ -42,6 +42,9 @@ class Player:
     def can_attack(self):
         return self.attack_cool_down_time <= 0
 
+    def has_item(self):
+        return self.keep_item_id != Const.NO_ITEM
+
     def move_every_tick(self, platforms: list):
         if not self.is_alive():
             return
