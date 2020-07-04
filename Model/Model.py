@@ -78,11 +78,14 @@ class GameEngine:
         '''
         self.clock = pg.time.Clock()
         self.state_machine.push(Const.STATE_MENU)
-        self.players = [Player(i, f'name{i}') for i in range(4)]
+        self.timer = Const.GAME_LENGTH
+
+    def init_stage(self, stage):
+        self.stage = stage
+        self.players = [Player(i, "name", Const.PLAYER_INIT_POSITION[self.stage][i]) for i in range(4)]
+        self.platforms = [Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION[self.stage]]
         self.items = []
         self.entities = []
-        self.platforms = [Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION]
-        self.timer = Const.GAME_LENGTH
 
     def notify(self, event: BaseEvent):
         '''
@@ -90,6 +93,7 @@ class GameEngine:
         '''
         if isinstance(event, EventInitialize):
             self.initialize()
+            self.init_stage(0)
 
         elif isinstance(event, EventEveryTick):
             cur_state = self.state_machine.peek()
@@ -146,7 +150,7 @@ class GameEngine:
                 attacker.attack(self.players, self.timer)
 
         elif isinstance(event, EventPlayerRespawn):
-            self.players[event.player_id].respawn()
+            self.players[event.player_id].respawn(Const.PLAYER_RESPAWN_POSITION[self.stage][event.player_id])
 
         elif isinstance(event, EventPlayerDied):
             died_player = self.players[event.player_id]

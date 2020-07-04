@@ -9,12 +9,7 @@ GAME_LENGTH = 300 * FPS
 PLAYER_RADIUS = 20
 VALID_KO_TIME = 3 * FPS
 PLAYER_LIFE = 5
-PLAYER_INIT_POSITION = [
-    pg.Vector2(100, 700),
-    pg.Vector2(300, 700),
-    pg.Vector2(500, 700),
-    pg.Vector2(700, 700)
-]
+
 PLAYER_INIT_VELOCITY = pg.Vector2(0, 0)
 PLAYER_NORMAL_SPEED = 150
 PLAYER_JUMP_SPEED = 1200
@@ -23,22 +18,43 @@ DIRECTION_TO_VEC2 = {
     'right': pg.Vector2(1, 0),
 }
 PLAYER_JUMP_QUOTA = 3
-PLAYER_RESPAWN_POSITION = [
-    pg.Vector2(600, 200),
-    pg.Vector2(600, 200),
-    pg.Vector2(600, 200),
-    pg.Vector2(600, 200)
-]
+
 ATTACK_RADIUS = 3.5 * PLAYER_RADIUS
 ATTACK_COOL_DOWN_TIME = 1.5 * FPS
 VOLTAGE_INCREASE_CONST = 300
 
-# model-platform and boundary
+# model-stage setting
+LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
+'''
 PLATFORM_INIT_POSITION = [
     [pg.Vector2(100, 730), pg.Vector2(700, 740)],
     [pg.Vector2(100, 500), pg.Vector2(400, 510)]
 ]
-LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
+'''
+PLATFORM_INIT_POSITION = [
+    [ # stage 0
+        [pg.Vector2(100, 700), pg.Vector2(700, 710)],
+        [pg.Vector2(100, 550), pg.Vector2(300, 560)],
+        [pg.Vector2(300, 450), pg.Vector2(500, 460)],
+        [pg.Vector2(500, 550), pg.Vector2(700, 560)]
+    ]
+]
+PLAYER_INIT_POSITION = [
+    [ # stage 0
+        pg.Vector2(100, 650),
+        pg.Vector2(300, 650),
+        pg.Vector2(500, 650),
+        pg.Vector2(700, 650)
+    ]
+]
+PLAYER_RESPAWN_POSITION = [
+    [ # stage 0
+        pg.Vector2(100, 650),
+        pg.Vector2(300, 650),
+        pg.Vector2(500, 650),
+        pg.Vector2(700, 650)
+    ]
+]
 
 # model-physics
 GRAVITY_ACCELERATION = 70 * FPS

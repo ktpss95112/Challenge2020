@@ -4,7 +4,7 @@ import Const
 from Model.GameObject.entity import *
 
 class Player:
-    def __init__(self, player_id, name):
+    def __init__(self, player_id, name, position: pg.Vector2):
         # basic
         self.name = name
         self.player_id = player_id
@@ -19,7 +19,7 @@ class Player:
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         # move
         self.direction = pg.Vector2(1,0)
-        self.position = pg.Vector2(Const.PLAYER_INIT_POSITION[player_id]) # is a pg.Vector2 (Const.PLAYER_INIT_POSITION is not update now!)
+        self.position = pg.Vector2(position)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
         self.normal_speed = Const.PLAYER_NORMAL_SPEED # speed gain when players try to move left and right
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
@@ -184,7 +184,7 @@ class Player:
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
 
-    def respawn(self):
+    def respawn(self, position: pg.Vector2):
         # EventPlayerRespawn
         # status
         self.player_radius = Const.PLAYER_RADIUS
@@ -195,7 +195,7 @@ class Player:
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         self.keep_item_id = Const.NO_ITEM
         # move
-        self.position = pg.Vector2(Const.PLAYER_RESPAWN_POSITION[self.player_id])
+        self.position = pg.Vector2(position)
         self.velocity = pg.Vector2(0, 0)
         # others
         self.last_being_attacked_by = -1
