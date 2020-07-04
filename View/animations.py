@@ -122,6 +122,7 @@ class Animation_player_attack(Animation_raster):
 
         if update: self.update()
 
+
 class Animation_Bomb_Explode(Animation_raster):
     frames = tuple(
         scaled_surface(
@@ -133,8 +134,6 @@ class Animation_Bomb_Explode(Animation_raster):
 
     def __init__(self, **pos):
         super().__init__(2, len(self.frames), **pos)
-
-
 
 
 def init_animation():

@@ -125,8 +125,8 @@ class View_entities(__Object_base):
         # draw players
         for entity in self.model.entities:
             if isinstance(entity, CancerBomb):
+                img_bomb = 'bomber_red' if (entity.timer <= 1 or entity.timer % 2 == 0) else 'bomber'
                 screen.blit(self.images[img_bomb], self.images[img_bomb].get_rect(center=entity.position))
-                img_bomb = 'bomber_red' if (entity.timer <= 1 or int(entity.timer * 3)  % 2 == 0) else 'bomber'
 
             elif isinstance(entity, PistolBullet):
                 screen.blit(self.images['bananabullet'], self.images['bananabullet'].get_rect(center=entity.position))
