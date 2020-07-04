@@ -9,12 +9,12 @@ class Item:
         self.velocity = pg.Vector2(0,0)
         self.drag = drag
 
-    def move_every_tick(self, platforms: list):
+    def update_every_tick(self, platforms: list):
         # Maintain velocity
         self.maintain_velocity_every_tick()
 
         # Maintain position, make sure that the player do not pass through the platform
-        self.move(platforms)
+        self.move_every_tick(platforms)
 
     def maintain_velocity_every_tick(self):
         # Modify the horizontal velocity (drag)
@@ -36,7 +36,7 @@ class Item:
         elif self.velocity.y <= Const.VERTICAL_DRAG_EMERGE_SPEED:
             self.velocity.y = Const.VERTICAL_DRAG_EMERGE_SPEED
 
-    def move(self, platforms):
+    def move_every_tick(self, platforms):
         prev_position = pg.Vector2(self.position)
         self.position += self.velocity / Const.FPS
         for platform in platforms:

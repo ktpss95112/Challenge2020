@@ -188,7 +188,7 @@ class GameEngine:
         self.players_collision_detect()
         for player in self.players:
             if player.is_alive():
-                player.move_every_tick(self.platforms)
+                player.update_every_tick(self.platforms)
                 if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                     self.ev_manager.post(EventPlayerDied(player.player_id))
         # update players' items
@@ -221,7 +221,7 @@ class GameEngine:
         self.generate_item()
 
         for item in self.items:
-            item.move_every_tick(self.platforms)
+            item.update_every_tick(self.platforms)
             if not Const.LIFE_BOUNDARY.collidepoint(item.position):
                 self.items.remove(item)
 
