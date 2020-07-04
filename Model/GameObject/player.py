@@ -4,9 +4,9 @@ import Const
 from Model.GameObject.entity import *
 
 class Player:
-    def __init__(self, player_id):
+    def __init__(self, player_id, name):
         # basic
-        self.name = ""
+        self.name = name
         self.player_id = player_id
         # status
         self.life = Const.PLAYER_LIFE
@@ -46,12 +46,18 @@ class Player:
         return self.keep_item_id != Const.NO_ITEM
 
     def move_every_tick(self, platforms: list):
-        if not self.is_alive():
-            return
-        # Calcultate the distance to move
-        displacement = self.velocity / Const.FPS
+        # Maintain horizontal and vertical velocity
+        self.maintain_velocity_every_tick()
 
-        # Modify the horizontal velocity
+        # Make sure that the player do not pass through the platform
+        displacement = self.velocity / Const.FPS
+        self.move(displacement, platforms)
+
+        # Maintain invincible_time, uncontrollable_time, attack_cool_down_time
+        self.maintain_timer_every_tick()
+
+    def maintain_velocity_every_tick(self):
+        # Modify the horizontal velocity (drag)
         if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
             self.velocity.x = 0
         elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
@@ -63,17 +69,14 @@ class Player:
             self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
             self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
 
-        # Modify the vertical velocity
+        # Modify the vertical velocity (drag and gravity)
         self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
         if self.velocity.y <= 2 * Const.VERTICAL_DRAG_EMERGE_SPEED:
             self.velocity.y /= 2
         elif self.velocity.y <= Const.VERTICAL_DRAG_EMERGE_SPEED:
             self.velocity.y = Const.VERTICAL_DRAG_EMERGE_SPEED
 
-        # Make sure that the player do not pass through the platform
-        self.move(displacement, platforms)
-        
-        # Maintain invincible_time, uncontrollable_time, attack_cool_down_time
+    def maintain_timer_every_tick(self):
         if self.invincible_time > 0:
             self.invincible_time -= 1
             if self.invincible_time == 0:
@@ -82,6 +85,18 @@ class Player:
             self.uncontrollable_time -= 1
         if self.attack_cool_down_time > 0:
             self.attack_cool_down_time -= 1
+
+    def move(self, displacement: pg.Vector2, platforms: list):
+        # Move and check if collide with platform
+        prev_position_y = self.position.y
+        self.position += displacement
+        for platform in platforms:
+            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
+                if prev_position_y <= platform.upper_left.y - self.player_radius <= self.position.y:
+                    self.position.y = platform.upper_left.y - self.player_radius
+                    self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
+                    self.jump_quota = Const.PLAYER_JUMP_QUOTA
+                    break
 
     def collision(self, other, platforms: list):
         # Deal with collision with other player
@@ -102,16 +117,6 @@ class Player:
         self.velocity += velocity_delta
         other.velocity -= velocity_delta
 
-    def overlap_resolved(self, other):
-        distance = self.position - other.position
-        if self.player_radius + other.player_radius <= distance.magnitude():
-            return False
-        if self.position.y < other.position.y:
-            self.position.y = other.position.y - math.sqrt((self.player_radius + other.player_radius) ** 2 - (self.position.x - other.position.x) ** 2)
-        else:
-            other.position.y = self.position.y - math.sqrt((self.player_radius + other.player_radius) ** 2 - (self.position.x - other.position.x) ** 2)
-        return True
-
     def collision_reliable(self, other, collision_time): # collsition time is a percentage of FPS
         # Collsion for reliable version
         self.position += self.velocity / Const.FPS * collision_time
@@ -123,26 +128,25 @@ class Player:
         self.position -= self.velocity / Const.FPS * collision_time
         other.position -= other.velocity / Const.FPS * collision_time
 
+    def overlap_resolved(self, other):
+        distance = self.position - other.position
+        if self.player_radius + other.player_radius <= distance.magnitude():
+            return False
+        if self.position.y < other.position.y:
+            self.position.y = other.position.y - math.sqrt((self.player_radius + other.player_radius) ** 2 - (self.position.x - other.position.x) ** 2)
+        else:
+            other.position.y = self.position.y - math.sqrt((self.player_radius + other.player_radius) ** 2 - (self.position.x - other.position.x) ** 2)
+        return True
+
     def bounce_reliable(self, collision_time):
         # Bounce when hitting platform for reliable version
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         self.position += self.velocity / Const.FPS * collision_time
         self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT
         self.position -= self.velocity / Const.FPS * collision_time
-
-    def move(self, displacement: pg.Vector2, platforms: list):
-        # Move and check if collide with platform
-        prev_position_y = self.position.y
-        self.position += displacement
-        for platform in platforms:
-            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
-                if prev_position_y <= platform.upper_left.y - self.player_radius <= self.position.y:
-                    self.position.y = platform.upper_left.y - self.player_radius
-                    self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
-                    self.jump_quota = Const.PLAYER_JUMP_QUOTA
-                    break
-
+    
     def add_horizontal_velocity(self, direction: str):
+        # EventPlayerMove
         # Add horizontal velocity to the player along the direction.
         self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
         if(direction == 'left'):
@@ -151,6 +155,7 @@ class Player:
             self.direction = pg.Vector2(1, 0)
 
     def jump(self):
+        # EventPlayerJump
         # Add vertical velocity to the player.
         if self.jump_quota != 0:
             if self.velocity.y > 0:
@@ -160,6 +165,7 @@ class Player:
             self.jump_quota -= 1
 
     def attack(self, players, time):
+        # EventPlayerAttack
         self.attack_cool_down_time = Const.ATTACK_COOL_DOWN_TIME
         for player in players:
             magnitude = (player.position - self.position).magnitude()
@@ -181,6 +187,7 @@ class Player:
         self.last_being_attacked_time_elapsed = time
 
     def respawn(self):
+        # EventPlayerRespawn
         # status
         self.player_radius = Const.PLAYER_RADIUS
         self.voltage = 0
@@ -197,6 +204,7 @@ class Player:
         self.last_being_attacked_time_elapsed = 0
         
     def use_item(self, players, entities, time):
+        # EventPlayerUseItem
         if self.keep_item_id == Const.BANANA_PISTOL:
             pos = self.position + self.direction * (self.player_radius + Const.BULLET_RADIUS) * 1.02
             entities.append(PistolBullet(self.player_id, pos, self.direction))

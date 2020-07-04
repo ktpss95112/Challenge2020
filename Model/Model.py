@@ -78,7 +78,7 @@ class GameEngine:
         '''
         self.clock = pg.time.Clock()
         self.state_machine.push(Const.STATE_MENU)
-        self.players = [Player(0), Player(1), Player(2), Player(3)]
+        self.players = [Player(i, f'name{i}') for i in range(4)]
         self.items = []
         self.entities = []
         self.platforms = [Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION]

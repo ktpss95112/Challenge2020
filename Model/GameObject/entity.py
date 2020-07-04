@@ -82,7 +82,7 @@ class CancerBomb(Entity):
 
     def update_every_tick(self, players, items, platforms, time):
        # gravity effect
-        self.velocity.y += Const.GRAVITY_ACCELERATION /Const.FPS
+        self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
         prev_position_y = self.position.y
         self.position += self.velocity / Const.FPS
         for platform in platforms:
@@ -95,7 +95,7 @@ class CancerBomb(Entity):
         if self.timer <= 0:
             for player in players:
                 if player.is_alive() and not player.is_invincible():
-                    if (player.position - self.position).magnitude() <=  Const.BOMB_EXPLODE_RADIUS:
+                    if (player.position - self.position).magnitude() <= Const.BOMB_EXPLODE_RADIUS:
                         player.voltage += Const.BOMB_ATK
             return False
         return True
