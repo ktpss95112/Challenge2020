@@ -49,9 +49,8 @@ class Player:
         # Maintain horizontal and vertical velocity
         self.maintain_velocity_every_tick()
 
-        # Make sure that the player do not pass through the platform
-        displacement = self.velocity / Const.FPS
-        self.move(displacement, platforms)
+        # Maintain position, make sure that the player do not pass through the platform
+        self.move(platforms)
 
         # Maintain invincible_time, uncontrollable_time, attack_cool_down_time
         self.maintain_timer_every_tick()
@@ -86,10 +85,9 @@ class Player:
         if self.attack_cool_down_time > 0:
             self.attack_cool_down_time -= 1
 
-    def move(self, displacement: pg.Vector2, platforms: list):
-        # Move and check if collide with platform
+    def move(self, platforms: list):
         prev_position_y = self.position.y
-        self.position += displacement
+        self.position += self.velocity / Const.FPS
         for platform in platforms:
             if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
                 if prev_position_y <= platform.upper_left.y - self.player_radius <= self.position.y:
