@@ -205,7 +205,6 @@ class GameEngine:
             if player.KO_amount == highest_KO_amount:
                 player.score += 50
 
-
     def update_objects(self):
         '''
         Update the objects not controlled by user.
