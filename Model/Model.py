@@ -163,11 +163,9 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerItem):
             player = self.players[event.player_id]
-            if not player.is_alive():
-                return
-            if player.keep_item_id != Const.NO_ITEM :
+            if player.is_alive() and player.keep_item_id != Const.NO_ITEM :
                 player.use_item(self.players, self.entities, self.timer)
-                self.ev_manager.post(EventPlayerUseItem(player, player.keep_item_id))
+                self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
 
     def update_menu(self):
         '''
@@ -254,7 +252,6 @@ class GameEngine:
                 for j in self.players:
                     if i.player_id < j.player_id and i.overlap_resolved(j):
                         overlap = True
-                        print("hi")
             if count == 4:
                 break
 
