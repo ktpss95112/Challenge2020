@@ -97,7 +97,7 @@ class Controller:
                     self.ev_manager.post(EventPlayerItem(v))
             # detect stop event
             if event_pg.key == Const.GAME_STOP_KEY:
-                self.ev_manager.post(EventStateChange(Const.STATE_STOP))
+                self.ev_manager.post(EventStop())
             else:
                 self.check_screen_keys(event_pg.key)
 
