@@ -158,9 +158,11 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerItem):
             player = self.players[event.player_id]
-            if player.is_alive() and player.keep_item_id != Const.NO_ITEM :
-                player.use_item(self.players, self.entities, self.timer)
+            if player.is_alive() and player.has_item():
                 self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
+
+        elif isinstance(event, EventPlayerUseItem):
+            self.players[event.player_id].use_item(self.players, self.entities, self.timer)
 
     def update_menu(self):
         '''
