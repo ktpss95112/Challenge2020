@@ -62,7 +62,7 @@ class Controller:
     def ctrl_menu(self, key_down_events):
         for event_pg in key_down_events:
             if event_pg.type == pg.KEYDOWN and event_pg.key == pg.K_SPACE:
-                self.ev_manager.post(EventStateChange(Const.STATE_PLAY))
+                self.ev_manager.post(EventPlay())
             else:
                 self.check_screen_keys(event_pg.key)
 

@@ -47,28 +47,48 @@ class BaseEvent:
 
 class EventInitialize(BaseEvent):
     name = 'Initialize event'
+    '''
+    initialize and model stage change to STATE_MENU
+    '''
+
+class EventPlay(BaseEvent):
+    name = 'GamePlay event'
+    '''
+    game play and model stage change to STATE_PLAY
+    '''
+
+
+class EventStop(BaseEvent):
+    name = 'GameStop event'
+    '''
+    game stop and model stage change to STATE_STOP
+    '''
+
+
+class EventContinue(BaseEvent):
+    name = 'GameContinue event'
+    '''
+    game continue and model stage change to STATE_PLAY
+    '''
+
+
+class EventRestart(BaseEvent):
+    name = 'GameRestart event'
+    '''
+    game restart and model stage change to STATE_MENU
+    '''
+
+
+class EventTimesUp(BaseEvent):
+    name = "Time's Up event"
 
 
 class EventQuit(BaseEvent):
     name = 'Quit event'
 
 
-class EventStateChange(BaseEvent):
-    name = 'StateChange event'
-
-    def __init__(self, state):
-        self.state = state
-
-    def __str__(self):
-        return f'{self.name} => StateTo: {self.state}'
-
-
 class EventEveryTick(BaseEvent):
     name = 'Tick event'
-
-
-class EventTimesUp(BaseEvent):
-    name = "Time's Up event"
 
 
 class EventPlayerMove(BaseEvent):
@@ -151,20 +171,6 @@ class EventPlayerPickItem(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} pick item {self.item_id}'
 
-
-class EventStop(BaseEvent):
-    name = 'GameStop event'
-
-
-class EventContinue(BaseEvent):
-    name = 'GameContinue event'
-
-
-class EventRestart(BaseEvent):
-    name = 'GameRestart event'
-    '''
-    restart and back to menu
-    '''
 
 class EventToggleFullScreen(BaseEvent):
     name = 'ToggleFullScreen event'

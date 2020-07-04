@@ -110,12 +110,8 @@ class GameEngine:
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
-        elif isinstance(event, EventStateChange):
-            if event.state == Const.STATE_POP:
-                if self.state_machine.pop() is None:
-                    self.ev_manager.post(EventQuit())
-            else:
-                self.state_machine.push(event.state)
+        elif isinstance(event, EventPlay):
+            self.state_machine.push(Const.STATE_PLAY)
 
         elif isinstance(event, EventStop):
             self.state_machine.push(Const.STATE_STOP)
