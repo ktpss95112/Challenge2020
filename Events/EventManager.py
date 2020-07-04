@@ -151,11 +151,14 @@ class EventPlayerPickItem(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} pick item {self.item_id}'
 
+
 class EventStop(BaseEvent):
     name = 'GameStop event'
 
+
 class EventContinue(BaseEvent):
     name = 'GameContinue event'
+
 
 class EventRestart(BaseEvent):
     name = 'GameRestart event'
@@ -165,6 +168,7 @@ class EventRestart(BaseEvent):
 
 class EventToggleFullScreen(BaseEvent):
     name = 'ToggleFullScreen event'
+
 
 class EventBombExplode(BaseEvent):
     name = 'BombExplode event'

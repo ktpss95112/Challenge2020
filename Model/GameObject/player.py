@@ -184,6 +184,15 @@ class Player:
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
 
+    def die(self, players, time):
+        # EventPlayerDied
+        self.life -= 1
+        atk_id = self.last_being_attacked_by
+        atk_t = self.last_being_attacked_time_elapsed
+        if atk_id != -1 and atk_t - time < Const.VALID_KO_TIME:
+            self.be_KO_amount += 1
+            players[atk_id].KO_amount += 1
+
     def respawn(self, position: pg.Vector2):
         # EventPlayerRespawn
         # status

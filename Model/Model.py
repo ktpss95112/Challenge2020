@@ -145,25 +145,16 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerAttack):
             attacker = self.players[event.player_id]
-            # can_attack() is in Controller.py, no need to recheck
-            if attacker.is_alive():
+            if attacker.is_alive(): # attacker.can_attack() is checked in Controller.py
                 attacker.attack(self.players, self.timer)
 
         elif isinstance(event, EventPlayerRespawn):
             self.players[event.player_id].respawn(Const.PLAYER_RESPAWN_POSITION[self.stage][event.player_id])
 
         elif isinstance(event, EventPlayerDied):
-            died_player = self.players[event.player_id]
-            died_player.life -= 1
-            # update KO amount
-            atk_id = died_player.last_being_attacked_by
-            atk_t = died_player.last_being_attacked_time_elapsed
-            if atk_id != -1 and atk_t - self.timer < Const.VALID_KO_TIME:
-                died_player.be_KO_amount += 1
-                self.players[atk_id].KO_amount += 1
-            # respawn if player has lives left
-            if died_player.is_alive():
-                self.ev_manager.post(EventPlayerRespawn(died_player.player_id))
+            self.players[event.player_id].die(self.players, self.timer)
+            if self.players[event.player_id].is_alive():
+                self.ev_manager.post(EventPlayerRespawn(event.player_id))
 
         elif isinstance(event, EventPlayerItem):
             player = self.players[event.player_id]
@@ -199,7 +190,7 @@ class GameEngine:
                     if distance <= item.item_radius + player.player_radius:
                         player.keep_item_id = item.item_id
                         self.items.remove(item)
-                        self.ev_manager.post(EventPlayerPickItem(player, item.item_id))
+                        self.ev_manager.post(EventPlayerPickItem(player.player_id, item.item_id))
         # update score
         highest_KO_amount = 0
         for player in self.players:
