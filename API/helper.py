@@ -2,6 +2,8 @@ import pygame as pg
 
 import Const
 
+from Model.GameObject.entity import *
+
 class Helper(object):
     def __init__(self, model, index):
         self.model = model
@@ -208,7 +210,87 @@ class Helper(object):
                 minimum_vector = vector
         return minimum_vector
 
+    # get all entity information
+    def is_entity_exist(self):
+        if self.model.entities:
+            return True
+        else:
+            return False
+    
+    def get_all_pistol_bullet_position(self):
+        a = []
+        if self.model.entities :
+            for entity in self.model.entities:
+                if isinstance(entity, PistolBullet):
+                    a.append(entity.position)
+        return a
+    
+    def get_all_pistol_bullet_timer(self):
+        a = []
+        if self.model.entities :
+            for entity in self.model.entities:
+                if isinstance(entity, PistolBullet):
+                    a.append(entity.timer)
+        return a
+    
+    def get_all_pistol_bullet_velocity(self):
+        a = []
+        if self.model.entities :
+            for entity in self.model.entities:
+                if isinstance(entity, PistolBullet):
+                    a.append(entity.velocity)
+        return a
+            
+    def get_all_banana_peel_position(self):
+        a = []
+        if self.model.entities :
+            for entity in self.model.entities:
+                if isinstance(entity, BananaPeel):
+                    a.append(entity.position)
+        return a
+    
+    def get_all_banana_peel_timer(self):
+        a = []
+        if self.model.entities :
+            for entity in self.model.entities:
+                if isinstance(entity, BananaPeel):
+                    a.append(entity.timer)
+        return a
+    
+    def get_all_cancer_bomb_position(self):
+        a = []
+        if self.model.entities :
+            for entity in self.model.entities:
+                if isinstance(entity, CancerBomb):
+                    a.append(entity.position)
+        return a
 
+    def get_all_cancer_bomb_timer(self):
+        a = []
+        if self.model.entities :
+            for entity in self.model.entities:
+                if isinstance(entity, CancerBomb):
+                    a.append(entity.timer)
+        return a
+    
+    def get_all_big_black_hole_position(self):
+        a = []
+        if self.model.entities :
+            for entity in self.model.entities:
+                if isinstance(entity, BigBlackHole):
+                    a.append(entity.position)
+        return a
+
+    def get_all_big_black_hole_timer(self):
+        a = []
+        if self.model.entities :
+            for entity in self.model.entities:
+                if isinstance(entity, BigBlackHole):
+                    a.append(entity.timer)
+        return a
+
+
+    
     # TODO:
     # def get_distance_to_closest_land(self):
     # def get_position_vector_to_closest_land(self):

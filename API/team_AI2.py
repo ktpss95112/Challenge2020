@@ -14,4 +14,5 @@ class TeamAI(BaseAI):
         my_pos = self.helper.get_self_position()
         radius = self.helper.get_self_radius()
         other_pos = self.helper.get_other_position(0)
+
         return AI_DIR_JUMP
