@@ -6,14 +6,14 @@ FPS = 60 # frame per second
 GAME_LENGTH = 300 * FPS
 
 # model-player
-PLAYER_RADIUS = 20
+PLAYER_RADIUS = 35
 VALID_KO_TIME = 3 * FPS
 PLAYER_LIFE = 5
 PLAYER_INIT_POSITION = [
-    pg.Vector2(100, 700),
-    pg.Vector2(300, 700),
-    pg.Vector2(500, 700),
-    pg.Vector2(700, 700)
+    pg.Vector2(100, 600),
+    pg.Vector2(300, 600),
+    pg.Vector2(500, 600),
+    pg.Vector2(700, 600)
 ]
 PLAYER_INIT_VELOCITY = pg.Vector2(0, 0)
 PLAYER_NORMAL_SPEED = 150
@@ -24,10 +24,10 @@ DIRECTION_TO_VEC2 = {
 }
 PLAYER_JUMP_QUOTA = 3
 PLAYER_RESPAWN_POSITION = [
-    pg.Vector2(600, 200),
-    pg.Vector2(600, 200),
-    pg.Vector2(600, 200),
-    pg.Vector2(600, 200)
+    pg.Vector2(100, 200),
+    pg.Vector2(300, 200),
+    pg.Vector2(500, 200),
+    pg.Vector2(700, 200)
 ]
 ATTACK_RADIUS = 3.5 * PLAYER_RADIUS
 VOLTAGE_INCREASE_CONST = 300

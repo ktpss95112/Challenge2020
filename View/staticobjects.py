@@ -91,7 +91,7 @@ class View_endgame(__Object_base):
 class View_players(__Object_base):
     images = tuple(
         scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),0.1
+            load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),0.098
         )
         for _i in range(0, 4)
     )
@@ -108,7 +108,6 @@ class View_players(__Object_base):
             if player.invincible_time > 0:
                 pass
 
-            center = ( int(player.position.x), int(player.position.y))
             screen.blit(self.images[player.player_id], self.images[player.player_id].get_rect(center=player.position))
 
             # temp voltage monitor
