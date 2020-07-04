@@ -8,8 +8,7 @@ import math
 
 import Model.GameObject.item as model_item
 from Model.GameObject.entity import CancerBomb , PistolBullet
-# TODO: refactor the following line
-import View.utils as view_utils
+import View.utils
 import Const
 
 '''
@@ -34,11 +33,6 @@ class __Object_base():
 
 
 class View_platform(__Object_base):
-    @classmethod
-    def init_convert(cls):
-        # cls.background = cls.background.convert()
-        # cls.priced_market = cls.priced_market.convert()
-        pass
 
     def draw(self, screen):
         screen.fill(Const.BACKGROUND_COLOR)
@@ -48,14 +42,6 @@ class View_platform(__Object_base):
 
 
 class View_menu(__Object_base):
-    # menu = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'menu.png')), 1)
-    # base = view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'base.png')), 0.5)
-
-    @classmethod
-    def init_convert(cls):
-        # cls.menu = cls.menu.convert()
-        # cls.base = cls.base.convert_alpha()
-        pass
 
     def draw(self, screen):
         # screen.blit(self.menu, (0, 0))
@@ -113,8 +99,7 @@ class View_players(__Object_base):
             if player.invincible_time > 0:
                 pass
 
-            # TODO: refactor the following line (int(x), int(y))
-            center = list(map(int, player.position))
+            center = ( int(player.position.x), int(player.position.y))
             pg.draw.circle(screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
 
             # temp voltage monitor
@@ -126,10 +111,10 @@ class View_players(__Object_base):
 
 class View_entities(__Object_base):
     images = {
-        'bomber'     : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
-        'bomber_red' : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber_red.png')), 0.15),
-        'bananabullet' : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
-        'lightning'  : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2)
+        'bomber'      : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
+        'bomber_red'  : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber_red.png')), 0.15),
+        'bananabullet': View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
+        'lightning'   : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2)
     }
 
     @classmethod
@@ -140,23 +125,20 @@ class View_entities(__Object_base):
         # draw players
         for entity in self.model.entities:
             if isinstance(entity, CancerBomb):
-                # TODO: remove redundant code
-                if (entity.timer <= 1 or int(entity.timer * 3)  % 2 == 0):
-                    screen.blit(self.images['bomber_red'], self.images['bomber_red'].get_rect(center=entity.position))
-                else:
-                    screen.blit(self.images['bomber'], self.images['bomber'].get_rect(center=entity.position))
+                screen.blit(self.images[img_bomb], self.images[img_bomb].get_rect(center=entity.position))
+                img_bomb = 'bomber_red' if (entity.timer <= 1 or int(entity.timer * 3)  % 2 == 0) else 'bomber'
+
             elif isinstance(entity, PistolBullet):
                 screen.blit(self.images['bananabullet'], self.images['bananabullet'].get_rect(center=entity.position))
 
             else:
-                # TODO: refactor the following code
-                center = list(map(int, entity.position))
+                center = (int(entity.position.x),int(entity.position.y))
                 pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
 
 
 class View_scoreboard(__Object_base):
     images = {
-        'Heart': view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.03125)
+        'Heart': View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.03125)
     }
 
     @classmethod
@@ -201,13 +183,13 @@ class View_scoreboard(__Object_base):
 
 class View_items(__Object_base):
     images = {
-        Const.BANANA_PISTOL     : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
-        Const.BIG_BLACK_HOLE    : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.2),
-        Const.CANCER_BOMB       : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
-        Const.ZAP_ZAP_ZAP       : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2),
-        Const.BANANA_PEEL       : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
-        Const.RAINBOW_GROUNDER  : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.05),
-        Const.INVINCIBLE_BATTERY: view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.02)
+        Const.BANANA_PISTOL     : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
+        Const.BIG_BLACK_HOLE    : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.2),
+        Const.CANCER_BOMB       : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
+        Const.ZAP_ZAP_ZAP       : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2),
+        Const.BANANA_PEEL       : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
+        Const.RAINBOW_GROUNDER  : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.05),
+        Const.INVINCIBLE_BATTERY: View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.02)
     }
 
     @classmethod
@@ -229,7 +211,7 @@ class View_items(__Object_base):
 
 class View_timer(__Object_base):
     images = {
-        'Heart' : view_utils.scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.2)
+        'Heart' : View.utils .scaled_surface(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.2)
     }
 
     @classmethod
