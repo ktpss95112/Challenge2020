@@ -3,7 +3,7 @@ from PIL import Image
 import numpy as np
 from View.transforms import RGBTransform
 
-class PureText():
+class PureText:
     def __init__(self, text, size, font, color, **pos):
         '''
         pos: refer to the attributes of pg.Rect
@@ -14,6 +14,16 @@ class PureText():
 
     def draw(self, screen):
         screen.blit(self.text_surface, self.pos_rect)
+
+
+__image_cache = dict()
+def load_image(path):
+    global __image_cache
+
+    if path not in __image_cache:
+        __image_cache[path] = pg.image.load(path)
+
+    return __image_cache[path]
 
 
 def scaled_surface(surface, scale):

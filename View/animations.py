@@ -21,7 +21,7 @@ import pygame as pg
 from Events.EventManager import *
 from Model.Model import GameEngine
 from Model.GameObject.player import Player
-from View.utils import scaled_surface
+from View.utils import scaled_surface, load_image
 import Const
 
 '''
@@ -95,12 +95,9 @@ class Animation_raster(Animation_base):
 
 
 class Animation_player_attack(Animation_raster):
-    # TODO: do not load image for many times
-    #       load it once and resize (maybe in init_convert())
-    #       this would reduce IO and improve game loading time a lot
     frames = tuple(
         scaled_surface(
-            pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')),
+            load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')),
             _i * 0.01
         )
         for _i in range(1, 21)
@@ -126,7 +123,7 @@ class Animation_player_attack(Animation_raster):
 class Animation_Bomb_Explode(Animation_raster):
     frames = tuple(
         scaled_surface(
-            pg.transform.rotate(pg.image.load(os.path.join(Const.IMAGE_PATH, 'heart.png')), 2*_i),
+            pg.transform.rotate(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 2*_i),
                 0.01*_i
             )
             for _i in range(1, 36)

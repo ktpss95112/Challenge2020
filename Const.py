@@ -69,6 +69,12 @@ BANANA_PEEL = 5
 RAINBOW_GROUNDER = 6
 INVINCIBLE_BATTERY = 7
 
+# player
+PLAYER_1_0 = 0
+PLAYER_2_0 = 1
+PLAYER_3_0 = 2
+PLAYER_4_0 = 3
+
 ITEMS_MAX_AMOUNT = 6
 ITEM_RADIUS = [7, 7, 7, 7, 7, 7, 7]
 ITEM_DRAG = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
@@ -103,6 +109,7 @@ WINDOW_SIZE = (1200, 800)
 ARENA_SIZE = (800, 800)
 BACKGROUND_COLOR = pg.Color('black')
 PLAYER_COLOR = [pg.Color('green'), pg.Color('magenta'), pg.Color('orange'), pg.Color('red')]
+PLAYER_PIC = ['player1.png', 'player2.png', 'player3.png', 'player4.png']
 ITEM_COLOR = [pg.Color('white'), pg.Color('yellow'), pg.Color('deepskyblue'), pg.Color('gray'), pg.Color('mediumpurple'), pg.Color('darkgreen'), pg.Color('tan'), pg.Color('olivedrab')]
 
 # controller
