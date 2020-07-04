@@ -55,6 +55,9 @@ class Helper(object):
     def get_self_score(self):
         return self.model.players[self.player_id].score
 
+    def get_self_jump_quota(self):
+        return self.model.players[self.player_id].jump_quota
+
     # get all player information    
     def get_all_position(self):
         return [tuple(player.position) for player in self.model.players]
@@ -89,6 +92,9 @@ class Helper(object):
     def get_all_score(self):
         return [player.score for player in self.model.players]
 
+    def get_all_jump_quota(self):
+        return [player.jump_quota for player in self.model.players]
+
     # get other players information
     def get_other_position(self, index):
         return tuple(self.model.players[index].position)
@@ -122,6 +128,9 @@ class Helper(object):
 
     def get_other_score(self, index):
         return self.model.players[index].score
+
+    def get_other_jump_quota(self, index):
+        return self.model.players[index],score
 
     # get item information
     def get_all_item_position(self):
@@ -198,11 +207,12 @@ class Helper(object):
                 minimum_distance = distance
                 minimum_vector = vector
         return minimum_vector
-    
+
+
     # TODO:
     # def get_distance_to_closest_land(self):
     # def get_position_vector_to_closest_land(self):
     # get entity information
-    # get jump rest times
+    # get jump rest times // done: get-xxx_jump_quota():
     # get jump to the highest time
     # get can attack time
