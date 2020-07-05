@@ -141,7 +141,7 @@ class GameEngine:
 
         elif isinstance(event, EventPlayerAttack):
             attacker = self.players[event.player_id]
-            if attacker.is_alive(): # attacker.can_attack() is checked in Controller.py
+            if attacker.is_alive() and attacker.can_attack():
                 attacker.attack(self.players, self.timer)
 
         elif isinstance(event, EventPlayerRespawn):
