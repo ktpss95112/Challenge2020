@@ -79,6 +79,11 @@ class GameEngine:
         self.clock = pg.time.Clock()
         self.state_machine.push(Const.STATE_MENU)
         self.timer = Const.GAME_LENGTH
+        self.stage = 0
+        self.players = []
+        self.platforms = []
+        self.items = []
+        self.entities = []
 
     def init_stage(self, stage):
         self.stage = stage
@@ -93,7 +98,6 @@ class GameEngine:
         '''
         if isinstance(event, EventInitialize):
             self.initialize()
-            self.init_stage(0)
 
         elif isinstance(event, EventEveryTick):
             cur_state = self.state_machine.peek()
@@ -111,6 +115,7 @@ class GameEngine:
                 self.update_endgame()
 
         elif isinstance(event, EventPlay):
+            self.init_stage(0)
             self.state_machine.push(Const.STATE_PLAY)
 
         elif isinstance(event, EventStop):
