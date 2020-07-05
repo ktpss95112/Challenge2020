@@ -33,7 +33,6 @@ class __Object_base():
 
 
 class View_platform(__Object_base):
-
     def draw(self, screen):
         screen.fill(Const.BACKGROUND_COLOR)
         for platform in self.model.platforms:
@@ -42,7 +41,6 @@ class View_platform(__Object_base):
 
 
 class View_menu(__Object_base):
-
     def draw(self, screen):
         # screen.blit(self.menu, (0, 0))
         # screen.blit(self.base, (10, 645))
