@@ -127,5 +127,7 @@ class BananaPeel(Entity):
                 (player.position - self.position).magnitude() < player.player_radius + Const.BANANA_PEEL_RADIUS:
                 player.uncontrollable_time = Const.BANANA_PEEL_AFFECT_TIME
                 return False
+        if not Const.LIFE_BOUNDARY.collidepoint(self.position):
+            return False
         return True
 
