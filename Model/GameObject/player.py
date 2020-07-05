@@ -46,11 +46,11 @@ class Player:
         return self.keep_item_id != Const.NO_ITEM
 
     def update_every_tick(self, platforms: list):
-        # Maintain horizontal and vertical velocity
-        self.maintain_velocity_every_tick()
-
         # Maintain position, make sure that the player do not pass through the platform
         self.move_every_tick(platforms)
+
+        # Maintain horizontal and vertical velocity
+        self.maintain_velocity_every_tick()
 
         # Maintain invincible_time, uncontrollable_time, attack_cool_down_time
         self.maintain_timer_every_tick()
@@ -140,7 +140,7 @@ class Player:
         # Bounce when hitting platform for reliable version
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         self.position += self.velocity / Const.FPS * collision_time
-        self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT
+        self.velocity.y *= -Const.ATTENUATION_COEFFICIENT
         self.position -= self.velocity / Const.FPS * collision_time
     
     def add_horizontal_velocity(self, direction: str):

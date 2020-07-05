@@ -245,7 +245,6 @@ class GameEngine:
                 break
 
     def players_collision_detect(self):
-        # More reliable
         origin_fps = -2
         player1, player2, collision_fps = self.first_collision(origin_fps)
         while collision_fps <= 1:
@@ -256,18 +255,9 @@ class GameEngine:
             origin_fps = collision_fps
             player1, player2, collision_fps = self.first_collision(origin_fps)
 
-        # Less reliable
-        '''
-        for i in range(len(self.players)):
-            for j in range(i + 1, len(self.players)):
-                if self.players[i].is_alive() and self.players[j].is_alive():
-                    self.players[i].collision(self.players[j], self.platforms)
-        '''
-
     def first_collision(self, origin_fps):
         # Find first collision after origin_fps
-        p1 = 0
-        p2 = 0
+        p1, p2 = 0, 0
         min_collision_time = 2
         for i in range(len(self.players)):
             if not self.players[i].is_alive():
@@ -289,6 +279,7 @@ class GameEngine:
                 if origin_fps < collision_time <= min_collision_time:
                     min_collision_time = collision_time
                     p1, p2 = i, j
+
             # Collision: ball <=> platform
             for j in self.platforms:
                 distance = j.upper_left.y - self.players[i].position.y - self.players[i].player_radius
