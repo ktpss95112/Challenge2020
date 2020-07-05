@@ -4,6 +4,14 @@ import Const
 
 from Model.GameObject.entity import *
 
+AI_DIR_LEFT        = 0
+AI_DIR_RIGHT       = 1
+AI_DIR_JUMP        = 2
+AI_DIR_ATTACK      = 3
+AI_DIR_PICK_ITEM   = 4
+AI_DIR_USE_ITEM    = 5
+JUMP_CONST_DELAY   = 30
+
 class Helper(object):
     def __init__(self, model, index):
         self.model = model
@@ -19,7 +27,8 @@ class Helper(object):
         self.drag_coefficient = Const.DRAG_COEFFICIENT
         self.arena_size = Const.ARENA_SIZE
         self.life_boundary = tuple(Const.LIFE_BOUNDARY)
-
+        self.jump_delay = 0
+        
     # get self information
     def get_self_id(self):
         return self.player_id
@@ -219,6 +228,17 @@ class Helper(object):
                 minimum_vector = vector
         return minimum_vector
 
+    def get_above_which_land(self, position):
+        index = -1
+        count = 0
+        for platform in self.model.platforms:
+            if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y:
+                index = count
+            count+=1
+        if position[0] > self.model.platforms[2].upper_left.x - 15 and position[0] < self.model.platforms[2].bottom_right.x + 15 and position[1] < self.model.platforms[2].upper_left.y:
+            index = 2
+        return index
+    
     # get all entity information
     def is_entity_exist(self):
         if self.model.entities:
@@ -298,7 +318,76 @@ class Helper(object):
                     big_black_hole_timer.append(entity.timer)
         return big_black_hole_timer
 
-    
+    def walk_to_position(self,target_position):
+        player_position = tuple(self.model.players[self.player_id].position)
+        player_above_which_land = self.get_above_which_land(player_position)
+        target_above_which_land = self.get_above_which_land(target_position)
+        command = AI_DIR_LEFT
+        if player_position[0] <= 100 or player_position[0] >= 700 or target_position[0] <= 100 or target_position[0] >= 700:
+            if self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0:
+                self.jump_delay = JUMP_CONST_DELAY
+                command = AI_DIR_JUMP
+            elif player_position[0] <= 400:
+                command = AI_DIR_RIGHT
+            elif player_position[0] >= 400:
+                command = AI_DIR_LEFT   
+        elif player_above_which_land == target_above_which_land:
+            if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
+                self.jump_delay = JUMP_CONST_DELAY
+                command = AI_DIR_JUMP
+            elif player_position[0] < target_position[0]:
+                command = AI_DIR_RIGHT
+            elif player_position[0] > target_position[0]:
+                command = AI_DIR_LEFT
+        elif target_above_which_land == 0:
+            if player_above_which_land == 1:
+                command = AI_DIR_RIGHT
+            elif player_above_which_land == 3:
+                command = AI_DIR_LEFT
+            elif player_above_which_land == 2:
+                closest_land_vector = self.get_position_vector_to_closest_land()
+                if closest_land_vector[0] >= 0:
+                    command = AI_DIR_RIGHT
+                elif closest_land_vector[0] < 0:
+                    command = AI_DIR_LEFT
+        elif target_above_which_land == 1:
+            if player_above_which_land == 0:
+                if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] < target_position[0]:
+                    command = AI_DIR_RIGHT
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
+            elif player_above_which_land == 3:
+                command = AI_DIR_LEFT
+            elif player_above_which_land == 2:
+                command = AI_DIR_LEFT
+        elif target_above_which_land == 3:
+            if player_above_which_land == 0:
+                if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] < target_position[0]:
+                    command = AI_DIR_RIGHT
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
+            elif player_above_which_land == 1:
+                command = AI_DIR_RIGHT
+            elif player_above_which_land == 2:
+                command = AI_DIR_RIGHT
+        elif target_above_which_land == 2:
+            if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0:
+                self.jump_delay = JUMP_CONST_DELAY
+                command = AI_DIR_JUMP
+            elif player_position[0] < target_position[0]:
+                command = AI_DIR_RIGHT
+            elif player_position[0] > target_position[0]:
+                command = AI_DIR_LEFT
+        if(self.jump_delay > 0):
+            self.jump_delay-=1
+        return command
+        
     
     # TODO:
     # get jump to the highest time

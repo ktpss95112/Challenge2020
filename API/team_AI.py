@@ -13,9 +13,12 @@ class TeamAI(BaseAI):
     def decide(self):
         my_pos = self.helper.get_self_position()
         radius = self.helper.get_self_radius()
+        return self.helper.walk_to_position(self.helper.get_other_position(3))
+        '''
         if my_pos[0] > 500:
             return AI_DIR_LEFT
         elif my_pos[0] < 300:
             return AI_DIR_RIGHT
         else:
             return AI_DIR_JUMP 
+        '''
