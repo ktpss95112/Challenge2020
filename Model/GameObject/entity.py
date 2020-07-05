@@ -100,7 +100,11 @@ class CancerBomb(Entity):
         if self.timer <= 0:
             for player in players:
                 if player.is_alive() and not player.is_invincible():
-                    if (player.position - self.position).magnitude() <= Const.BOMB_EXPLODE_RADIUS:
+                    distance = player.position - self.position
+                    if distance.magnitude() <= Const.BOMB_EXPLODE_RADIUS:
+                        # Attack power == normal player's attack power
+                        voltage_acceleration = player.voltage ** 1.35 + 10
+                        player.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * distance.normalize() / distance.magnitude() / Const.FPS
                         player.voltage += Const.BOMB_ATK
             return False
         return True
