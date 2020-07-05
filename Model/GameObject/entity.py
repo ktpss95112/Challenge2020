@@ -30,8 +30,7 @@ class PistolBullet(Entity):
                 magnitude = vec.magnitude() * 10
                 if vec.magnitude() < player.player_radius + Const.BULLET_RADIUS:
                     # print("someone got shoot")
-                    unit = vec.normalize()
-                    player.be_attacked(unit, magnitude, self.user_id, time)
+                    player.be_attacked(self.velocity.normalize(), magnitude, self.user_id, time)
                     # prevent remove failure
                     self.position = pg.Vector2(-1000, -2000)
                     self.velocity = pg.Vector2(0, 0)
