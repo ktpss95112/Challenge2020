@@ -119,6 +119,30 @@ class Animation_player_attack(Animation_raster):
 
         if update: self.update()
 
+class Animation_player_attack_big(Animation_raster):
+    frames = tuple(
+        scaled_surface(
+            load_image(os.path.join(Const.IMAGE_PATH, 'electricattack.png')),
+            0.2 + (_i * 0.002)
+        )
+        for _i in range(1, 7)
+    )
+
+    def __init__(self, player: Player):
+        self._timer = 0
+        self.delay_of_frames = 2
+        self.frame_index_to_draw = 0
+        self.expire_time = 2*len(self.frames)
+        self.expired = False
+        self.player = player
+
+    def draw(self, screen, update=True):
+        screen.blit(
+            self.frames[self.frame_index_to_draw],
+            self.frames[self.frame_index_to_draw].get_rect(center=(self.player.position.x , self.player.position.y - 2*Const.ATTACK_ERROR)),
+        )
+
+        if update: self.update()
 
 class Animation_Bomb_Explode(Animation_raster):
     frames = tuple(

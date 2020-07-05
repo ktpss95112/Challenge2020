@@ -80,7 +80,10 @@ class GraphicalView:
             self.toggle_fullscreen()
 
         elif isinstance(event, EventPlayerAttack):
-            self.animation_list.append(View.animations.Animation_player_attack(self.model.players[event.player_id]))
+            if self.model.players[event.player_id].player_radius / Const.PLAYER_RADIUS == 1:
+                self.animation_list.append(View.animations.Animation_player_attack(self.model.players[event.player_id]))
+            else:
+                self.animation_list.append(View.animations.Animation_player_attack_big(self.model.players[event.player_id]))
 
         elif isinstance(event, EventStop):
             self.render_play(target=self.stop_screen, update=False)
