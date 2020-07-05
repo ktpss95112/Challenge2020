@@ -247,6 +247,7 @@ class Player:
                 if abs(self.position.x - other.position.x) < Const.ZAP_ZAP_ZAP_RANGE and self != other\
                         and other.is_alive() and not other.is_invincible():
                     other.voltage += Const.ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP
+                    other.velocity.y -= 200
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
             pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
