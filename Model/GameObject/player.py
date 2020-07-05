@@ -46,13 +46,13 @@ class Player:
         return self.keep_item_id != Const.NO_ITEM
 
     def update_every_tick(self, platforms: list):
-        # Maintain position, make sure that the player do not pass through the platform
-        self.move_every_tick(platforms)
+        # Maintain position
+        self.move_every_tick()
 
         # Maintain horizontal and vertical velocity
         self.maintain_velocity_every_tick()
 
-        # Maintain invincible_time, uncontrollable_time, attack_cool_down_time
+        # Maintain three timers
         self.maintain_timer_every_tick()
 
     def maintain_velocity_every_tick(self):
@@ -85,16 +85,9 @@ class Player:
         if self.attack_cool_down_time > 0:
             self.attack_cool_down_time -= 1
 
-    def move_every_tick(self, platforms: list):
+    def move_every_tick(self):
         prev_position_y = self.position.y
         self.position += self.velocity / Const.FPS
-        for platform in platforms:
-            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
-                if prev_position_y <= platform.upper_left.y - self.player_radius <= self.position.y:
-                    self.position.y = platform.upper_left.y - self.player_radius
-                    self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
-                    self.jump_quota = Const.PLAYER_JUMP_QUOTA
-                    break
 
     def find_item_every_tick(self, items: list):
         # called by model update_players()
