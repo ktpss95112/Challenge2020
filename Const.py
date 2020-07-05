@@ -171,8 +171,8 @@ GAME_RESTART_KEY = pg.K_SPACE
 GAME_FULLSCREEN_KEY = pg.K_F11
 
 # Player setting
-NAME = ['manual', 'manual', 'manual', 'manual']
-IS_AI = [False, False, False, False]
+NAME = ['AI', 'AI2', 'AI3', 'manual']
+IS_AI = [True, True, True, False]
 
 # Path
 IMAGE_PATH = os.path.join('View', 'img')

@@ -12,13 +12,13 @@ class TeamAI(BaseAI):
         self.helper = helper
     def decide(self):
         my_pos = self.helper.get_self_position()
-        radius = self.helper.get_self_radius()
+        my_radius = self.helper.get_self_radius()
         other_pos = self.helper.get_other_position(self.helper.get_nearest_player())
-        if other_pos[0] > my_pos[0] and abs(other_pos[0] - my_pos[0]) > self.helper.attack_radius:
+        if other_pos[0] > my_pos[0] and abs(other_pos[0] - my_pos[0]) > 3.5 * my_radius:
             return AI_DIR_RIGHT
-        elif other_pos[0] < my_pos[0] and abs(other_pos[0] - my_pos[0]) > self.helper.attack_radius:
+        elif other_pos[0] < my_pos[0] and abs(other_pos[0] - my_pos[0]) > 3.5 * my_radius:
             return AI_DIR_LEFT
-        elif abs(other_pos[1] - my_pos[1]) > self.helper.attack_radius:
+        elif abs(other_pos[1] - my_pos[1]) > 3.5 * my_radius:
             return AI_DIR_JUMP
         else:
             return AI_DIR_ATTACK
