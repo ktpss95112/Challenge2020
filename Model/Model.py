@@ -157,6 +157,10 @@ class GameEngine:
             if player.is_alive() and player.has_item():
                 self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
 
+        elif isinstance(event, EventPlayerPickItem):
+            self.players[event.player_id].pick_item(event.item)
+            self.items.remove(event.item)
+
         elif isinstance(event, EventPlayerUseItem):
             self.players[event.player_id].use_item(self.players, self.entities, self.timer)
 
@@ -172,34 +176,26 @@ class GameEngine:
         Update information of users
         For example: position, remaining time of item used and score
         '''
-        # update position
         self.overlap_detect()
         self.players_collision_detect()
+        highest_KO_amount = max(player.KO_amount for player in self.players)
         for player in self.players:
             if player.is_alive():
+                # maintain position, velocity and timer
                 player.update_every_tick(self.platforms)
+
+                # maintain items
+                if not player.has_item():
+                    item = player.find_item_every_tick(self.items)
+                    if not item is None:
+                        self.ev_manager.post(EventPlayerPickItem(player.player_id, item))
+                
+                # maintain scores
+                player.maintain_score_every_tick(highest_KO_amount)
+
+                # maintain lifes
                 if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                     self.ev_manager.post(EventPlayerDied(player.player_id))
-        # update players' items
-        for player in self.players:
-            if not player.has_item():
-                for item in self.items:
-                    distance = (item.position - player.position).magnitude()
-                    if distance <= item.item_radius + player.player_radius:
-                        player.keep_item_id = item.item_id
-                        self.items.remove(item)
-                        self.ev_manager.post(EventPlayerPickItem(player.player_id, item.item_id))
-        # update score
-        highest_KO_amount = 0
-        for player in self.players:
-            if player.KO_amount > highest_KO_amount:
-                highest_KO_amount = player.KO_amount
-        for player in self.players:
-            player.score = player.KO_amount * 30 - player.be_KO_amount * 15
-            if player.be_KO_amount == 0:
-                player.score += 100
-            if player.KO_amount == highest_KO_amount:
-                player.score += 50
 
     def update_objects(self):
         '''

@@ -96,6 +96,22 @@ class Player:
                     self.jump_quota = Const.PLAYER_JUMP_QUOTA
                     break
 
+    def find_item_every_tick(self, items: list):
+        # called by model update_players()
+        for item in items:
+            distance = (item.position - self.position).magnitude()
+            if distance <= item.item_radius + self.player_radius:
+                return item
+        return None
+
+    def maintain_score_every_tick(self, highest_KO_amount):
+        # called by model update_players()
+        self.score = self.KO_amount * 30 - self.be_KO_amount * 15
+        if self.be_KO_amount == 0:
+            self.score += 100
+        if self.KO_amount == highest_KO_amount:
+            self.score += 50
+
     def collision(self, other, platforms: list):
         # Deal with collision with other player
         distance = other.position - self.position
@@ -209,6 +225,10 @@ class Player:
         # others
         self.last_being_attacked_by = -1
         self.last_being_attacked_time_elapsed = 0
+
+    def pick_item(self, item):
+        # EventPlayerPickItem
+        self.keep_item_id = item.item_id
         
     def use_item(self, players, entities, time):
         # EventPlayerUseItem
