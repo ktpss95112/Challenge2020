@@ -155,7 +155,7 @@ class GameEngine:
         elif isinstance(event, EventPlayerItem):
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
-                self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
+                self.ev_manager.post(EventPlayerUseItem(player.player_id))
 
         elif isinstance(event, EventPlayerPickItem):
             self.players[event.player_id].pick_item(event.item)
