@@ -230,8 +230,9 @@ class Player:
         # EventPlayerPickItem
         self.keep_item_id = item.item_id
         
-    def use_item(self, players, entities, time):
+    def use_item(self, players, time):
         # EventPlayerUseItem
+        entities = []
         if self.keep_item_id == Const.BANANA_PISTOL:
             pos = self.position + self.direction * (self.player_radius + Const.BULLET_RADIUS) * 1.02
             entities.append(PistolBullet(self.player_id, pos, self.direction))
@@ -266,3 +267,4 @@ class Player:
             self.invincible_time = Const.INVINCIBLE_BATTERY_TIME
 
         self.keep_item_id = Const.NO_ITEM
+        return entities

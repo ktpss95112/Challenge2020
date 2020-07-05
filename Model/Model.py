@@ -162,7 +162,9 @@ class GameEngine:
             self.items.remove(event.item)
 
         elif isinstance(event, EventPlayerUseItem):
-            self.players[event.player_id].use_item(self.players, self.entities, self.timer)
+            entities = self.players[event.player_id].use_item(self.players, self.timer)
+            for entity in entities:
+                self.entities.append(entity)
 
     def update_menu(self):
         '''
