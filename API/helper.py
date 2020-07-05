@@ -13,7 +13,7 @@ class Helper(object):
         self.player_jump_speed = Const.PLAYER_JUMP_SPEED
         self.player_respawn_position = Const.PLAYER_RESPAWN_POSITION
         self.player_gravity_acceleration = Const.GRAVITY_ACCELERATION
-        self.attack_radius_multiple_constant = Const.ATTACK_RADIUS_MULTIPLE_CONSTANT
+        self.attack_radius = Const.ATTACK_RADIUS
         self.be_attacked_acceleration = Const.BE_ATTACKED_ACCELERATION
         self.drag_critical_speed = Const.DRAG_CRITICAL_SPEED
         self.drag_coefficient = Const.DRAG_COEFFICIENT
