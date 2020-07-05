@@ -60,6 +60,9 @@ class Helper(object):
     def get_self_jump_quota(self):
         return self.model.players[self.player_id].jump_quota
 
+    def get_self_jump_to_the_highest_time(self):
+        return self.model.players[self.player_id].velocity.y / self.player_gravity_acceleration
+
     # get all player information    
     def get_all_position(self):
         return [tuple(player.position) for player in self.model.players]
@@ -97,6 +100,9 @@ class Helper(object):
     def get_all_jump_quota(self):
         return [player.jump_quota for player in self.model.players]
 
+    def get_all_jump_to_the_highest_time(self):
+        return [player.velocity.y / self.player_gravity_acceleration for player in self.model.players]
+
     # get other players information
     def get_other_position(self, index):
         return tuple(self.model.players[index].position)
@@ -132,7 +138,10 @@ class Helper(object):
         return self.model.players[index].score
 
     def get_other_jump_quota(self, index):
-        return self.model.players[index],score
+        return self.model.players[index].jump_quota
+
+    def get_self_jump_to_the_highest_time(self, index):
+        return self.model.players[index].velocity.y / self.player_gravity_acceleration
 
     # get item information
     def get_all_item_position(self):
@@ -175,7 +184,7 @@ class Helper(object):
         return highest_score_id
 
     def get_distance(self, p1, p2):
-        return (p1 - p2).magnitude()
+        return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
 
     def get_distance_to_closest_land(self):
         minimum_distance = 10000 ** 2

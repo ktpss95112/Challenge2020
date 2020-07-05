@@ -80,7 +80,7 @@ class GameEngine:
         self.state_machine.push(Const.STATE_MENU)
 
         # TODO: change its expression ==> let every team have their own name
-        self.players = [Player(0, is_AI = True, player_name = "AI"), Player(1, is_AI = True, player_name = "AI2"), Player(2, is_AI = False), Player(3, is_AI = False)]
+        self.players = [Player(0, is_AI = True, player_name = "AI"), Player(1, is_AI = True, player_name = "AI2"), Player(2, is_AI = True , player_name = "AI3"), Player(3, is_AI = False)]
 
         self.items = []
         self.entities = []
