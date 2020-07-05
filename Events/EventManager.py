@@ -181,3 +181,12 @@ class EventBombExplode(BaseEvent):
 
     def __init__(self, position):
         self.position = position
+
+class EventCutInStart(BaseEvent):
+    name = 'Cut-in start event'
+
+    def __init__(self, item):
+        self.item = item
+
+class EventCutInEnd(BaseEvent):
+    name = 'Cut-in end event'

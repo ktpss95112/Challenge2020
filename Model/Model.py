@@ -162,9 +162,20 @@ class GameEngine:
             self.items.remove(event.item)
 
         elif isinstance(event, EventPlayerUseItem):
+            item = self.players[event.player_id].keep_item_id
+            if Const.HAS_CUT_IN[item]:
+                self.ev_manager.post(EventCutInStart(item))
             entities = self.players[event.player_id].use_item(self.players, self.timer)
             for entity in entities:
                 self.entities.append(entity)
+
+        elif isinstance(event, EventCutInStart):
+            self.state_machine.push(Const.STATE_STOP)
+
+        elif isinstance(event, EventCutInEnd):
+            if self.state_machine.peek() == Const.STATE_STOP:
+                self.state_machine.pop()
+        
 
     def update_menu(self):
         '''
