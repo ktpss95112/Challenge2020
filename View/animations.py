@@ -97,10 +97,10 @@ class Animation_raster(Animation_base):
 class Animation_player_attack(Animation_raster):
     frames = tuple(
         scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')),
-            _i * 0.01
+            load_image(os.path.join(Const.IMAGE_PATH, 'electricattack.png')),
+            0.1 + (_i * 0.002)
         )
-        for _i in range(1, 21)
+        for _i in range(1, 7)
     )
 
     def __init__(self, player: Player):
@@ -114,7 +114,7 @@ class Animation_player_attack(Animation_raster):
     def draw(self, screen, update=True):
         screen.blit(
             self.frames[self.frame_index_to_draw],
-            self.frames[self.frame_index_to_draw].get_rect(center=self.player.position),
+            self.frames[self.frame_index_to_draw].get_rect(center=(self.player.position.x , self.player.position.y - Const.ATTACK_ERROR)),
         )
 
         if update: self.update()
