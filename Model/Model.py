@@ -170,10 +170,10 @@ class GameEngine:
                 self.entities.append(entity)
 
         elif isinstance(event, EventCutInStart):
-            self.state_machine.push(Const.STATE_STOP)
+            self.state_machine.push(Const.STATE_CUTIN)
 
         elif isinstance(event, EventCutInEnd):
-            if self.state_machine.peek() == Const.STATE_STOP:
+            if self.state_machine.peek() == Const.STATE_CUTIN:
                 self.state_machine.pop()
         
 

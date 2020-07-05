@@ -73,6 +73,7 @@ STATE_MENU = 1
 STATE_PLAY = 2
 STATE_STOP = 3
 STATE_ENDGAME = 4 # show score board and handle restart
+STATE_CUTIN = 5
 
 # model-item
 ITEM_SPECIES = 7
