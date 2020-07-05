@@ -113,6 +113,10 @@ PLAYER_PIC = ['player1_0.png', 'player1_1.png', 'player1_2.png', 'player1_3.png'
               'player2_0.png', 'player2_2.png', 'player2_4.png', 'player2_1.png', 'player2_3.png',
               'player3_3.png', 'player3_1.png', 'player3_2.png', 'player3_4.png', 'player3_0.png',
               'player4_1.png', 'player4_4.png', 'player4_3.png', 'player4_0.png', 'player4_2.png',
+              'player1_0.png', 'player1_1.png', 'player1_2.png', 'player1_3.png', 'player1_4.png',
+              'player2_0.png', 'player2_2.png', 'player2_4.png', 'player2_1.png', 'player2_3.png',
+              'player3_3.png', 'player3_1.png', 'player3_2.png', 'player3_4.png', 'player3_0.png',
+              'player4_1.png', 'player4_4.png', 'player4_3.png', 'player4_0.png', 'player4_2.png',
              ]
 ATTACK_ERROR = 2.8
 ITEM_COLOR = [pg.Color('white'), pg.Color('yellow'), pg.Color('deepskyblue'), pg.Color('gray'), pg.Color('mediumpurple'), pg.Color('darkgreen'), pg.Color('tan'), pg.Color('olivedrab')]
