@@ -14,5 +14,12 @@ class TeamAI(BaseAI):
         my_pos = self.helper.get_self_position()
         radius = self.helper.get_self_radius()
         other_pos = self.helper.get_other_position(0)
-
-        return AI_DIR_JUMP
+        if other_pos[0] > my_pos[0] and abs(other_pos[0] - my_pos[0]) > radius * self.helper.attack_radius_multiple_constant:
+            return AI_DIR_RIGHT
+        elif other_pos[0] < my_pos[0] and abs(other_pos[0] - my_pos[0]) > radius * self.helper.attack_radius_multiple_constant:
+            return AI_DIR_LEFT
+        elif abs(other_pos[1] - my_pos[1]) > radius * self.helper.attack_radius_multiple_constant:
+            return AI_DIR_JUMP
+        else:
+            return AI_DIR_ATTACK
+        
