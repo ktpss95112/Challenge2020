@@ -183,7 +183,7 @@ class Player:
             if player.player_id == self.player_id or not player.is_alive() or player.is_invincible():
                 continue
             # attack if they are close enough
-            if magnitude < Const.ATTACK_RADIUS:
+            if (self.player_radius == Const.INVINCIBLE_BATTERY_PLAYER_RADIUS and magnitude < Const.INVINCIBLE_BATTERY_ATTACK_RADIUS) or magnitude < Const.ATTACK_RADIUS:
                 unit = (player.position - self.position).normalize()
                 player.be_attacked(unit, magnitude, self.player_id, time)
 
