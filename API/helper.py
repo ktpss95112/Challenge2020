@@ -218,83 +218,79 @@ class Helper(object):
             return False
     
     def get_all_pistol_bullet_position(self):
-        a = []
+        pistol_bullet_position = []
         if self.model.entities :
             for entity in self.model.entities:
                 if isinstance(entity, PistolBullet):
-                    a.append(entity.position)
-        return a
+                    pistol_bullet_position.append(entity.position)
+        return pistol_bullet_position
     
     def get_all_pistol_bullet_timer(self):
-        a = []
+        pistol_bullet_timer = []
         if self.model.entities :
             for entity in self.model.entities:
                 if isinstance(entity, PistolBullet):
-                    a.append(entity.timer)
-        return a
+                    pistol_bullet_timer.append(entity.timer)
+        return pistol_bullet_timer
     
     def get_all_pistol_bullet_velocity(self):
-        a = []
+        pistol_bullet_velocity = []
         if self.model.entities :
             for entity in self.model.entities:
                 if isinstance(entity, PistolBullet):
-                    a.append(entity.velocity)
-        return a
+                    pistol_bullet_velocity.append(entity.velocity)
+        return pistol_bullet_velocity
             
     def get_all_banana_peel_position(self):
-        a = []
+        banana_peel_position = []
         if self.model.entities :
             for entity in self.model.entities:
                 if isinstance(entity, BananaPeel):
-                    a.append(entity.position)
-        return a
+                    banana_peel_position.append(entity.position)
+        return banana_peel_position
     
     def get_all_banana_peel_timer(self):
-        a = []
+        banana_peel_timer = []
         if self.model.entities :
             for entity in self.model.entities:
                 if isinstance(entity, BananaPeel):
-                    a.append(entity.timer)
-        return a
+                    banana_peel_timer.append(entity.timer)
+        return banana_peel_timer
     
     def get_all_cancer_bomb_position(self):
-        a = []
+        cancer_bomb_position = []
         if self.model.entities :
             for entity in self.model.entities:
                 if isinstance(entity, CancerBomb):
-                    a.append(entity.position)
-        return a
+                    cancer_bomb_position.append(entity.position)
+        return cancer_bomb_position
 
     def get_all_cancer_bomb_timer(self):
-        a = []
+        cancer_bomb_timer = []
         if self.model.entities :
             for entity in self.model.entities:
                 if isinstance(entity, CancerBomb):
-                    a.append(entity.timer)
-        return a
+                    cancer_bomb_timer.append(entity.timer)
+        return cancer_bomb_timer
     
     def get_all_big_black_hole_position(self):
-        a = []
+        big_black_hole_position = []
         if self.model.entities :
             for entity in self.model.entities:
                 if isinstance(entity, BigBlackHole):
-                    a.append(entity.position)
-        return a
+                    big_black_hole_position.append(entity.position)
+        return big_black_hole_position
 
     def get_all_big_black_hole_timer(self):
-        a = []
+        big_black_hole_timer = []
         if self.model.entities :
             for entity in self.model.entities:
                 if isinstance(entity, BigBlackHole):
-                    a.append(entity.timer)
-        return a
+                    big_black_hole_timer.append(entity.timer)
+        return big_black_hole_timer
 
 
     
     # TODO:
-    # def get_distance_to_closest_land(self):
-    # def get_position_vector_to_closest_land(self):
-    # get entity information
-    # get jump rest times // done: get-xxx_jump_quota():
     # get jump to the highest time
     # get can attack time
