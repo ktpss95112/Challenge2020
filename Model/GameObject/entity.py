@@ -57,8 +57,11 @@ class BigBlackHole(Entity):
                     magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - player.position).magnitude() ** 0.3
                     player.velocity += magnitude * unit / Const.FPS
                 else:
-                    player.position += pg.Vector2((random.uniform(-Const.BLACK_HOLE_FLOATING_VELOCITY, Const.BLACK_HOLE_FLOATING_VELOCITY), \
-                        random.uniform(-Const.BLACK_HOLE_FLOATING_VELOCITY, Const.BLACK_HOLE_FLOATING_VELOCITY)))
+                    normal = (self.position - player.position).normalize()
+                    tangent = pg.Vector2(normal.y, -normal.x)
+                    if tangent.dot(player.velocity) < 0:
+                        tangent = -tangent
+                    player.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
         # attract items
         for item in items:
             dist = (self.position - item.position).magnitude()
@@ -68,8 +71,11 @@ class BigBlackHole(Entity):
                 magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - item.position).magnitude() ** 0.3
                 item.velocity += magnitude * unit / Const.FPS
             else:
-                item.position += pg.Vector2((random.uniform(-Const.BLACK_HOLE_FLOATING_VELOCITY, Const.BLACK_HOLE_FLOATING_VELOCITY), \
-                    random.uniform(-Const.BLACK_HOLE_FLOATING_VELOCITY, Const.BLACK_HOLE_FLOATING_VELOCITY)))
+                normal = (self.position - item.position).normalize()
+                tangent = pg.Vector2(normal.y, -normal.x)
+                if tangent.dot(item.velocity) < 0:
+                    tangent = -tangent
+                item.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
         return True
 
 
