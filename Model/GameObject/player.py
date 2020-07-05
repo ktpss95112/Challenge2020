@@ -1,5 +1,6 @@
 import pygame as pg
 import math
+import random
 import Const
 from Model.GameObject.entity import *
 
@@ -159,7 +160,7 @@ class Player:
         # EventPlayerMove
         # Add horizontal velocity to the player along the direction.
         self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
-        if(direction == 'left'):
+        if direction == 'left':
             self.direction = pg.Vector2(-1, 0)
         elif (direction == 'right'):
             self.direction = pg.Vector2(1, 0)
@@ -246,8 +247,11 @@ class Player:
             for other in players :
                 if abs(self.position.x - other.position.x) < Const.ZAP_ZAP_ZAP_RANGE and self != other\
                         and other.is_alive() and not other.is_invincible():
+                    voltage_acceleration = other.voltage ** 1.35 + 100
                     other.voltage += Const.ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP
-                    other.velocity.y -= 200
+                    other.velocity.y = -Const.ZAP_ZAP_ZAP_VERTICAL_ACCELERATION * voltage_acceleration / Const.FPS
+                    other.velocity.x = random.uniform(0, Const.ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION) * voltage_acceleration / Const.FPS \
+                                       * (1 if self.position.x < other.position.x else -1)
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
             pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
