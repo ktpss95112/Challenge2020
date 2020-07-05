@@ -91,9 +91,9 @@ class View_endgame(__Object_base):
 class View_players(__Object_base):
     images = tuple(
         scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),0.098
+            load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),0.075
         )
-        for _i in range(0, 4)
+        for _i in range(0, 20)
     )
 
 
@@ -104,11 +104,13 @@ class View_players(__Object_base):
 
     def draw(self, screen):
         # draw players
+        img_shining_period = (int)(self.model.timer / 7 ) % 5
         for player in self.model.players:
             if player.invincible_time > 0:
                 pass
 
-            screen.blit(self.images[player.player_id], self.images[player.player_id].get_rect(center=player.position))
+            img_play_state = player.player_id * 5 + img_shining_period
+            screen.blit(self.images[img_play_state], self.images[img_play_state].get_rect(center=player.position))
 
             # temp voltage monitor
             # TODO: create a class MutableText() similar to PureText()
