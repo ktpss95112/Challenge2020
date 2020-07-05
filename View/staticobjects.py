@@ -97,7 +97,6 @@ class View_players(__Object_base):
         for _i in range(0, 40)
     )
 
-
     @classmethod
     def init_convert(cls):
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 15)
