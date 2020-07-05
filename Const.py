@@ -9,12 +9,6 @@ GAME_LENGTH = 300 * FPS
 PLAYER_RADIUS = 25
 VALID_KO_TIME = 3 * FPS
 PLAYER_LIFE = 5
-PLAYER_INIT_POSITION = [
-    pg.Vector2(100, 600),
-    pg.Vector2(300, 600),
-    pg.Vector2(500, 600),
-    pg.Vector2(700, 600)
-]
 PLAYER_INIT_VELOCITY = pg.Vector2(0, 0)
 PLAYER_NORMAL_SPEED = 150
 PLAYER_JUMP_SPEED = 1200
@@ -23,21 +17,43 @@ DIRECTION_TO_VEC2 = {
     'right': pg.Vector2(1, 0),
 }
 PLAYER_JUMP_QUOTA = 3
-PLAYER_RESPAWN_POSITION = [
-    pg.Vector2(100, 200),
-    pg.Vector2(300, 200),
-    pg.Vector2(500, 200),
-    pg.Vector2(700, 200)
-]
-ATTACK_RADIUS = 3.5 * PLAYER_RADIUS
+
+ATTACK_RADIUS = 8 * PLAYER_RADIUS
+ATTACK_COOL_DOWN_TIME = 1.5 * FPS
 VOLTAGE_INCREASE_CONST = 300
 
-# model-platform and boundary
+# model-stage setting
+LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
+'''
 PLATFORM_INIT_POSITION = [
     [pg.Vector2(100, 730), pg.Vector2(700, 740)],
     [pg.Vector2(100, 500), pg.Vector2(400, 510)]
 ]
-LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
+'''
+PLATFORM_INIT_POSITION = [
+    [ # stage 0
+        [pg.Vector2(100, 700), pg.Vector2(700, 710)],
+        [pg.Vector2(100, 550), pg.Vector2(300, 560)],
+        [pg.Vector2(300, 450), pg.Vector2(500, 460)],
+        [pg.Vector2(500, 550), pg.Vector2(700, 560)]
+    ]
+]
+PLAYER_INIT_POSITION = [
+    [ # stage 0
+        pg.Vector2(100, 650),
+        pg.Vector2(300, 650),
+        pg.Vector2(500, 650),
+        pg.Vector2(700, 650)
+    ]
+]
+PLAYER_RESPAWN_POSITION = [
+    [ # stage 0
+        pg.Vector2(100, 650),
+        pg.Vector2(300, 650),
+        pg.Vector2(500, 650),
+        pg.Vector2(700, 650)
+    ]
+]
 
 # model-physics
 GRAVITY_ACCELERATION = 70 * FPS
@@ -69,27 +85,28 @@ BANANA_PEEL = 5
 RAINBOW_GROUNDER = 6
 INVINCIBLE_BATTERY = 7
 
-# player
-PLAYER_1_0 = 0
-PLAYER_2_0 = 1
-PLAYER_3_0 = 2
-PLAYER_4_0 = 3
+ZAP_ZAP_ZAP_RANGE = 5 * PLAYER_RADIUS
+ZAP_ZAP_ZAP_SELF_VOLTAGE_UP = 10
+ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP = 50
+RAINBOW_GROUNDER_VOLTAGE_DOWN = 10
+INVINCIBLE_BATTERY_PLAYER_RADIUS = 2 * PLAYER_RADIUS
+INVINCIBLE_BATTERY_TIME = 5 * FPS
+RESPAWN_INVINCIBLE_TIME = 2 * FPS
 
 ITEMS_MAX_AMOUNT = 6
 ITEM_RADIUS = [7, 7, 7, 7, 7, 7, 7]
 ITEM_DRAG = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 ITEM_INIT_HEIGHT = 10
-ITEM_PROBABILITY = [0.2, 0.05, 0.2, 0.05, 0.2, 0.2, 0.1]
+ITEM_PROBABILITY = [0.2, 0.05, 0.2, 0.05, 0.2, 0.2, 0.1] # make sure sum = 1
 
 # model-entities
 BULLET_TIME = 5 * FPS
 BULLET_VELOCITY = 30 * FPS
 BULLET_RADIUS = 5
-BULLET_ATK = 10
 
 BANANA_PEEL_TIME = 15 * FPS
 BANANA_PEEL_RADIUS = 8
-BANANA_PEEL_AFFECT_TIME = 1
+BANANA_PEEL_AFFECT_TIME = 1 * FPS
 
 BOMB_TIME = 3 * FPS
 BOMB_EXPLODE_RADIUS = 50
@@ -100,8 +117,6 @@ BLACK_HOLE_RADIUS = 10
 BLACK_HOLE_EFFECT_RADIUS = 2 * PLAYER_RADIUS
 BLACK_HOLE_FLOATING_VELOCITY = 5
 BLACK_HOLE_GRAVITY_ACCELERATION = 500 * FPS
-
-ZAP_ZAP_ZAP_RANGE = 5
 
 # view
 WINDOW_CAPTION = 'Challenge 2020'

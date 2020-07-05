@@ -62,7 +62,7 @@ class Controller:
     def ctrl_menu(self, key_down_events):
         for event_pg in key_down_events:
             if event_pg.type == pg.KEYDOWN and event_pg.key == pg.K_SPACE:
-                self.ev_manager.post(EventStateChange(Const.STATE_PLAY))
+                self.ev_manager.post(EventPlay())
             else:
                 self.check_screen_keys(event_pg.key)
 
@@ -90,14 +90,14 @@ class Controller:
                 if event_pg.key == k:
                     self.ev_manager.post(EventPlayerJump(v))
             for k, v in Const.PLAYER_ATTACK_KEYS.items():
-                if event_pg.key == k:
+                if event_pg.key == k and self.model.players[v].can_attack():
                     self.ev_manager.post(EventPlayerAttack(v))
             for k, v in Const.PLAYER_ITEM_KEYS.items():
                 if event_pg.key == k:
                     self.ev_manager.post(EventPlayerItem(v))
             # detect stop event
             if event_pg.key == Const.GAME_STOP_KEY:
-                self.ev_manager.post(EventStateChange(Const.STATE_STOP))
+                self.ev_manager.post(EventStop())
             else:
                 self.check_screen_keys(event_pg.key)
 
