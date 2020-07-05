@@ -1,7 +1,9 @@
 import pygame as pg
-
+import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
+import View.staticobjects
+import View.animations
 import Const
 
 
@@ -10,6 +12,7 @@ class GraphicalView:
     Draws the state of GameEngine onto the screen.
     '''
     background = pg.Surface(Const.ARENA_SIZE)
+    fullscreen = True
 
     def __init__(self, ev_manager: EventManager, model: GameEngine):
         '''
@@ -17,20 +20,45 @@ class GraphicalView:
         For more specific objects related to a game instance
             , they should be initialized in GraphicalView.initialize()
         '''
+
         self.ev_manager = ev_manager
         ev_manager.register_listener(self)
 
         self.model = model
-
-        self.screen = pg.display.set_mode(Const.WINDOW_SIZE)
-        pg.display.set_caption(Const.WINDOW_CAPTION)
-        self.background.fill(Const.BACKGROUND_COLOR)
+        self.is_initialized = False
+        self.screen = None
+        self.stop_screen = None
+        self.clock = None
+        self.last_update = 0
 
     def initialize(self):
         '''
         This method is called when a new game is instantiated.
         '''
-        pass
+        pg.init()
+        pg.font.init()
+        pg.display.set_caption(Const.WINDOW_CAPTION)
+        self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
+        self.stop_screen = pg.Surface(Const.WINDOW_SIZE)
+        self.clock = pg.time.Clock()
+        self.is_initialized = True
+
+        # convert images
+        View.staticobjects.init_staticobjects()
+        View.animations.init_animation()
+
+        # animations
+        self.animation_list = []
+
+        # static objects
+        self.scoreboard = View.staticobjects.View_scoreboard(self.model)
+        self.players = View.staticobjects.View_players(self.model)
+        self.platform = View.staticobjects.View_platform(self.model)
+        self.items = View.staticobjects.View_items(self.model)
+        self.timer = View.staticobjects.View_timer(self.model)
+        self.entities = View.staticobjects.View_entities(self.model)
+        self.menu = View.staticobjects.View_menu(self.model)
+        self.endgame = View.staticobjects.View_endgame(self.model)
 
     def notify(self, event):
         '''
@@ -48,6 +76,21 @@ class GraphicalView:
             elif cur_state == Const.STATE_STOP: self.render_stop()
             elif cur_state == Const.STATE_ENDGAME: self.render_endgame()
 
+        elif isinstance(event, EventToggleFullScreen):
+            self.toggle_fullscreen()
+
+        elif isinstance(event, EventPlayerAttack):
+            if self.model.players[event.player_id].player_radius / Const.PLAYER_RADIUS == 1:
+                self.animation_list.append(View.animations.Animation_player_attack(self.model.players[event.player_id]))
+            else:
+                self.animation_list.append(View.animations.Animation_player_attack_big(self.model.players[event.player_id]))
+
+        elif isinstance(event, EventStop):
+            self.render_play(target=self.stop_screen, update=False)
+
+        elif isinstance(event, EventBombExplode):
+            self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
+
     def display_fps(self):
         '''
         Display the current fps on the window caption.
@@ -55,118 +98,82 @@ class GraphicalView:
         pg.display.set_caption(f'{Const.WINDOW_CAPTION} - FPS: {self.model.clock.get_fps():.2f}')
 
     def render_menu(self):
-        # draw background
-        self.screen.fill(Const.BACKGROUND_COLOR)
-
-        # draw text
-        font = pg.font.Font(None, 36)
-        text_surface = font.render("Press [space] to start ...", 1, pg.Color('gray88'))
-        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
-
+        # draw menu
+        self.menu.draw(self.screen)
         pg.display.flip()
 
-    def render_play(self):
-        # draw background
-        self.screen.fill(Const.BACKGROUND_COLOR)
+    def render_play(self, target=None, update=True):
+        if target is None:
+            target = self.screen
+
+        # draw platform
+        self.platform.draw(target)
 
         # draw players
-        for player in self.model.players:
-            if not player.is_alive():
-                continue
-            if player.invincible_time > 0:
-                pass
-            center = list(map(int, player.position))
-            pg.draw.circle(self.screen, Const.PLAYER_COLOR[player.player_id], center, player.player_radius)
-            # temp voltage monitor
-            font = pg.font.Font(None, 20)
-            voltage_surface = font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
-            voltage_pos = player.position
-            self.screen.blit(voltage_surface, voltage_surface.get_rect(center = voltage_pos))    
+        self.players.draw(target)
 
-        # draw platforms
-        for platform in self.model.platforms:
-            pg.draw.rect(self.screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
-        
         # draw items
-        for item in self.model.items:
-            center = list(map(int, item.position))
-            pg.draw.circle(self.screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
-            # temp item id monitor
-            font = pg.font.Font(None, 15)
-            item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))
-            item_pos = item.position
-            self.screen.blit(item_surface, item_surface.get_rect(center = item_pos))
+        self.items.draw(target)
 
         # draw entities
-        for entity in self.model.entities:
-            center = list(map(int, entity.position))
-            pg.draw.circle(self.screen, Const.ITEM_COLOR[2], center, 10)
-        
-        # draw temp score board 
-        font = pg.font.Font(None, 36)
-        for player in self.model.players:
-            player_surface = font.render(f"player{player.player_id :d}:", 1, Const.PLAYER_COLOR[player.player_id])
-            player_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (1 + 5 * player.player_id) / 30)
-            self.screen.blit(player_surface, player_surface.get_rect(center = player_pos))
-            lives_surface = font.render(f"                lives left: {player.life :d}", 1, Const.PLAYER_COLOR[player.player_id])
-            lives_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (2 + 5 * player.player_id) / 30)
-            self.screen.blit(lives_surface, lives_surface.get_rect(center = lives_pos))
-            KO_surface = font.render(f"                KO: {player.KO_amount :d}", 1, Const.PLAYER_COLOR[player.player_id])
-            KO_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (3 + 5 * player.player_id) / 30)
-            self.screen.blit(KO_surface, KO_surface.get_rect(center = KO_pos))
-            be_KO_surface = font.render(f"                be KO: {player.be_KO_amount :d}", 1, Const.PLAYER_COLOR[player.player_id])
-            be_KO_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (4 + 5 * player.player_id) / 30)
-            self.screen.blit(be_KO_surface, be_KO_surface.get_rect(center = be_KO_pos))
-            score_surface = font.render(f"                score: {player.score :3d}", 1, Const.PLAYER_COLOR[player.player_id])
-            score_pos = (Const.WINDOW_SIZE[0] * 5 / 6, Const.WINDOW_SIZE[1] * (5 + 5 * player.player_id) / 30)
-            self.screen.blit(score_surface, score_surface.get_rect(center = score_pos))
-            
-        # draw timer        
-        font = pg.font.Font(None, 36)
-        timer_surface = font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
-        timer_pos = (Const.ARENA_SIZE[0] * 29 / 30, Const.ARENA_SIZE[1] * 1 / 30)
-        self.screen.blit(timer_surface, timer_surface.get_rect(center = timer_pos))
-        
+        self.entities.draw(target)
+
+        # draw timer
+        self.timer.draw(target)
+
+        #draw scoreboard
+        self.scoreboard.draw(target)
+
+        # draw animation
+        for ani in self.animation_list:
+            if ani.expired: self.animation_list.remove(ani)
+            else          : ani.draw(target, update)
+
         pg.display.flip()
 
     def render_stop(self):
-        # draw text
-        font = pg.font.Font(None, 36)
+        self.screen.blit(self.stop_screen, (0, 0))
+
+        font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
         text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
-        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
-        
+        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
+        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+
         pg.display.flip()
 
     def render_endgame(self):
-        # draw background
-        self.screen.fill(Const.BACKGROUND_COLOR)
-        
-        # draw score board
-        font = pg.font.Font(None, 36)
-        for player in self.model.players:
-            player_surface = font.render(f"player{player.player_id :d}:", 1, Const.PLAYER_COLOR[player.player_id])
-            player_pos = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] * (1 + 5 * player.player_id) / 30)
-            self.screen.blit(player_surface, player_surface.get_rect(center = player_pos))
-            lives_surface = font.render(f"                lives left: {player.life :d}", 1, Const.PLAYER_COLOR[player.player_id])
-            lives_pos = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] * (2 + 5 * player.player_id) / 30)
-            self.screen.blit(lives_surface, lives_surface.get_rect(center = lives_pos))
-            KO_surface = font.render(f"                KO: {player.KO_amount :d}", 1, Const.PLAYER_COLOR[player.player_id])
-            KO_pos = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] * (3 + 5 * player.player_id) / 30)
-            self.screen.blit(KO_surface, KO_surface.get_rect(center = KO_pos))
-            be_KO_surface = font.render(f"                be KO: {player.be_KO_amount :d}", 1, Const.PLAYER_COLOR[player.player_id])
-            be_KO_pos = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] * (4 + 5 * player.player_id) / 30)
-            self.screen.blit(be_KO_surface, be_KO_surface.get_rect(center = be_KO_pos))
-            score_surface = font.render(f"                score: {player.score :3d}", 1, Const.PLAYER_COLOR[player.player_id])
-            score_pos = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] * (5 + 5 * player.player_id) / 30)
-            self.screen.blit(score_surface, score_surface.get_rect(center = score_pos))
-            
 
-
-        # draw text
-        text_surface = font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
-        text_center = (Const.ARENA_SIZE[0] / 2, Const.ARENA_SIZE[1] / 10 * 8)
-        self.screen.blit(text_surface, text_surface.get_rect(center = text_center))
-
+        # draw endgame menu
+        self.endgame.draw(self.screen)
         pg.display.flip()
+
+    def toggle_fullscreen(self):
+        self.ev_manager.post(EventStop())
+        # save screen content before toggling
+        screen = pg.display.get_surface()
+        tmp = screen.convert()
+        caption = pg.display.get_caption()
+        cursor = pg.mouse.get_cursor()
+        w, h = screen.get_width(), screen.get_height()
+        flags = screen.get_flags()
+        bits = screen.get_bitsize()
+
+        pg.display.quit()
+        pg.display.init()
+
+        # toggle fullscreen
+        self.fullscreen = not self.fullscreen
+        if self.fullscreen:
+            screen = pg.display.set_mode((w, h), pg.FULLSCREEN, bits)
+        else:
+            screen = pg.display.set_mode((w, h))
+
+        # restore screen content
+        screen.blit(tmp, (0, 0))
+        pg.display.set_caption(*caption)
+
+        pg.key.set_mods(0)
+        pg.mouse.set_cursor(*cursor)
+
+        self.screen = screen
+        self.ev_manager.post(EventContinue())
