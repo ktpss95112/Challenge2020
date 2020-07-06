@@ -5,7 +5,7 @@ import Const
 from Model.GameObject.entity import *
 
 class Player:
-    def __init__(self, player_id, player_name, position: pg.Vector2, is_AI):
+    def __init__(self, player_id, player_name, is_AI):
         # basic
         self.player_name = player_name
         self.player_id = player_id
@@ -21,7 +21,7 @@ class Player:
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         # move
         self.direction = pg.Vector2(1,0)
-        self.position = pg.Vector2(position)
+        self.position = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
         self.normal_speed = Const.PLAYER_NORMAL_SPEED # speed gain when players try to move left and right
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
@@ -48,6 +48,9 @@ class Player:
 
     def has_item(self):
         return self.keep_item_id != Const.NO_ITEM
+
+    def set_position(self, position: pg.Vector2):
+        self.position = pg.Vector2(position)
 
     def update_every_tick(self, platforms: list):
         # Maintain position

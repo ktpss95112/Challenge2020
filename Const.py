@@ -23,6 +23,11 @@ ATTACK_COOL_DOWN_TIME = 1.5 * FPS
 VOLTAGE_INCREASE_CONST = 300
 
 # model-stage setting
+STAGE_RANDOM = -1
+STAGE_NUMBER = 2
+STAGE_0 = 0
+STAGE_1 = 1
+
 LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
 PLATFORM_INIT_POSITION = [
     [ # stage 0
@@ -30,6 +35,16 @@ PLATFORM_INIT_POSITION = [
         [pg.Vector2(100, 550), pg.Vector2(300, 560)],
         [pg.Vector2(300, 450), pg.Vector2(500, 460)],
         [pg.Vector2(500, 550), pg.Vector2(700, 560)]
+    ],
+    [ # stage 1
+        [pg.Vector2(0, 150), pg.Vector2(100, 160)],
+        [pg.Vector2(0, 350), pg.Vector2(130, 360)],
+        [pg.Vector2(0, 550), pg.Vector2(190, 560)],
+        [pg.Vector2(0, 750), pg.Vector2(280, 760)],
+        [pg.Vector2(700, 150), pg.Vector2(800, 160)],
+        [pg.Vector2(670, 350), pg.Vector2(800, 360)],
+        [pg.Vector2(610, 550), pg.Vector2(800, 560)],
+        [pg.Vector2(520, 750), pg.Vector2(800, 760)]
     ]
 ]
 PLAYER_INIT_POSITION = [
@@ -38,6 +53,12 @@ PLAYER_INIT_POSITION = [
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
+    ],
+    [ # stage 1
+        pg.Vector2(100, 300),
+        pg.Vector2(100, 700),
+        pg.Vector2(700, 300),
+        pg.Vector2(700, 700)
     ]
 ]
 PLAYER_RESPAWN_POSITION = [
@@ -46,6 +67,12 @@ PLAYER_RESPAWN_POSITION = [
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
+    ],
+    [ # stage 1
+        pg.Vector2(100, 300),
+        pg.Vector2(100, 700),
+        pg.Vector2(700, 300),
+        pg.Vector2(700, 700)
     ]
 ]
 

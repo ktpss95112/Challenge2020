@@ -61,7 +61,7 @@ class GameEngine:
     The main game engine. The main loop of the game is in GameEngine.run()
     '''
 
-    def __init__(self, ev_manager: EventManager):
+    def __init__(self, ev_manager: EventManager, AI_names: list):
         '''
         This function is called when the GameEngine is created.
         For more specific objects related to a game instance
@@ -71,23 +71,35 @@ class GameEngine:
         ev_manager.register_listener(self)
 
         self.state_machine = StateMachine()
+        self.AI_names = AI_names
+        while len(self.AI_names) < 4:
+            self.AI_names.append("m")
 
     def initialize(self):
         '''
         This method is called when a new game is instantiated.
         '''
         self.clock = pg.time.Clock()
-        self.state_machine.push(Const.STATE_MENU)
         self.timer = Const.GAME_LENGTH
-        self.stage = 0
+        self.stage = Const.STAGE_0
+        self.init_players()
+        self.state_machine.push(Const.STATE_MENU)
+
+    def init_players(self):
         self.players = []
-        self.platforms = []
-        self.items = []
-        self.entities = []
+        for name, i in zip(self.AI_names, range(4)):
+            if name == "m":
+                self.players.append(Player(i, "manual", False))
+            else:
+                self.players.append(Player(i, name, True))
 
     def init_stage(self, stage):
-        self.stage = stage
-        self.players = [Player(i, Const.NAME[i], Const.PLAYER_INIT_POSITION[self.stage][i], Const.IS_AI[i]) for i in range(4)]
+        if stage == Const.STAGE_RANDOM:
+            self.stage = random.randrange(0, Const.STAGE_NUMBER)
+        else:
+            self.stage = stage
+        for player in self.players:
+            player.set_position(Const.PLAYER_INIT_POSITION[self.stage][player.player_id])
         self.platforms = [Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION[self.stage]]
         self.items = []
         self.entities = []
@@ -115,7 +127,7 @@ class GameEngine:
                 self.update_endgame()
 
         elif isinstance(event, EventPlay):
-            self.init_stage(0)
+            self.init_stage(event.stage)
             self.state_machine.push(Const.STATE_PLAY)
 
         elif isinstance(event, EventStop):
@@ -196,7 +208,7 @@ class GameEngine:
                     item = player.find_item_every_tick(self.items)
                     if not item is None:
                         self.ev_manager.post(EventPlayerPickItem(player.player_id, item))
-                
+
                 # maintain scores
                 player.maintain_score_every_tick(highest_KO_amount)
 
