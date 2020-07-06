@@ -3,15 +3,14 @@ import pygame as pg
 import Const
 
 from Model.GameObject.entity import *
-
+'''
 AI_DIR_LEFT        = 0
 AI_DIR_RIGHT       = 1
 AI_DIR_JUMP        = 2
 AI_DIR_ATTACK      = 3
-AI_DIR_PICK_ITEM   = 4
-AI_DIR_USE_ITEM    = 5
+AI_DIR_USE_ITEM    = 4
 JUMP_CONST_DELAY   = 30
-
+'''
 class Helper(object):
     def __init__(self, model, index):
         self.model = model
@@ -157,6 +156,7 @@ class Helper(object):
         itemlist = [ [] for i in range(Const.ITEM_SPECIES + 1) ]
         for item in self.model.items:
             itemlist[item.item_id].append(tuple(item.position))
+        return itemlist
 
     # get platform information 
     def get_platform_position(self):
