@@ -86,12 +86,7 @@ class GameEngine:
         self.state_machine.push(Const.STATE_MENU)
 
     def init_players(self):
-        self.players = []
-        for name, i in zip(self.AI_names, range(4)):
-            if name == "m":
-                self.players.append(Player(i, "manual", False))
-            else:
-                self.players.append(Player(i, name, True))
+        self.players = [ Player(i, 'manual', False) if name == 'm' else Player(i, name, True) for name, i in zip(self.AI_names, range(4)) ]
 
     def init_stage(self, stage):
         if stage == Const.STAGE_RANDOM:
