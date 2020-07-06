@@ -101,6 +101,8 @@ class CancerBomb(Entity):
             for player in players:
                 if player.is_alive() and not player.is_invincible():
                     distance = player.position - self.position
+                    if distance.magnitude() < Const.BOMB_MINIMUM_DISTANCE:
+                        distance = pg.Vector2(0, Const.BOMB_MINIMUM_DISTANCE)
                     if distance.magnitude() <= Const.BOMB_EXPLODE_RADIUS:
                         # Attack power == normal player's attack power
                         voltage_acceleration = player.voltage ** 1.35 + 10
