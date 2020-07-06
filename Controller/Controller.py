@@ -86,15 +86,10 @@ class Controller:
         #   except KeyError:
         #       pass
         for event_pg in key_down_events:
-            for k, v in Const.PLAYER_JUMP_KEYS.items():
-                if event_pg.key == k:
-                    self.ev_manager.post(EventPlayerJump(v))
-            for k, v in Const.PLAYER_ATTACK_KEYS.items():
-                if event_pg.key == k and self.model.players[v].can_attack():
-                    self.ev_manager.post(EventPlayerAttack(v))
-            for k, v in Const.PLAYER_ITEM_KEYS.items():
-                if event_pg.key == k:
-                    self.ev_manager.post(EventPlayerItem(v))
+            try:
+                Const.handle_keys[event_pg.key](self)
+            except KeyError:
+                pass
             # detect stop event
             if event_pg.key == Const.GAME_STOP_KEY:
                 self.ev_manager.post(EventStop())
