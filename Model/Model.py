@@ -248,10 +248,15 @@ class GameEngine:
             overlap = False
             count += 1
             for i in self.players:
+                if not i.is_alive():
+                    continue
                 for j in self.players:
+                    if not j.is_alive():
+                        continue
                     if i.player_id < j.player_id and i.overlap_resolved(j):
                         overlap = True
-            if count == 4:
+                        print("hi")
+            if count == 16:
                 break
 
     def players_collision_detect(self):
@@ -286,6 +291,8 @@ class GameEngine:
                 if abs(min_distance) >= abs(collision_distance):
                     continue
                 collision_time = (math.sqrt(distance * distance - min_distance * min_distance) - math.sqrt(collision_distance * collision_distance - min_distance * min_distance)) / (rel_velocity / Const.FPS).magnitude()
+                if collision_time < 0 and distance.magnitude() < collision_distance:
+                    continue
                 if origin_fps < collision_time <= min_collision_time:
                     min_collision_time = collision_time
                     p1, p2 = i, j
@@ -296,6 +303,8 @@ class GameEngine:
                 if self.players[i].velocity.y > 0:
                     if j.upper_left.x <= self.players[i].position.x + (self.players[i].velocity.x / self.players[i].velocity.y) * distance <= j.bottom_right.x:
                         collision_time = distance / (self.players[i].velocity.y / Const.FPS)
+                        if collision_time < 0 and abs(distance) < j.bottom_right.y - j.upper_left.y:
+                            continue
                         if origin_fps <= collision_time <= min_collision_time:
                             min_collision_time = collision_time
                             p1, p2 = i, -1
