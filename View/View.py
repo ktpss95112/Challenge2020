@@ -86,7 +86,10 @@ class GraphicalView:
                 self.animation_list.append(View.animations.Animation_player_attack_big(self.model.players[event.player_id]))
 
         elif isinstance(event, EventStop):
-            self.render_play(target=self.stop_screen, update=False)
+            cur_state = self.model.state_machine.peek()
+            if cur_state == Const.STATE_MENU: self.render_menu(target=self.stop_screen, update=False)
+            elif cur_state == Const.STATE_PLAY: self.render_play(target=self.stop_screen, update=False)
+            elif cur_state == Const.STATE_ENDGAME: self.render_endgame(target=self.stop_screen, update=False)
 
         elif isinstance(event, EventBombExplode):
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
@@ -97,9 +100,12 @@ class GraphicalView:
         '''
         pg.display.set_caption(f'{Const.WINDOW_CAPTION} - FPS: {self.model.clock.get_fps():.2f}')
 
-    def render_menu(self):
+    def render_menu(self, target=None, update=True):
+        if target is None:
+            target = self.screen
+
         # draw menu
-        self.menu.draw(self.screen)
+        self.menu.draw(target)
         pg.display.flip()
 
     def render_play(self, target=None, update=True):
@@ -141,10 +147,12 @@ class GraphicalView:
 
         pg.display.flip()
 
-    def render_endgame(self):
+    def render_endgame(self, target=None, update=True):
+        if target is None:
+            target = self.screen
 
         # draw endgame menu
-        self.endgame.draw(self.screen)
+        self.endgame.draw(target)
         pg.display.flip()
 
     def toggle_fullscreen(self):
