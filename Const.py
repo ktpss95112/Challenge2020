@@ -19,24 +19,33 @@ DIRECTION_TO_VEC2 = {
 }
 PLAYER_JUMP_QUOTA = 3
 
-ATTACK_RADIUS = 8 * PLAYER_RADIUS
+ATTACK_RADIUS = 12 * PLAYER_RADIUS
 ATTACK_COOL_DOWN_TIME = 1.5 * FPS
 VOLTAGE_INCREASE_CONST = 300
 
 # model-stage setting
+STAGE_RANDOM = -1
+STAGE_NUMBER = 2
+STAGE_0 = 0
+STAGE_1 = 1
+
 LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
-'''
-PLATFORM_INIT_POSITION = [
-    [pg.Vector2(100, 730), pg.Vector2(700, 740)],
-    [pg.Vector2(100, 500), pg.Vector2(400, 510)]
-]
-'''
 PLATFORM_INIT_POSITION = [
     [ # stage 0
         [pg.Vector2(100, 700), pg.Vector2(700, 710)],
         [pg.Vector2(100, 550), pg.Vector2(300, 560)],
         [pg.Vector2(300, 450), pg.Vector2(500, 460)],
         [pg.Vector2(500, 550), pg.Vector2(700, 560)]
+    ],
+    [ # stage 1
+        [pg.Vector2(0, 150), pg.Vector2(100, 160)],
+        [pg.Vector2(0, 350), pg.Vector2(130, 360)],
+        [pg.Vector2(0, 550), pg.Vector2(190, 560)],
+        [pg.Vector2(0, 750), pg.Vector2(280, 760)],
+        [pg.Vector2(700, 150), pg.Vector2(800, 160)],
+        [pg.Vector2(670, 350), pg.Vector2(800, 360)],
+        [pg.Vector2(610, 550), pg.Vector2(800, 560)],
+        [pg.Vector2(520, 750), pg.Vector2(800, 760)]
     ]
 ]
 PLAYER_INIT_POSITION = [
@@ -45,6 +54,12 @@ PLAYER_INIT_POSITION = [
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
+    ],
+    [ # stage 1
+        pg.Vector2(100, 300),
+        pg.Vector2(100, 700),
+        pg.Vector2(700, 300),
+        pg.Vector2(700, 700)
     ]
 ]
 PLAYER_RESPAWN_POSITION = [
@@ -53,6 +68,12 @@ PLAYER_RESPAWN_POSITION = [
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
+    ],
+    [ # stage 1
+        pg.Vector2(100, 300),
+        pg.Vector2(100, 700),
+        pg.Vector2(700, 300),
+        pg.Vector2(700, 700)
     ]
 ]
 
@@ -89,8 +110,11 @@ INVINCIBLE_BATTERY = 7
 ZAP_ZAP_ZAP_RANGE = 5 * PLAYER_RADIUS
 ZAP_ZAP_ZAP_SELF_VOLTAGE_UP = 10
 ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP = 50
+ZAP_ZAP_ZAP_VERTICAL_ACCELERATION = 800
+ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION = 1000
 RAINBOW_GROUNDER_VOLTAGE_DOWN = 10
 INVINCIBLE_BATTERY_PLAYER_RADIUS = 2 * PLAYER_RADIUS
+INVINCIBLE_BATTERY_ATTACK_RADIUS = 2 * ATTACK_RADIUS
 INVINCIBLE_BATTERY_TIME = 5 * FPS
 RESPAWN_INVINCIBLE_TIME = 2 * FPS
 
@@ -112,10 +136,11 @@ BANANA_PEEL_AFFECT_TIME = 1 * FPS
 BOMB_TIME = 3 * FPS
 BOMB_EXPLODE_RADIUS = 50
 BOMB_ATK = 50
+BOMB_MINIMUM_DISTANCE = 30
 
 BLACK_HOLE_TIME = 5 * FPS
 BLACK_HOLE_RADIUS = 10
-BLACK_HOLE_EFFECT_RADIUS = 2 * PLAYER_RADIUS
+BLACK_HOLE_EFFECT_RADIUS = 10 * PLAYER_RADIUS
 BLACK_HOLE_FLOATING_VELOCITY = 5
 BLACK_HOLE_GRAVITY_ACCELERATION = 500 * FPS
 

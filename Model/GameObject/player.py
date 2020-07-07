@@ -1,10 +1,11 @@
 import pygame as pg
 import math
+import random
 import Const
 from Model.GameObject.entity import *
 
 class Player:
-    def __init__(self, player_id, player_name, position: pg.Vector2, is_AI):
+    def __init__(self, player_id, player_name, is_AI):
         # basic
         self.player_name = player_name
         self.player_id = player_id
@@ -20,7 +21,7 @@ class Player:
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         # move
         self.direction = pg.Vector2(1,0)
-        self.position = pg.Vector2(position)
+        self.position = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
         self.normal_speed = Const.PLAYER_NORMAL_SPEED # speed gain when players try to move left and right
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
@@ -47,6 +48,9 @@ class Player:
 
     def has_item(self):
         return self.keep_item_id != Const.NO_ITEM
+
+    def set_position(self, position: pg.Vector2):
+        self.position = pg.Vector2(position)
 
     def update_every_tick(self, platforms: list):
         # Maintain position
@@ -159,7 +163,7 @@ class Player:
         # EventPlayerMove
         # Add horizontal velocity to the player along the direction.
         self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
-        if(direction == 'left'):
+        if direction == 'left':
             self.direction = pg.Vector2(-1, 0)
         elif (direction == 'right'):
             self.direction = pg.Vector2(1, 0)
@@ -183,7 +187,7 @@ class Player:
             if player.player_id == self.player_id or not player.is_alive() or player.is_invincible():
                 continue
             # attack if they are close enough
-            if magnitude < Const.ATTACK_RADIUS:
+            if (self.player_radius == Const.INVINCIBLE_BATTERY_PLAYER_RADIUS and magnitude < Const.INVINCIBLE_BATTERY_ATTACK_RADIUS) or magnitude < Const.ATTACK_RADIUS:
                 unit = (player.position - self.position).normalize()
                 player.be_attacked(unit, magnitude, self.player_id, time)
 
@@ -246,7 +250,11 @@ class Player:
             for other in players :
                 if abs(self.position.x - other.position.x) < Const.ZAP_ZAP_ZAP_RANGE and self != other\
                         and other.is_alive() and not other.is_invincible():
+                    voltage_acceleration = other.voltage ** 1.35 + 100
                     other.voltage += Const.ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP
+                    other.velocity.y = -Const.ZAP_ZAP_ZAP_VERTICAL_ACCELERATION * voltage_acceleration / Const.FPS
+                    other.velocity.x = random.uniform(0, Const.ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION) * voltage_acceleration / Const.FPS \
+                                       * (1 if self.position.x < other.position.x else -1)
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
             pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 

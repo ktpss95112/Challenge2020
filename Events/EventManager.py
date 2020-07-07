@@ -51,11 +51,14 @@ class EventInitialize(BaseEvent):
     initialize and model stage change to STATE_MENU
     '''
 
+
 class EventPlay(BaseEvent):
     name = 'GamePlay event'
     '''
     game play and model stage change to STATE_PLAY
     '''
+    def __init__(self, stage: int):
+        self.stage = stage
 
 
 class EventStop(BaseEvent):
@@ -157,7 +160,7 @@ class EventPlayerUseItem(BaseEvent):
         self.player_id = player_id
         self.item_id = item_id
     def __str__(self):
-        return f'{self.name} => player_id {self.player_id} use item {self.item_id}'
+        return f'{self.name} => player_id {self.player_id} use item'
 
     
 class EventPlayerPickItem(BaseEvent):

@@ -30,8 +30,7 @@ class PistolBullet(Entity):
                 magnitude = vec.magnitude() * 10
                 if vec.magnitude() < player.player_radius + Const.BULLET_RADIUS:
                     # print("someone got shoot")
-                    unit = vec.normalize()
-                    player.be_attacked(unit, magnitude, self.user_id, time)
+                    player.be_attacked(self.velocity.normalize(), magnitude, self.user_id, time)
                     # prevent remove failure
                     self.position = pg.Vector2(-1000, -2000)
                     self.velocity = pg.Vector2(0, 0)
@@ -58,8 +57,11 @@ class BigBlackHole(Entity):
                     magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - player.position).magnitude() ** 0.3
                     player.velocity += magnitude * unit / Const.FPS
                 else:
-                    player.position += pg.Vector2((random.uniform(-Const.BLACK_HOLE_FLOATING_VELOCITY, Const.BLACK_HOLE_FLOATING_VELOCITY), \
-                        random.uniform(-Const.BLACK_HOLE_FLOATING_VELOCITY, Const.BLACK_HOLE_FLOATING_VELOCITY)))
+                    normal = (self.position - player.position).normalize()
+                    tangent = pg.Vector2(normal.y, -normal.x)
+                    if tangent.dot(player.velocity) < 0:
+                        tangent = -tangent
+                    player.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
         # attract items
         for item in items:
             dist = (self.position - item.position).magnitude()
@@ -69,8 +71,11 @@ class BigBlackHole(Entity):
                 magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - item.position).magnitude() ** 0.3
                 item.velocity += magnitude * unit / Const.FPS
             else:
-                item.position += pg.Vector2((random.uniform(-Const.BLACK_HOLE_FLOATING_VELOCITY, Const.BLACK_HOLE_FLOATING_VELOCITY), \
-                    random.uniform(-Const.BLACK_HOLE_FLOATING_VELOCITY, Const.BLACK_HOLE_FLOATING_VELOCITY)))
+                normal = (self.position - item.position).normalize()
+                tangent = pg.Vector2(normal.y, -normal.x)
+                if tangent.dot(item.velocity) < 0:
+                    tangent = -tangent
+                item.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
         return True
 
 
@@ -95,7 +100,13 @@ class CancerBomb(Entity):
         if self.timer <= 0:
             for player in players:
                 if player.is_alive() and not player.is_invincible():
-                    if (player.position - self.position).magnitude() <= Const.BOMB_EXPLODE_RADIUS:
+                    distance = player.position - self.position
+                    if distance.magnitude() < Const.BOMB_MINIMUM_DISTANCE:
+                        distance = pg.Vector2(0, Const.BOMB_MINIMUM_DISTANCE)
+                    if distance.magnitude() <= Const.BOMB_EXPLODE_RADIUS:
+                        # Attack power == normal player's attack power
+                        voltage_acceleration = player.voltage ** 1.35 + 10
+                        player.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * distance.normalize() / distance.magnitude() / Const.FPS
                         player.voltage += Const.BOMB_ATK
             return False
         return True
