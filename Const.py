@@ -148,24 +148,6 @@ PLAYER_MOVE_KEYS = {
     pg.K_a: (0, 'left'),
     pg.K_d: (0, 'right'),
 }
-PLAYER_JUMP_KEYS = {
-    pg.K_UP: 3,
-    pg.K_i: 2,
-    pg.K_t: 1,
-    pg.K_w: 0
-}
-PLAYER_ITEM_KEYS = {
-    pg.K_RSHIFT: 3,
-    pg.K_u: 2,
-    pg.K_r: 1,
-    pg.K_q: 0
-}
-PLAYER_ATTACK_KEYS = {
-    pg.K_DOWN: 3,
-    pg.K_k: 2,
-    pg.K_g: 1,
-    pg.K_s: 0
-}
 GAME_STOP_KEY = pg.K_SPACE
 GAME_CONTINUE_KEY = pg.K_SPACE
 GAME_RESTART_KEY = pg.K_SPACE
@@ -180,14 +162,14 @@ handle_keys = {
     pg.K_k: lambda self : self.ev_manager.post(EventPlayerAttack(2)),
     pg.K_g: lambda self : self.ev_manager.post(EventPlayerAttack(1)),
     pg.K_s: lambda self : self.ev_manager.post(EventPlayerAttack(0)),
-    pg.K_RCTRL: lambda self : self.ev_manager.post(EventPlayerItem(3)),
+    pg.K_RSHIFT: lambda self : self.ev_manager.post(EventPlayerItem(3)),
     pg.K_u: lambda self : self.ev_manager.post(EventPlayerItem(2)),
     pg.K_r: lambda self : self.ev_manager.post(EventPlayerItem(1)),
     pg.K_q: lambda self : self.ev_manager.post(EventPlayerItem(0))
 }
 # Player setting
-NAME = ['AI', 'AI2', 'AI3', 'AI4']
-IS_AI = [True, True, True, True]
+NAME = ['manual', 'manual', 'manual', 'manual']
+IS_AI = [False, False, False, False]
 
 # Path
 IMAGE_PATH = os.path.join('View', 'img')

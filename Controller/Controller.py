@@ -67,24 +67,12 @@ class Controller:
                 self.check_screen_keys(event_pg.key)
 
     def ctrl_play(self, key_down_events):
+        
         keys = pg.key.get_pressed()
         for k, v in Const.PLAYER_MOVE_KEYS.items():
             if keys[k]:
                 self.ev_manager.post(EventPlayerMove(*v))
-
-        # TODO: replace busy checking with a dictionary which stores the mapping of key and event
-        #       this should improve the performance
-        # example:
-        #   handle_keys = {
-        #       pg.K_UP: lambda : self.ev_manager.post(EventPlayerJump(0)),
-        #       pg.K_i: lambda : self.ev_manager.post(EventPlayerJump(1)),
-        #       pg.K_t: lambda : self.ev_manager.post(EventPlayerJump(2)),
-        #       pg.K_w: lambda : self.ev_manager.post(EventPlayerJump(3)),
-        #   }
-        #   try:
-        #       handle_keys[event_pg.key]()
-        #   except KeyError:
-        #       pass
+        
         for event_pg in key_down_events:
             try:
                 Const.handle_keys[event_pg.key](self)
