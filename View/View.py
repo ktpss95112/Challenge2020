@@ -127,7 +127,7 @@ class GraphicalView:
         # draw timer
         self.timer.draw(target)
 
-        #draw scoreboard
+        # draw scoreboard
         self.scoreboard.draw(target)
 
         # draw animation

@@ -17,6 +17,7 @@ while True:
 '''
 import os
 import pygame as pg
+import numpy as np
 
 from Events.EventManager import *
 from Model.Model import GameEngine
@@ -105,6 +106,7 @@ class Animation_player_attack(Animation_raster):
     )
 
     def __init__(self, player: Player):
+        # TODO: refactor the following code, use super().__init__
         self._timer = 0
         self.delay_of_frames = 2
         self.frame_index_to_draw = 0
@@ -131,6 +133,7 @@ class Animation_player_attack_big(Animation_raster):
     )
 
     def __init__(self, player: Player):
+        # TODO: refactor the following code, use super().__init__
         self._timer = 0
         self.delay_of_frames = 2
         self.frame_index_to_draw = 0
@@ -158,6 +161,18 @@ class Animation_Bomb_Explode(Animation_raster):
 
     def __init__(self, **pos):
         super().__init__(2, len(self.frames), **pos)
+        r = Const.BOMB_SCREEN_VIBRATION_RADIUS
+        self.vibration = np.zeros((Const.BOMB_TIME, 2), dtype=np.int8)
+        self.vibration[:Const.BOMB_SCREEN_VIBRATION_DURATION, :] = np.random.randint(-r, r+1, size=(Const.BOMB_SCREEN_VIBRATION_DURATION, 2))
+
+    def draw(self, screen, update=True):
+        screen.blit(
+            self.frames[self.frame_index_to_draw],
+            self.frames[self.frame_index_to_draw].get_rect(**self.pos),
+        )
+        screen.blit(screen.copy(), self.vibration[self._timer])
+
+        if update: self.update()
 
 
 def init_animation():
