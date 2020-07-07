@@ -13,6 +13,7 @@ class Player:
         self.is_AI = is_AI
         # status
         self.life = Const.PLAYER_LIFE
+        self.attack_radius = Const.ATTACK_RADIUS
         self.player_radius = Const.PLAYER_RADIUS
         self.voltage = 0
         self.keep_item_id = Const.NO_ITEM
@@ -49,6 +50,11 @@ class Player:
 
     def has_item(self):
         return self.keep_item_id != Const.NO_ITEM
+
+    def enhance(self, enhancement):
+        self.attack_radius *= (1 + enhancement[Const.ATTACK_RADIUS_ENHANCEMENT_INDEX] * Const.ATTACK_RADIUS_ENHANCEMENT)
+        self.normal_speed *= (1 + enhancement[Const.SPEED_ENHANCEMENT_INDEX] * Const.SPEED_ENHANCEMENT)
+        self.jump_speed *= (1 + enhancement[Const.JUMP_ENHANCEMENT_INDEX] * Const.JUMP_ENHANCEMENT)
 
     def set_position(self, position: pg.Vector2):
         self.position = pg.Vector2(position)
@@ -197,7 +203,7 @@ class Player:
             if player.player_id == self.player_id or not player.is_alive() or player.is_invincible():
                 continue
             # attack if they are close enough
-            if (self.player_radius == Const.INVINCIBLE_BATTERY_PLAYER_RADIUS and magnitude < Const.INVINCIBLE_BATTERY_ATTACK_RADIUS) or magnitude < Const.ATTACK_RADIUS:
+            if (self.player_radius == Const.INVINCIBLE_BATTERY_PLAYER_RADIUS and magnitude < Const.INVINCIBLE_BATTERY_ATTACK_RADIUS) or magnitude < self.attack_radius:
                 unit = (player.position - self.position).normalize()
                 player.be_attacked(unit, magnitude, self.player_id, time)
 

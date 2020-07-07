@@ -203,3 +203,12 @@ IMAGE_PATH = os.path.join('View', 'img')
 SOUND_PATH = os.path.join('View', 'sound')
 VIDEO_PATH = os.path.join('View', 'video')
 FONT_PATH = os.path.join('View', 'fonts')
+
+# Enhancement
+ATTACK_RADIUS_ENHANCEMENT_INDEX = 0
+SPEED_ENHANCEMENT_INDEX = 1
+JUMP_ENHANCEMENT_INDEX = 2
+
+ATTACK_RADIUS_ENHANCEMENT = 0.01
+SPEED_ENHANCEMENT = 0.01
+JUMP_ENHANCEMENT = 0.01
