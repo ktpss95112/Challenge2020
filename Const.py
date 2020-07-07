@@ -28,6 +28,7 @@ VOLTAGE_INCREASE_CONST = 300
 # model-stage setting
 NO_STAGE = -2
 RANDOM_STAGE = -1
+RANDOM_STAGE_TIME = 1 * FPS
 STAGE_NUMBER = 3
 STAGE_1 = 0
 STAGE_2 = 1
@@ -114,7 +115,6 @@ STATE_MENU = 1
 STATE_PLAY = 2
 STATE_STOP = 3
 STATE_ENDGAME = 4 # show score board and handle restart
-RANDOM_STAGE_TIME = 5 * FPS
 
 # model-item
 ITEM_SPECIES = 7

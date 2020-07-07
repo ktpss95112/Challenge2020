@@ -196,7 +196,14 @@ class GameEngine:
         '''
         if self.random_stage_timer > 0:
             self.random_stage_timer -= 1
-            self.stage = random.randrange(Const.STAGE_NUMBER)
+            if self.random_stage_timer > 0.5 * Const.FPS:
+                self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+            elif self.random_stage_timer > 0.25 * Const.FPS:
+                if self.random_stage_timer % 2 == 0:
+                    self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+            else:
+                if self.random_stage_timer % 4 == 0:
+                    self.stage = (self.stage + 1) % Const.STAGE_NUMBER
 
     def update_variable(self):
         self.item_amount = self.item_amount_function(self.timer)
