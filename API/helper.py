@@ -56,7 +56,7 @@ class Helper(object):
     def get_self_invincible_time(self):
         return self.model.players[self.player_id].invincible_time
 
-    def get_self_can_not_control_time(self):
+    def get_self_uncontrollable_time(self):
         return self.model.players[self.player_id].uncontrollable_time
     
     def get_self_life(self):
@@ -96,7 +96,7 @@ class Helper(object):
     def get_all_invincible_time(self):
         return [player.invincible_time for player in self.model.players]
 
-    def get_all_can_not_control_time(self):
+    def get_all_uncontrollable_time(self):
         return [player.uncontrollable_time for player in self.model.players]
     
     def get_all_life(self):
@@ -136,7 +136,7 @@ class Helper(object):
     def get_other_invincible_time(self, index):
         return self.model.players[index].invincible_time
 
-    def get_other_can_not_control_time(self, index):
+    def get_other_uncontrollable_time(self, index):
         return self.model.players[index].uncontrollable_time
     
     def get_other_life(self, index):
