@@ -55,6 +55,7 @@ class Animation_base():
         # update second
         pass
 
+
 class Animation_raster(Animation_base):
     frames = tuple()
 
@@ -119,6 +120,7 @@ class Animation_player_attack(Animation_raster):
 
         if update: self.update()
 
+
 class Animation_player_attack_big(Animation_raster):
     frames = tuple(
         scaled_surface(
@@ -143,6 +145,7 @@ class Animation_player_attack_big(Animation_raster):
         )
 
         if update: self.update()
+
 
 class Animation_Bomb_Explode(Animation_raster):
     frames = tuple(

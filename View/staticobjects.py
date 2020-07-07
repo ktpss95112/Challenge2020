@@ -33,7 +33,6 @@ class __Object_base():
 
 
 class View_platform(__Object_base):
-
     def draw(self, screen):
         screen.fill(Const.BACKGROUND_COLOR)
         for platform in self.model.platforms:
@@ -42,7 +41,6 @@ class View_platform(__Object_base):
 
 
 class View_menu(__Object_base):
-
     def draw(self, screen):
         # screen.blit(self.menu, (0, 0))
         # screen.blit(self.base, (10, 645))
@@ -97,7 +95,6 @@ class View_players(__Object_base):
         for _i in range(0, 40)
     )
 
-
     @classmethod
     def init_convert(cls):
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 15)
@@ -136,7 +133,7 @@ class View_entities(__Object_base):
         # draw players
         for entity in self.model.entities:
             if isinstance(entity, CancerBomb):
-                img_bomb = 'bomber_red' if (entity.timer <= 1 or entity.timer % 2 == 0) else 'bomber'
+                img_bomb = 'bomber_red' if (entity.timer <= 60 or (int)(entity.timer / 9)  % 2 == 0) else 'bomber'
                 screen.blit(self.images[img_bomb], self.images[img_bomb].get_rect(center=entity.position))
 
             elif isinstance(entity, PistolBullet):
