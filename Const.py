@@ -26,20 +26,22 @@ ATTACK_COOL_DOWN_TIME = 1.5 * FPS
 VOLTAGE_INCREASE_CONST = 300
 
 # model-stage setting
-STAGE_RANDOM = -1
-STAGE_NUMBER = 2
-STAGE_0 = 0
-STAGE_1 = 1
+NO_STAGE = -2
+RANDOM_STAGE = -1
+STAGE_NUMBER = 3
+STAGE_1 = 0
+STAGE_2 = 1
+STAGE_3 = 2
 
 LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
 PLATFORM_INIT_POSITION = [
-    [ # stage 0
+    [ # stage 1
         [pg.Vector2(100, 700), pg.Vector2(700, 710)],
         [pg.Vector2(100, 550), pg.Vector2(300, 560)],
         [pg.Vector2(300, 450), pg.Vector2(500, 460)],
         [pg.Vector2(500, 550), pg.Vector2(700, 560)]
     ],
-    [ # stage 1
+    [ # stage 2
         [pg.Vector2(0, 150), pg.Vector2(100, 160)],
         [pg.Vector2(0, 350), pg.Vector2(130, 360)],
         [pg.Vector2(0, 550), pg.Vector2(190, 560)],
@@ -48,30 +50,45 @@ PLATFORM_INIT_POSITION = [
         [pg.Vector2(670, 350), pg.Vector2(800, 360)],
         [pg.Vector2(610, 550), pg.Vector2(800, 560)],
         [pg.Vector2(520, 750), pg.Vector2(800, 760)]
-    ]
+    ],
+    [ # stage 3
+        [pg.Vector2(100, 700), pg.Vector2(700, 710)],
+    ],
 ]
 PLAYER_INIT_POSITION = [
-    [ # stage 0
+    [ # stage 1
         pg.Vector2(100, 650),
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
     ],
-    [ # stage 1
+    [ # stage 2
         pg.Vector2(100, 300),
         pg.Vector2(100, 700),
         pg.Vector2(700, 300),
         pg.Vector2(700, 700)
-    ]
-]
-PLAYER_RESPAWN_POSITION = [
-    [ # stage 0
+    ],
+    [ # stage 3
         pg.Vector2(100, 650),
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
     ],
+]
+PLAYER_RESPAWN_POSITION = [
     [ # stage 1
+        pg.Vector2(100, 650),
+        pg.Vector2(300, 650),
+        pg.Vector2(500, 650),
+        pg.Vector2(700, 650)
+    ],
+    [ # stage 2
+        pg.Vector2(100, 300),
+        pg.Vector2(100, 700),
+        pg.Vector2(700, 300),
+        pg.Vector2(700, 700)
+    ],
+    [ # stage 3
         pg.Vector2(100, 300),
         pg.Vector2(100, 700),
         pg.Vector2(700, 300),
@@ -97,6 +114,7 @@ STATE_MENU = 1
 STATE_PLAY = 2
 STATE_STOP = 3
 STATE_ENDGAME = 4 # show score board and handle restart
+RANDOM_STAGE_TIME = 5 * FPS
 
 # model-item
 ITEM_SPECIES = 7
@@ -178,10 +196,18 @@ PLAYER_MOVE_KEYS = {
     pg.K_a: (0, 'left'),
     pg.K_d: (0, 'right'),
 }
+
 GAME_STOP_KEY = pg.K_SPACE
 GAME_CONTINUE_KEY = pg.K_SPACE
 GAME_RESTART_KEY = pg.K_SPACE
 GAME_FULLSCREEN_KEY = pg.K_F11
+
+menu_keys = {
+    pg.K_1: lambda self : self.ev_manager.post(EventPickArena(STAGE_1)),
+    pg.K_2: lambda self : self.ev_manager.post(EventPickArena(STAGE_2)),
+    pg.K_3: lambda self : self.ev_manager.post(EventPickArena(STAGE_3)),
+    pg.K_r: lambda self : self.ev_manager.post(EventPickArena(RANDOM_STAGE)),
+}
 
 handle_keys = {
     pg.K_UP: lambda self : self.ev_manager.post(EventPlayerJump(3)),
