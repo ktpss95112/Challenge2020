@@ -40,10 +40,17 @@ class Interface(object):
                     self.ev_manager.post(EventPlayerMove(player.player_id, 'right'))
                 elif AI_dir == 2:
                     self.ev_manager.post(EventPlayerJump(player.player_id))
-                elif AI_dir == 3 and player.can_attack():
+                elif AI_dir == 3:
+                    self.ev_manager.post(EventPlayerMove(player.player_id, 'left'))
+                    self.ev_manager.post(EventPlayerJump(player.player_id))
+                elif AI_dir == 4:
+                    self.ev_manager.post(EventPlayerMove(player.player_id, 'right'))
+                    self.ev_manager.post(EventPlayerJump(player.player_id))
+                elif AI_dir == 5 and player.can_attack():
                     self.ev_manager.post(EventPlayerAttack(player.player_id)) 
-                elif AI_dir == 4 and player.has_item():
+                elif AI_dir == 6 and player.has_item():
                     self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
+                    
 
     def initialize(self):
         if self.is_init_AI:

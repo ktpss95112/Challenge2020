@@ -8,13 +8,17 @@ from Model.GameObject.entity import *
 AI_DIR_LEFT        = 0
 AI_DIR_RIGHT       = 1
 AI_DIR_JUMP        = 2
-AI_DIR_ATTACK      = 3
-AI_DIR_USE_ITEM    = 4
+AI_DIR_LEFT_JUMP   = 3
+AI_DIR_RIGHT_JUMP  = 4
+AI_DIR_ATTACK      = 5
+AI_DIR_USE_ITEM    = 6
 JUMP_CONST_DELAY   = 30
 '''
+
 '''
 When return timers or velocity, please use "second" as time unit.
 '''
+
 class Helper(object):
     def __init__(self, model, index):
         self.model = model
@@ -247,7 +251,7 @@ class Helper(object):
         for platform in self.model.platforms:
             if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y:
                 index = count
-            count+=1
+            count += 1
         if position[0] > self.model.platforms[2].upper_left.x - 15 and position[0] < self.model.platforms[2].bottom_right.x + 15 and position[1] < self.model.platforms[2].upper_left.y:
             index = 2
         return index
