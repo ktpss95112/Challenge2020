@@ -75,6 +75,8 @@ class GameEngine:
         while len(self.AI_names) < 4:
             self.AI_names.append("m")
 
+        self.item_amount = Const.ITEMS_INIT_AMOUNT
+
     def initialize(self):
         '''
         This method is called when a new game is instantiated.
@@ -113,6 +115,7 @@ class GameEngine:
             elif cur_state == Const.STATE_PLAY:
                 self.update_players()
                 self.update_objects()
+                self.update_variable()
                 self.timer -= 1
                 # check if game ends
                 cnt = sum(player.is_alive() for player in self.players)
@@ -178,12 +181,18 @@ class GameEngine:
             for entity in entities:
                 self.entities.append(entity)
 
+    def item_amount_function(self, time):
+        return Const.ITEMS_AMOUNT_PARAMETER * time ** 2 + Const.ITEMS_FINAL_AMOUNT
+
     def update_menu(self):
         '''
         Update the objects in welcome scene.
         For example: game title, hint text
         '''
         pass
+
+    def update_variable(self):
+        self.item_amount = self.item_amount_function(self.timer)
 
     def update_players(self):
         '''
@@ -311,8 +320,8 @@ class GameEngine:
         return p1, p2, min_collision_time
 
     def generate_item(self):
-        # In every tick, if item is less than ITEMS_MAX_AMOUNT, it MAY generate one item
-        if len(self.items) < Const.ITEMS_MAX_AMOUNT and random.randint(1, 1000) > 985 :
+        # In every tick, if item is less than item_amount, it MAY generate one item
+        if len(self.items) < int(self.item_amount) and random.randint(1, 1000) > 985  :
             new_item = np.random.choice(np.arange(1, Const.ITEM_SPECIES + 1), p = Const.ITEM_PROBABILITY)
             find_position = False
             while not find_position:
