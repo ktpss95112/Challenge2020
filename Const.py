@@ -122,7 +122,7 @@ ITEMS_MAX_AMOUNT = 6
 ITEM_RADIUS = [7, 7, 7, 7, 7, 7, 7]
 ITEM_DRAG = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 ITEM_INIT_HEIGHT = 10
-ITEM_PROBABILITY = [0.2, 0.05, 0.2, 0.05, 0.2, 0.2, 0.1] # make sure sum = 1
+ITEM_PROBABILITY = [0.2, 0.05, 0.05, 0.2, 0.2, 0.2, 0.1] # make sure sum = 1
 
 # model-entities
 BULLET_TIME = 5 * FPS
@@ -149,7 +149,7 @@ BLACK_HOLE_GRAVITY_ACCELERATION = 500 * FPS
 # view
 WINDOW_CAPTION = 'Challenge 2020'
 WINDOW_SIZE = (1200, 800)
-ARENA_SIZE = (800, 800)
+ARENA_SIZE = (800, 800) 
 BACKGROUND_COLOR = pg.Color('black')
 PLAYER_COLOR = [pg.Color('green'), pg.Color('magenta'), pg.Color('orange'), pg.Color('red')]
 PLAYER_PIC = ['player1_0.png', 'player1_1.png', 'player1_2.png', 'player1_3.png', 'player1_4.png',
