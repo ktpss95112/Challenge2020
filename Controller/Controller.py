@@ -61,6 +61,7 @@ class Controller:
 
     def ctrl_menu(self, key_down_events):
         for event_pg in key_down_events:
+            # TODO: choose menu
             if event_pg.type == pg.KEYDOWN and event_pg.key == pg.K_SPACE:
                 self.ev_manager.post(EventPlay(Const.STAGE_RANDOM))
             else:
