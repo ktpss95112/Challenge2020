@@ -15,9 +15,9 @@ class TeamAI(BaseAI):
         other_pos = self.helper.get_other_position(self.helper.get_nearest_player())
         if self.helper.get_self_keep_item_id() > 0:
             return AI_DIR_USE_ITEM
-        if my_pos[0] < 300:
+        if my_pos[0] < 250:
             return AI_DIR_RIGHT
-        elif my_pos[0] > 500:
+        elif my_pos[0] > 550:
             return AI_DIR_LEFT 
         if other_pos[0] > my_pos[0] and abs(other_pos[0] - my_pos[0]) > 3.5 * my_radius:
             return AI_DIR_RIGHT

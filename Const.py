@@ -168,8 +168,8 @@ handle_keys = {
     pg.K_q: lambda self : self.ev_manager.post(EventPlayerItem(0))
 }
 # Player setting
-NAME = ['manual', 'manual', 'manual', 'manual']
-IS_AI = [False, False, False, False]
+NAME = ['AI', 'AI2', 'AI3', 'AI4']
+IS_AI = [True, True, True, True]
 
 # Path
 IMAGE_PATH = os.path.join('View', 'img')
