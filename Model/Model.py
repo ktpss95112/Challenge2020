@@ -179,13 +179,14 @@ class GameEngine:
                 self.entities.append(entity)
 
         elif isinstance(event, EventPickArena):
-            if event.stage != Const.RANDOM_STAGE:
-                self.stage = event.stage if self.stage == Const.NO_STAGE else Const.NO_STAGE
+            if self.stage == event.stage:
+                self.stage = Const.NO_ITEM
+            elif event.stage != Const.RANDOM_STAGE:
+                self.stage = event.stage
             else:
                 self.random_stage_timer = Const.RANDOM_STAGE_TIME
                 self.stage = random.randrange(Const.STAGE_NUMBER)
                 
-
     def item_amount_function(self, time):
         return Const.ITEMS_AMOUNT_PARAMETER * time ** 2 + Const.ITEMS_FINAL_AMOUNT
 
