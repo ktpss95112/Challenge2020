@@ -66,6 +66,9 @@ class Controller:
             else:
                 self.check_screen_keys(event_pg.key)
 
+
+
+
     def ctrl_play(self, key_down_events):
         
         keys = pg.key.get_pressed()
@@ -75,7 +78,7 @@ class Controller:
         
         for event_pg in key_down_events:
             try:
-                Const.handle_keys[event_pg.key](self)
+                Const.handle_keys[event_pg.key](self, self.model)
             except KeyError:
                 pass
             # detect stop event

@@ -184,18 +184,18 @@ GAME_RESTART_KEY = pg.K_SPACE
 GAME_FULLSCREEN_KEY = pg.K_F11
 
 handle_keys = {
-    pg.K_UP: lambda self : self.ev_manager.post(EventPlayerJump(3)),
-    pg.K_i: lambda self : self.ev_manager.post(EventPlayerJump(2)),
-    pg.K_t: lambda self : self.ev_manager.post(EventPlayerJump(1)),
-    pg.K_w: lambda self : self.ev_manager.post(EventPlayerJump(0)),
-    pg.K_DOWN: lambda self : self.ev_manager.post(EventPlayerAttack(3)),
-    pg.K_k: lambda self : self.ev_manager.post(EventPlayerAttack(2)),
-    pg.K_g: lambda self : self.ev_manager.post(EventPlayerAttack(1)),
-    pg.K_s: lambda self : self.ev_manager.post(EventPlayerAttack(0)),
-    pg.K_RSHIFT: lambda self : self.ev_manager.post(EventPlayerItem(3)),
-    pg.K_u: lambda self : self.ev_manager.post(EventPlayerItem(2)),
-    pg.K_r: lambda self : self.ev_manager.post(EventPlayerItem(1)),
-    pg.K_q: lambda self : self.ev_manager.post(EventPlayerItem(0))
+    pg.K_UP: lambda self, model : self.ev_manager.post(EventPlayerJump(3)),
+    pg.K_i: lambda self, model : self.ev_manager.post(EventPlayerJump(2)),
+    pg.K_t: lambda self, model : self.ev_manager.post(EventPlayerJump(1)),
+    pg.K_w: lambda self, model : self.ev_manager.post(EventPlayerJump(0)),
+    pg.K_DOWN: lambda self, model : self.ev_manager.post(EventPlayerAttack(3)) if self.model.players[3].can_attack() else None,
+    pg.K_k: lambda self, model : self.ev_manager.post(EventPlayerAttack(2)) if self.model.players[2].can_attack() else None,
+    pg.K_g: lambda self, model : self.ev_manager.post(EventPlayerAttack(1)) if self.model.players[1].can_attack() else None,
+    pg.K_s: lambda self, model : self.ev_manager.post(EventPlayerAttack(0)) if self.model.players[0].can_attack() else None,
+    pg.K_RSHIFT: lambda self, model : self.ev_manager.post(EventPlayerItem(3)),
+    pg.K_u: lambda self, model : self.ev_manager.post(EventPlayerItem(2)),
+    pg.K_r: lambda self, model : self.ev_manager.post(EventPlayerItem(1)),
+    pg.K_q: lambda self, model : self.ev_manager.post(EventPlayerItem(0))
 }
 
 # Path
