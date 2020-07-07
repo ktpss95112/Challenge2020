@@ -77,6 +77,10 @@ class Interface(object):
                 traceback.print_exc()
                 player.player_name, player.is_AI = "Error", False
                 continue
+            try:
+                player.enhance(self.player_AI[player.index].enhancement)
+            except:
+                pass
             self.load_msg(str(player.player_id), player.player_name, "Successful to Load")
 
     def load_msg(self, player_id, player_name ,msg):

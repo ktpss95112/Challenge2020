@@ -9,6 +9,8 @@ AI_DIR_USE_ITEM    = 4
 class TeamAI(BaseAI):
     def __init__(self, helper):
         self.helper = helper
+        self.enhancement = [0, 0, 0]
+    
     def decide(self):
         my_pos = self.helper.get_self_position()
         my_radius = self.helper.get_self_radius()
