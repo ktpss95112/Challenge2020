@@ -12,7 +12,9 @@ AI_DIR_ATTACK      = 3
 AI_DIR_USE_ITEM    = 4
 JUMP_CONST_DELAY   = 30
 '''
-
+'''
+When return timers or velocity, please use "second" as time unit.
+'''
 class Helper(object):
     def __init__(self, model, index):
         self.model = model
@@ -251,83 +253,35 @@ class Helper(object):
         return index
     
     # get all entity information
-    def is_entity_exist(self):
-        if self.model.entities:
-            return True
-        else:
-            return False
+    def entity_exists(self):
+        return (True if self.model.entites else False)
     
     def get_all_pistol_bullet_position(self):
-        pistol_bullet_position = []
-        if self.model.entities :
-            for entity in self.model.entities:
-                if isinstance(entity, PistolBullet):
-                    pistol_bullet_position.append(entity.position)
-        return pistol_bullet_position
+        return [entity.position for entity in self.model.entities if isinstance(entity, PistolBullet)]
     
     def get_all_pistol_bullet_timer(self):
-        pistol_bullet_timer = []
-        if self.model.entities :
-            for entity in self.model.entities:
-                if isinstance(entity, PistolBullet):
-                    pistol_bullet_timer.append(entity.timer)
-        return pistol_bullet_timer
+        return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, PistolBullet)]
     
     def get_all_pistol_bullet_velocity(self):
-        pistol_bullet_velocity = []
-        if self.model.entities :
-            for entity in self.model.entities:
-                if isinstance(entity, PistolBullet):
-                    pistol_bullet_velocity.append(entity.velocity)
-        return pistol_bullet_velocity
+        return [tuple(entity.velocity) for entity in self.model.entities if isinstance(entity, PistolBullet)]
             
     def get_all_banana_peel_position(self):
-        banana_peel_position = []
-        if self.model.entities :
-            for entity in self.model.entities:
-                if isinstance(entity, BananaPeel):
-                    banana_peel_position.append(entity.position)
-        return banana_peel_position
+        return [entity.position for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
     def get_all_banana_peel_timer(self):
-        banana_peel_timer = []
-        if self.model.entities :
-            for entity in self.model.entities:
-                if isinstance(entity, BananaPeel):
-                    banana_peel_timer.append(entity.timer)
-        return banana_peel_timer
+        return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
     def get_all_cancer_bomb_position(self):
-        cancer_bomb_position = []
-        if self.model.entities :
-            for entity in self.model.entities:
-                if isinstance(entity, CancerBomb):
-                    cancer_bomb_position.append(entity.position)
-        return cancer_bomb_position
+        return [entity.position for entity in self.model.entities if isinstance(entity, CancerBomb)]
 
     def get_all_cancer_bomb_timer(self):
-        cancer_bomb_timer = []
-        if self.model.entities :
-            for entity in self.model.entities:
-                if isinstance(entity, CancerBomb):
-                    cancer_bomb_timer.append(entity.timer)
-        return cancer_bomb_timer
+        return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, CancerBomb)]
     
     def get_all_big_black_hole_position(self):
-        big_black_hole_position = []
-        if self.model.entities :
-            for entity in self.model.entities:
-                if isinstance(entity, BigBlackHole):
-                    big_black_hole_position.append(entity.position)
-        return big_black_hole_position
+        return [entity.position for entity in self.model.entities if isinstance(entity, BigBlackHole)]
 
     def get_all_big_black_hole_timer(self):
-        big_black_hole_timer = []
-        if self.model.entities :
-            for entity in self.model.entities:
-                if isinstance(entity, BigBlackHole):
-                    big_black_hole_timer.append(entity.timer)
-        return big_black_hole_timer
+        return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BigBlackHole)]
 
     def walk_to_position(self,target_position):
         player_position = tuple(self.model.players[self.player_id].position)
