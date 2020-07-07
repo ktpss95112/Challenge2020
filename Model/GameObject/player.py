@@ -109,7 +109,6 @@ class Player:
             self.attack_cool_down_time -= 1
 
     def move_every_tick(self):
-        prev_position_y = self.position.y
         self.position += self.velocity / Const.FPS
 
     def find_item_every_tick(self, items: list):
