@@ -46,25 +46,26 @@ class View_menu(__Object_base):
         # screen.blit(self.base, (10, 645))
         screen.fill(Const.BACKGROUND_COLOR)
 
-        # TODO: use View.utils.PureText to render static words
-        titlefont = pg.font.Font(os.path.join(Const.FONT_PATH, 'digitalt', 'Digitalt.ttf'), 125)
-        titlesmallfont = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 20)
+        background = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'menu.png')), 0.24)
+        screen.blit(background, (0, 0))
+        pass
 
-        words_1 = titlefont.render     ('Electroshock', True, pg.Color('white'))
-        words_2 = titlesmallfont.render('presented by 2020 NTU CSIE CAMP', True, pg.Color('white'))
-        words_3 = titlesmallfont.render('press [space] to start game', True, pg.Color('white'))
-        (size_x_1, size_y_1) = words_1.get_size()
-        (size_x_2, size_y_2) = words_2.get_size()
-        (size_x_3, size_y_3) = words_3.get_size()
-        pos_x_1 = (Const.WINDOW_SIZE[0] - size_x_1) / 2
-        pos_y_1 = (Const.WINDOW_SIZE[1] - size_y_1 - 450) / 2
-        pos_x_2 = (Const.WINDOW_SIZE[0] - size_x_2) / 2
-        pos_y_2 = (Const.WINDOW_SIZE[1] - size_y_2) / 2
-        pos_x_3 = (Const.WINDOW_SIZE[0] - size_x_3) / 2
-        pos_y_3 = (Const.WINDOW_SIZE[1] - size_y_3 + 50) / 2
-        screen.blit(words_1, (pos_x_1, pos_y_1))
-        screen.blit(words_2, (pos_x_2, pos_y_2))
-        screen.blit(words_3, (pos_x_3, pos_y_3))
+
+
+        if self.model.stage == Const.NO_STAGE or self.model.random_stage_timer > 0:
+            pg.draw.rect(screen, Const.BACKGROUND_COLOR, (466, 692, 267, 42))
+
+        if self.model.stage == Const.STAGE_1:
+            highlight = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'stage_1.png')), 0.24)
+            screen.blit(highlight, (219, 389))
+
+        elif self.model.stage == Const.STAGE_2:
+            highlight = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'stage_2.png')), 0.24)
+            screen.blit(highlight, (487, 389))
+
+        elif self.model.stage == Const.STAGE_3:
+            highlight = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'stage_3.png')), 0.24)
+            screen.blit(highlight, (755, 389))
 
 
 class View_endgame(__Object_base):

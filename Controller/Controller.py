@@ -1,5 +1,5 @@
 import pygame as pg
-
+import random
 from Events.EventManager import *
 from Model.Model import GameEngine
 import Const
@@ -61,16 +61,19 @@ class Controller:
 
     def ctrl_menu(self, key_down_events):
         for event_pg in key_down_events:
-            if event_pg.type == pg.KEYDOWN and event_pg.key == pg.K_SPACE:
-                self.ev_manager.post(EventPlay(Const.STAGE_RANDOM))
-            else:
-                self.check_screen_keys(event_pg.key)
+            try:
+                Const.menu_keys[event_pg.key](self)
+            except KeyError:
+                pass
+            if self.model.stage != Const.NO_STAGE and self.model.random_stage_timer == 0:
+                if event_pg.type == pg.KEYDOWN and event_pg.key == pg.K_SPACE:
+                    self.ev_manager.post(EventPlay())
+            self.check_screen_keys(event_pg.key)
 
 
 
 
     def ctrl_play(self, key_down_events):
-        
         keys = pg.key.get_pressed()
         for k, v in Const.PLAYER_MOVE_KEYS.items():
             if keys[k]:

@@ -253,14 +253,14 @@ class Helper(object):
     def get_above_which_land(self, position):
         index = -1
         count = 0
-        if self.model.stage == Const.STAGE_0:
+        if self.model.stage == Const.STAGE_1:
             for platform in self.model.platforms:
                 if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y:
                     index = count
                 count+=1
             if position[0] > self.model.platforms[2].upper_left.x - 15 and position[0] < self.model.platforms[2].bottom_right.x + 15 and position[1] < self.model.platforms[2].upper_left.y:
                 index = 2
-        if self.model.stage == Const.STAGE_1:
+        if self.model.stage == Const.STAGE_2:
             for platform in self.model.platforms:
                 if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y and index < 0:
                     index = count
@@ -304,7 +304,7 @@ class Helper(object):
         player_above_which_land = self.get_above_which_land(player_position)
         target_above_which_land = self.get_above_which_land(target_position)
         command = AI_DIR_ATTACK
-        if self.model.stage == Const.STAGE_0:
+        if self.model.stage == Const.STAGE_1:
             if player_above_which_land == -1:
                 if self.jump_delay == 0:
                     self.jump_delay = JUMP_CONST_DELAY
@@ -366,7 +366,7 @@ class Helper(object):
                     command = AI_DIR_RIGHT
                 elif player_position[0] > target_position[0]:
                     command = AI_DIR_LEFT
-        elif self.model.stage == Const.STAGE_1:
+        elif self.model.stage == Const.STAGE_2:
             if player_above_which_land == -1:
                 if self.jump_delay == 0:
                     self.jump_delay = JUMP_CONST_DELAY

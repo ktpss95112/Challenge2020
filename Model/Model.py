@@ -83,18 +83,15 @@ class GameEngine:
         '''
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
-        self.stage = Const.STAGE_0
+        self.random_stage_timer = 0
+        self.stage = Const.NO_STAGE
         self.init_players()
         self.state_machine.push(Const.STATE_MENU)
 
     def init_players(self):
         self.players = [ Player(i, 'manual', False) if name == 'm' else Player(i, name, True) for name, i in zip(self.AI_names, range(4)) ]
 
-    def init_stage(self, stage):
-        if stage == Const.STAGE_RANDOM:
-            self.stage = random.randrange(0, Const.STAGE_NUMBER)
-        else:
-            self.stage = stage
+    def init_stage(self):
         for player in self.players:
             player.set_position(Const.PLAYER_INIT_POSITION[self.stage][player.player_id])
         self.platforms = [Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION[self.stage]]
@@ -125,7 +122,7 @@ class GameEngine:
                 self.update_endgame()
 
         elif isinstance(event, EventPlay):
-            self.init_stage(event.stage)
+            self.init_stage()
             self.state_machine.push(Const.STATE_PLAY)
 
         elif isinstance(event, EventStop):
@@ -181,15 +178,32 @@ class GameEngine:
             for entity in entities:
                 self.entities.append(entity)
 
+        elif isinstance(event, EventPickArena):
+            if self.stage == event.stage:
+                self.stage = Const.NO_STAGE
+            elif event.stage != Const.RANDOM_STAGE:
+                self.stage = event.stage
+            else:
+                self.random_stage_timer = Const.RANDOM_STAGE_TIME
+                self.stage = random.randrange(Const.STAGE_NUMBER)
+                
     def item_amount_function(self, time):
         return Const.ITEMS_AMOUNT_PARAMETER * time ** 2 + Const.ITEMS_FINAL_AMOUNT
 
     def update_menu(self):
         '''
-        Update the objects in welcome scene.
-        For example: game title, hint text
+        Update stage
         '''
-        pass
+        if self.random_stage_timer > 0:
+            self.random_stage_timer -= 1
+            if self.random_stage_timer > 0.5 * Const.FPS:
+                self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+            elif self.random_stage_timer > 0.25 * Const.FPS:
+                if self.random_stage_timer % 2 == 0:
+                    self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+            else:
+                if self.random_stage_timer % 4 == 0:
+                    self.stage = (self.stage + 1) % Const.STAGE_NUMBER
 
     def update_variable(self):
         self.item_amount = self.item_amount_function(self.timer)
