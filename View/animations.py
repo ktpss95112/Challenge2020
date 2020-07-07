@@ -17,10 +17,12 @@ while True:
 '''
 import os
 import pygame as pg
+import numpy as np
 
 from Events.EventManager import *
 from Model.Model import GameEngine
 from Model.GameObject.player import Player
+from Model.GameObject.item import Item
 from View.utils import scaled_surface, load_image
 import Const
 
@@ -95,6 +97,49 @@ class Animation_raster(Animation_base):
         if update: self.update()
 
 
+class Animation_Bomb_Explode(Animation_raster):
+    frames = tuple(
+        scaled_surface(
+            pg.transform.rotate(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 2*_i),
+                0.01*_i
+            )
+            for _i in range(1, 36)
+    )
+
+    def __init__(self, **pos):
+        super().__init__(2, len(self.frames), **pos)
+
+
+class Animation_Lightning(Animation_raster):
+    lightning = pg.transform.smoothscale(load_image(os.path.join(Const.IMAGE_PATH, 'lightning.png')),
+    (int(2 * Const.ZAP_ZAP_ZAP_RANGE), 800))
+
+    @classmethod
+    def init_convert(cls):
+        cls.lightning = cls.lightning.convert_alpha()
+
+    def __init__(self, pos):
+        self._timer = 0
+        self.delay_of_frames = 2
+        self.expire_time = 50
+        self.expired = False # turn tuple into vec2
+        self.pos = pos - Const.ZAP_ZAP_ZAP_RANGE
+
+    def update(self):
+        self._timer += 1
+        if self._timer == self.expire_time:
+            self.expired = True
+
+    def draw(self, screen, update=True):
+        self.image = self.lightning.subsurface(pg.Rect(0, 0, 2 * Const.ZAP_ZAP_ZAP_RANGE, (Const.ARENA_SIZE[0] / self.expire_time) * self._timer))
+        screen.blit(
+            self.image,
+            (self.pos,0),
+        )
+
+        if update: self.update()
+
+
 class Animation_player_attack(Animation_raster):
     frames = tuple(
         scaled_surface(
@@ -105,6 +150,7 @@ class Animation_player_attack(Animation_raster):
     )
 
     def __init__(self, player: Player):
+        # TODO: refactor the following code, use super().__init__
         self._timer = 0
         self.delay_of_frames = 2
         self.frame_index_to_draw = 0
@@ -131,6 +177,7 @@ class Animation_player_attack_big(Animation_raster):
     )
 
     def __init__(self, player: Player):
+        # TODO: refactor the following code, use super().__init__
         self._timer = 0
         self.delay_of_frames = 2
         self.frame_index_to_draw = 0
@@ -158,10 +205,24 @@ class Animation_Bomb_Explode(Animation_raster):
 
     def __init__(self, **pos):
         super().__init__(2, len(self.frames), **pos)
+        r = Const.BOMB_SCREEN_VIBRATION_RADIUS
+        self.vibration = np.zeros((Const.BOMB_TIME, 2), dtype=np.int8)
+        self.vibration[:Const.BOMB_SCREEN_VIBRATION_DURATION, :] = np.random.randint(-r, r+1, size=(Const.BOMB_SCREEN_VIBRATION_DURATION, 2))
+
+    def draw(self, screen, update=True):
+        screen.blit(
+            self.frames[self.frame_index_to_draw],
+            self.frames[self.frame_index_to_draw].get_rect(**self.pos),
+        )
+        screen.blit(screen.copy(), self.vibration[self._timer])
+
+        if update: self.update()
 
 
 def init_animation():
     Animation_player_attack.init_convert()
+    Animation_player_attack_big.init_convert()
     Animation_Bomb_Explode.init_convert()
+    Animation_Lightning.init_convert()
 
 

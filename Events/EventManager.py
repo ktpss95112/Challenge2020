@@ -52,13 +52,18 @@ class EventInitialize(BaseEvent):
     '''
 
 
+class EventPickArena(BaseEvent):
+    name = 'StageSelect Event'
+
+    def __init__(self, stage):
+        self.stage = stage
+
+
 class EventPlay(BaseEvent):
     name = 'GamePlay event'
     '''
     game play and model stage change to STATE_PLAY
     '''
-    def __init__(self, stage: int):
-        self.stage = stage
 
 
 class EventStop(BaseEvent):

@@ -4,15 +4,17 @@ import os.path
 
 # model-game
 FPS = 60 # frame per second
-GAME_LENGTH = 300 * FPS
+GAME_LENGTH = 180 * FPS
 
 # model-player
 PLAYER_RADIUS = 25
 VALID_KO_TIME = 3 * FPS
 PLAYER_LIFE = 5
 PLAYER_INIT_VELOCITY = pg.Vector2(0, 0)
-PLAYER_NORMAL_SPEED = 150
-PLAYER_JUMP_SPEED = 1200
+PLAYER_INIT_SPEED = 150
+PLAYER_FINAL_SPEED = 300
+PLAYER_SPEED_PARAMETER = (PLAYER_INIT_SPEED - PLAYER_FINAL_SPEED) / GAME_LENGTH ** 2
+PLAYER_JUMP_SPEED = 900
 DIRECTION_TO_VEC2 = {
     'left': pg.Vector2(-1, 0),
     'right': pg.Vector2(1, 0),
@@ -24,20 +26,23 @@ ATTACK_COOL_DOWN_TIME = 1.5 * FPS
 VOLTAGE_INCREASE_CONST = 300
 
 # model-stage setting
-STAGE_RANDOM = -1
-STAGE_NUMBER = 2
-STAGE_0 = 0
-STAGE_1 = 1
+NO_STAGE = -2
+RANDOM_STAGE = -1
+RANDOM_STAGE_TIME = 1 * FPS
+STAGE_NUMBER = 3
+STAGE_1 = 0
+STAGE_2 = 1
+STAGE_3 = 2
 
 LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
 PLATFORM_INIT_POSITION = [
-    [ # stage 0
+    [ # stage 1
         [pg.Vector2(100, 700), pg.Vector2(700, 710)],
         [pg.Vector2(100, 550), pg.Vector2(300, 560)],
         [pg.Vector2(300, 450), pg.Vector2(500, 460)],
         [pg.Vector2(500, 550), pg.Vector2(700, 560)]
     ],
-    [ # stage 1
+    [ # stage 2
         [pg.Vector2(0, 150), pg.Vector2(100, 160)],
         [pg.Vector2(0, 350), pg.Vector2(130, 360)],
         [pg.Vector2(0, 550), pg.Vector2(190, 560)],
@@ -46,30 +51,45 @@ PLATFORM_INIT_POSITION = [
         [pg.Vector2(670, 350), pg.Vector2(800, 360)],
         [pg.Vector2(610, 550), pg.Vector2(800, 560)],
         [pg.Vector2(520, 750), pg.Vector2(800, 760)]
-    ]
+    ],
+    [ # stage 3
+        [pg.Vector2(100, 700), pg.Vector2(700, 710)],
+    ],
 ]
 PLAYER_INIT_POSITION = [
-    [ # stage 0
+    [ # stage 1
         pg.Vector2(100, 650),
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
     ],
-    [ # stage 1
+    [ # stage 2
         pg.Vector2(100, 300),
         pg.Vector2(100, 700),
         pg.Vector2(700, 300),
         pg.Vector2(700, 700)
-    ]
-]
-PLAYER_RESPAWN_POSITION = [
-    [ # stage 0
+    ],
+    [ # stage 3
         pg.Vector2(100, 650),
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
     ],
+]
+PLAYER_RESPAWN_POSITION = [
     [ # stage 1
+        pg.Vector2(100, 650),
+        pg.Vector2(300, 650),
+        pg.Vector2(500, 650),
+        pg.Vector2(700, 650)
+    ],
+    [ # stage 2
+        pg.Vector2(100, 300),
+        pg.Vector2(100, 700),
+        pg.Vector2(700, 300),
+        pg.Vector2(700, 700)
+    ],
+    [ # stage 3
         pg.Vector2(100, 300),
         pg.Vector2(100, 700),
         pg.Vector2(700, 300),
@@ -85,7 +105,7 @@ DRAG_COEFFICIENT = 0.00005
 VERTICAL_DRAG_EMERGE_SPEED = -1500
 ATTENUATION_COEFFICIENT = 0.5
 VERTICAL_SPEED_MINIMUM = 500
-HORIZONTAL_SPEED_MINIMUM = 20
+HORIZONTAL_SPEED_MINIMUM = 100
 BE_ATTACKED_ACCELERATION = 1200 * FPS
 BE_ATTACKED_MAX_ACCELERATION_DISTANCE = 20
 
@@ -120,11 +140,14 @@ INVINCIBLE_BATTERY_ATTACK_RADIUS = 2 * ATTACK_RADIUS
 INVINCIBLE_BATTERY_TIME = 5 * FPS
 RESPAWN_INVINCIBLE_TIME = 2 * FPS
 
-ITEMS_MAX_AMOUNT = 6
+ITEMS_INIT_AMOUNT = 6
+ITEMS_FINAL_AMOUNT = 10
+ITEMS_AMOUNT_PARAMETER = (ITEMS_INIT_AMOUNT - ITEMS_FINAL_AMOUNT) / GAME_LENGTH ** 2
 ITEM_RADIUS = [7, 7, 7, 7, 7, 7, 7]
 ITEM_DRAG = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 ITEM_INIT_HEIGHT = 10
 ITEM_PROBABILITY = [0.2, 0.05, 0.2, 0.05, 0.2, 0.2, 0.1] # make sure sum = 1
+GENERATE_ITEM_PROBABILITY = 985 # GENERATE_ITEM_PROBABILITY / 1000
 
 # model-entities
 BULLET_TIME = 5 * FPS
@@ -136,9 +159,11 @@ BANANA_PEEL_RADIUS = 8
 BANANA_PEEL_AFFECT_TIME = 1 * FPS
 
 BOMB_TIME = 3 * FPS
-BOMB_EXPLODE_RADIUS = 50
+BOMB_EXPLODE_RADIUS = 16 * PLAYER_RADIUS
 BOMB_ATK = 50
 BOMB_MINIMUM_DISTANCE = 30
+BOMB_SCREEN_VIBRATION_RADIUS = 15
+BOMB_SCREEN_VIBRATION_DURATION = 15
 
 BLACK_HOLE_TIME = 5 * FPS
 BLACK_HOLE_RADIUS = 10
@@ -150,7 +175,7 @@ BLACK_HOLE_GRAVITY_ACCELERATION = 500 * FPS
 WINDOW_CAPTION = 'Challenge 2020'
 WINDOW_SIZE = (1200, 800)
 ARENA_SIZE = (800, 800)
-BACKGROUND_COLOR = pg.Color('black')
+BACKGROUND_COLOR = pg.Color(0x23, 0x23, 0x23)
 PLAYER_COLOR = [pg.Color('green'), pg.Color('magenta'), pg.Color('orange'), pg.Color('red')]
 PLAYER_PIC = ['player1_0.png', 'player1_1.png', 'player1_2.png', 'player1_3.png', 'player1_4.png',
               'player2_0.png', 'player2_2.png', 'player2_4.png', 'player2_1.png', 'player2_3.png',
@@ -175,24 +200,32 @@ PLAYER_MOVE_KEYS = {
     pg.K_a: (0, 'left'),
     pg.K_d: (0, 'right'),
 }
+
 GAME_STOP_KEY = pg.K_SPACE
 GAME_CONTINUE_KEY = pg.K_SPACE
 GAME_RESTART_KEY = pg.K_SPACE
 GAME_FULLSCREEN_KEY = pg.K_F11
 
+menu_keys = {
+    pg.K_1: lambda self : self.ev_manager.post(EventPickArena(STAGE_1)),
+    pg.K_2: lambda self : self.ev_manager.post(EventPickArena(STAGE_2)),
+    pg.K_3: lambda self : self.ev_manager.post(EventPickArena(STAGE_3)),
+    pg.K_r: lambda self : self.ev_manager.post(EventPickArena(RANDOM_STAGE)),
+}
+
 handle_keys = {
-    pg.K_UP: lambda self : self.ev_manager.post(EventPlayerJump(3)),
-    pg.K_i: lambda self : self.ev_manager.post(EventPlayerJump(2)),
-    pg.K_t: lambda self : self.ev_manager.post(EventPlayerJump(1)),
-    pg.K_w: lambda self : self.ev_manager.post(EventPlayerJump(0)),
-    pg.K_DOWN: lambda self : self.ev_manager.post(EventPlayerAttack(3)),
-    pg.K_k: lambda self : self.ev_manager.post(EventPlayerAttack(2)),
-    pg.K_g: lambda self : self.ev_manager.post(EventPlayerAttack(1)),
-    pg.K_s: lambda self : self.ev_manager.post(EventPlayerAttack(0)),
-    pg.K_RSHIFT: lambda self : self.ev_manager.post(EventPlayerItem(3)),
-    pg.K_u: lambda self : self.ev_manager.post(EventPlayerItem(2)),
-    pg.K_r: lambda self : self.ev_manager.post(EventPlayerItem(1)),
-    pg.K_q: lambda self : self.ev_manager.post(EventPlayerItem(0))
+    pg.K_UP: lambda self, model : self.ev_manager.post(EventPlayerJump(3)),
+    pg.K_i: lambda self, model : self.ev_manager.post(EventPlayerJump(2)),
+    pg.K_t: lambda self, model : self.ev_manager.post(EventPlayerJump(1)),
+    pg.K_w: lambda self, model : self.ev_manager.post(EventPlayerJump(0)),
+    pg.K_DOWN: lambda self, model : self.ev_manager.post(EventPlayerAttack(3)) if self.model.players[3].can_attack() else None,
+    pg.K_k: lambda self, model : self.ev_manager.post(EventPlayerAttack(2)) if self.model.players[2].can_attack() else None,
+    pg.K_g: lambda self, model : self.ev_manager.post(EventPlayerAttack(1)) if self.model.players[1].can_attack() else None,
+    pg.K_s: lambda self, model : self.ev_manager.post(EventPlayerAttack(0)) if self.model.players[0].can_attack() else None,
+    pg.K_RSHIFT: lambda self, model : self.ev_manager.post(EventPlayerItem(3)),
+    pg.K_u: lambda self, model : self.ev_manager.post(EventPlayerItem(2)),
+    pg.K_r: lambda self, model : self.ev_manager.post(EventPlayerItem(1)),
+    pg.K_q: lambda self, model : self.ev_manager.post(EventPlayerItem(0))
 }
 
 # Path
@@ -200,3 +233,12 @@ IMAGE_PATH = os.path.join('View', 'img')
 SOUND_PATH = os.path.join('View', 'sound')
 VIDEO_PATH = os.path.join('View', 'video')
 FONT_PATH = os.path.join('View', 'fonts')
+
+# Enhancement
+ATTACK_RADIUS_ENHANCEMENT_INDEX = 0
+SPEED_ENHANCEMENT_INDEX = 1
+JUMP_ENHANCEMENT_INDEX = 2
+
+ATTACK_RADIUS_ENHANCEMENT = 0.01
+SPEED_ENHANCEMENT = 0.01
+JUMP_ENHANCEMENT = 0.01

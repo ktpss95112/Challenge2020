@@ -94,6 +94,10 @@ class GraphicalView:
         elif isinstance(event, EventBombExplode):
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
+        elif isinstance(event, EventPlayerUseItem):
+            if event.item_id == 4:
+                self.animation_list.append(View.animations.Animation_Lightning(self.model.players[event.player_id].position.x))
+
     def display_fps(self):
         '''
         Display the current fps on the window caption.
@@ -127,7 +131,7 @@ class GraphicalView:
         # draw timer
         self.timer.draw(target)
 
-        #draw scoreboard
+        # draw scoreboard
         self.scoreboard.draw(target)
 
         # draw animation
