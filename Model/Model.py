@@ -180,7 +180,7 @@ class GameEngine:
 
         elif isinstance(event, EventPickArena):
             if self.stage == event.stage:
-                self.stage = Const.NO_ITEM
+                self.stage = Const.NO_STAGE
             elif event.stage != Const.RANDOM_STAGE:
                 self.stage = event.stage
             else:
