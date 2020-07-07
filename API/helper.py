@@ -25,7 +25,7 @@ class Helper(object):
         self.model = model
         self.player_id = index
         self.player_radius = Const.PLAYER_RADIUS
-        self.player_normal_speed = Const.PLAYER_NORMAL_SPEED
+        self.player_normal_speed = Const.PLAYER_INIT_SPEED
         self.player_jump_speed = Const.PLAYER_JUMP_SPEED
         self.player_respawn_position = Const.PLAYER_RESPAWN_POSITION
         self.player_gravity_acceleration = Const.GRAVITY_ACCELERATION
