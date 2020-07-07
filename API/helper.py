@@ -55,7 +55,7 @@ class Helper(object):
         return self.model.players[self.player_id].player_radius
 
     def get_self_is_invincible(self):
-        return (self.model.players[self.player_id].invincible_time > 0)
+        return (self.model.players[self.player_id].is_invincible())
     
     def get_self_invincible_time(self):
         return self.model.players[self.player_id].invincible_time / Const.FPS
@@ -98,7 +98,7 @@ class Helper(object):
         return [player.player_radius for player in self.model.players]
 
     def get_all_is_invincible(self):
-        return [player.invincible_time > 0 for player in self.model.players]
+        return [player.is_invincible() for player in self.model.players]
     
     def get_all_invincible_time(self):
         return [player.invincible_time / Const.FPS for player in self.model.players]
@@ -141,7 +141,7 @@ class Helper(object):
         return self.model.players[index].player_radius
 
     def get_other_is_invincible(self, index):
-        return (self.model.players[index].invincible_time > 0)
+        return (self.model.players[index].is_invincible())
     
     def get_other_invincible_time(self, index):
         return self.model.players[index].invincible_time / Const.FPS
