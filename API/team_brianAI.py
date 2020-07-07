@@ -27,7 +27,7 @@ class TeamAI(BaseAI):
         my_radius = self.helper.get_self_radius()
         other_pos = self.helper.get_other_position(self.helper.get_nearest_player())
 
-        if self.helper.get_distance(my_pos, other_pos) < self.helper.attack_radius / 8 and self.helper.get_self_can_attack_time() == 0:
+        if self.helper.get_distance(my_pos, other_pos) < self.helper.get_self_attack_radius() / 8 and self.helper.get_self_can_attack_time() == 0:
             return AI_DIR_ATTACK
 
         lands = self.helper.get_platform_position()
@@ -71,7 +71,7 @@ class TeamAI(BaseAI):
 
         self.last_position = my_pos
 
-        if self.helper.get_distance(my_pos, other_pos) > self.helper.attack_radius / 2:
+        if self.helper.get_distance(my_pos, other_pos) > self.helper.get_self_attack_radius() / 2:
             if other_pos[1] < my_pos[1]:
                 if other_pos[0] > my_pos[0]:
                     return AI_DIR_RIGHT_JUMP

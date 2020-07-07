@@ -24,19 +24,8 @@ class Helper(object):
     def __init__(self, model, index):
         self.model = model
         self.player_id = index
-        self.player_radius = Const.PLAYER_RADIUS
-        self.player_normal_speed = Const.PLAYER_INIT_SPEED
-        self.player_jump_speed = Const.PLAYER_JUMP_SPEED
-        self.player_respawn_position = Const.PLAYER_RESPAWN_POSITION
-        self.player_gravity_acceleration = Const.GRAVITY_ACCELERATION
-        self.attack_radius = Const.ATTACK_RADIUS
-        self.be_attacked_acceleration = Const.BE_ATTACKED_ACCELERATION
-        self.drag_critical_speed = Const.DRAG_CRITICAL_SPEED
-        self.drag_coefficient = Const.DRAG_COEFFICIENT
-        self.arena_size = Const.ARENA_SIZE
-        self.life_boundary = tuple(Const.LIFE_BOUNDARY)
         self.jump_delay = 0
-        
+
     # get self information
     def get_self_id(self):
         return self.player_id
@@ -59,6 +48,9 @@ class Helper(object):
     def get_self_radius(self):
         return self.model.players[self.player_id].player_radius
 
+    def get_self_attack_radius(self):
+        return self.model.players[self.player_id].attack_radius
+
     def get_self_is_invincible(self):
         return (self.model.players[self.player_id].is_invincible())
     
@@ -78,7 +70,7 @@ class Helper(object):
         return self.model.players[self.player_id].jump_quota
 
     def get_self_jump_to_the_highest_time(self):
-        return self.model.players[self.player_id].velocity.y / self.player_gravity_acceleration
+        return self.model.players[self.player_id].velocity.y / Const.GRAVITY_ACCELERATION
 
     def get_self_can_attack_time(self):
         return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
@@ -102,6 +94,9 @@ class Helper(object):
     def get_all_radius(self):
         return [player.player_radius for player in self.model.players]
 
+    def get_all_attack_radius(self):
+        return [player.attack_radius for player in self.model.players]
+
     def get_all_is_invincible(self):
         return [player.is_invincible() for player in self.model.players]
     
@@ -121,7 +116,7 @@ class Helper(object):
         return [player.jump_quota for player in self.model.players]
 
     def get_all_jump_to_the_highest_time(self):
-        return [player.velocity.y / self.player_gravity_acceleration for player in self.model.players]
+        return [player.velocity.y / Const.GRAVITY_ACCELERATION for player in self.model.players]
     
     def get_all_can_attack_time(self):
         return [player.attack_cool_down_time / Const.FPS for player in self.model.players]
@@ -145,6 +140,9 @@ class Helper(object):
     def get_other_radius(self, index):
         return self.model.players[index].player_radius
 
+    def get_other_attack_radius(self, index):
+        return self.model.players[index].attack_radius
+
     def get_other_is_invincible(self, index):
         return (self.model.players[index].is_invincible())
     
@@ -164,7 +162,7 @@ class Helper(object):
         return self.model.players[index].jump_quota
 
     def get_other_jump_to_the_highest_time(self, index):
-        return self.model.players[index].velocity.y / self.player_gravity_acceleration
+        return self.model.players[index].velocity.y / Const.GRAVITY_ACCELERATION
 
     def get_other_can_attack_time(self, index):
         return self.model.players[index].attack_cool_down_time / Const.FPS
@@ -267,7 +265,6 @@ class Helper(object):
                 count+=1
         return index
 
-    
     # get all entity information
     def entity_exists(self):
         return (True if self.model.entites else False)
