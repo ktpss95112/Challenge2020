@@ -3,6 +3,7 @@ import pygame as pg
 import Const
 
 from Model.GameObject.entity import *
+
 '''
 AI_DIR_LEFT        = 0
 AI_DIR_RIGHT       = 1
@@ -11,6 +12,7 @@ AI_DIR_ATTACK      = 3
 AI_DIR_USE_ITEM    = 4
 JUMP_CONST_DELAY   = 30
 '''
+
 class Helper(object):
     def __init__(self, model, index):
         self.model = model
@@ -54,10 +56,10 @@ class Helper(object):
         return (self.model.players[self.player_id].invincible_time > 0)
     
     def get_self_invincible_time(self):
-        return self.model.players[self.player_id].invincible_time
+        return self.model.players[self.player_id].invincible_time / Const.FPS
 
     def get_self_uncontrollable_time(self):
-        return self.model.players[self.player_id].uncontrollable_time
+        return self.model.players[self.player_id].uncontrollable_time / Const.FPS
     
     def get_self_life(self):
         return self.model.players[self.player_id].life
@@ -70,6 +72,9 @@ class Helper(object):
 
     def get_self_jump_to_the_highest_time(self):
         return self.model.players[self.player_id].velocity.y / self.player_gravity_acceleration
+
+    def get_self_can_attack_time(self):
+        return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
 
     # get all player information    
     def get_all_position(self):
@@ -94,10 +99,10 @@ class Helper(object):
         return [player.invincible_time > 0 for player in self.model.players]
     
     def get_all_invincible_time(self):
-        return [player.invincible_time for player in self.model.players]
+        return [player.invincible_time / Const.FPS for player in self.model.players]
 
     def get_all_uncontrollable_time(self):
-        return [player.uncontrollable_time for player in self.model.players]
+        return [player.uncontrollable_time / Const.FPS for player in self.model.players]
     
     def get_all_life(self):
         return [player.life for player in self.model.players]
@@ -110,7 +115,10 @@ class Helper(object):
 
     def get_all_jump_to_the_highest_time(self):
         return [player.velocity.y / self.player_gravity_acceleration for player in self.model.players]
-
+    
+    def get_all_can_attack_time(self):
+        return [player.attack_cool_down_time / Const.FPS for player in self.model.players]
+    
     # get other players information
     def get_other_position(self, index):
         return tuple(self.model.players[index].position)
@@ -134,10 +142,10 @@ class Helper(object):
         return (self.model.players[index].invincible_time > 0)
     
     def get_other_invincible_time(self, index):
-        return self.model.players[index].invincible_time
+        return self.model.players[index].invincible_time / Const.FPS
 
     def get_other_uncontrollable_time(self, index):
-        return self.model.players[index].uncontrollable_time
+        return self.model.players[index].uncontrollable_time / Const.FPS
     
     def get_other_life(self, index):
         return self.model.players[index].life
@@ -150,6 +158,9 @@ class Helper(object):
 
     def get_other_jump_to_the_highest_time(self, index):
         return self.model.players[index].velocity.y / self.player_gravity_acceleration
+
+    def get_self_can_attack_time(self, index):
+        return self.model.players[index].attack_cool_down_time / Const.FPS
 
     # get item information
     def get_all_item_position(self):
@@ -387,7 +398,3 @@ class Helper(object):
         if(self.jump_delay > 0):
             self.jump_delay-=1
         return command
-        
-    
-    # TODO:
-    # get can attack time
