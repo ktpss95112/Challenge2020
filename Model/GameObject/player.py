@@ -5,6 +5,7 @@ import Const
 from Model.GameObject.entity import *
 
 class Player:
+
     def __init__(self, player_id, player_name, is_AI):
         # basic
         self.player_name = player_name
@@ -23,7 +24,7 @@ class Player:
         self.direction = pg.Vector2(1,0)
         self.position = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
-        self.normal_speed = Const.PLAYER_NORMAL_SPEED # speed gain when players try to move left and right
+        self.normal_speed = Const.PLAYER_INIT_SPEED # speed gain when players try to move left and right
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
         # others
         self.last_being_attacked_by = -1
@@ -52,7 +53,13 @@ class Player:
     def set_position(self, position: pg.Vector2):
         self.position = pg.Vector2(position)
 
-    def update_every_tick(self, platforms: list):
+    def speed_function(self, time):
+        return Const.PLAYER_SPEED_PARAMETER * time ** 2 + Const.PLAYER_FINAL_SPEED
+
+    def update_every_tick(self, platforms: list, time):
+        # Maintain normal speed
+        self.maintain_speed_every_tick(time)
+
         # Maintain position
         self.move_every_tick()
 
@@ -61,6 +68,9 @@ class Player:
 
         # Maintain three timers
         self.maintain_timer_every_tick()
+
+    def maintain_speed_every_tick(self, time):
+        self.normal_speed = self.speed_function(time)
 
     def maintain_velocity_every_tick(self):
         # Modify the horizontal velocity (drag)

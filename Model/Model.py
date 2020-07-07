@@ -196,7 +196,7 @@ class GameEngine:
         for player in self.players:
             if player.is_alive():
                 # maintain position, velocity and timer
-                player.update_every_tick(self.platforms)
+                player.update_every_tick(self.platforms, self.timer)
 
                 # maintain items
                 if not player.has_item():
