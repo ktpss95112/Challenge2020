@@ -161,7 +161,7 @@ class Helper(object):
     def get_other_jump_to_the_highest_time(self, index):
         return self.model.players[index].velocity.y / self.player_gravity_acceleration
 
-    def get_self_can_attack_time(self, index):
+    def get_other_can_attack_time(self, index):
         return self.model.players[index].attack_cool_down_time / Const.FPS
 
     # get item information
