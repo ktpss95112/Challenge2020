@@ -23,7 +23,7 @@ def load_image(path):
     if path not in __image_cache:
         __image_cache[path] = pg.image.load(path)
 
-    return __image_cache[path]
+    return __image_cache[path].copy()
 
 
 def scaled_surface(surface, scale):
@@ -53,6 +53,7 @@ def replace_color(path, origin, target):
     im = Image.fromarray(data)
     im2 = pg.image.fromstring(im.tobytes(), im.size, im.mode)
     return im2
+
 
 def overlay_color(im_path, color,scale ,transparency):
     im = Image.open(im_path)

@@ -32,7 +32,7 @@ class Interface(object):
 
     def API_play(self):
         for player in self.model.players:
-            if player.is_AI:
+            if player.is_AI and player.is_alive():
                 AI_dir = self.player_AI[player.player_id].decide()
                 if AI_dir == 0:
                     self.ev_manager.post(EventPlayerMove(player.player_id, 'left'))
@@ -40,12 +40,10 @@ class Interface(object):
                     self.ev_manager.post(EventPlayerMove(player.player_id, 'right'))
                 elif AI_dir == 2:
                     self.ev_manager.post(EventPlayerJump(player.player_id))
-                elif AI_dir == 3:
+                elif AI_dir == 3 and player.can_attack():
                     self.ev_manager.post(EventPlayerAttack(player.player_id)) 
-                elif AI_dir == 4:
-                    self.ev_manager.post(EventPlayerPickItem(player.player_id))
-                elif AI_dir == 5:
-                    self.ev_manager.post(EventPlayerUseItem(player.player_id))
+                elif AI_dir == 4 and player.has_item():
+                    self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
 
     def initialize(self):
         if self.is_init_AI:

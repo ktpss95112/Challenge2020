@@ -1,4 +1,5 @@
 import pygame as pg
+from Events.EventManager import *
 import os.path
 
 # model-game
@@ -18,24 +19,33 @@ DIRECTION_TO_VEC2 = {
 }
 PLAYER_JUMP_QUOTA = 3
 
-ATTACK_RADIUS = 8 * PLAYER_RADIUS
+ATTACK_RADIUS = 12 * PLAYER_RADIUS
 ATTACK_COOL_DOWN_TIME = 1.5 * FPS
 VOLTAGE_INCREASE_CONST = 300
 
 # model-stage setting
+STAGE_RANDOM = -1
+STAGE_NUMBER = 2
+STAGE_0 = 0
+STAGE_1 = 1
+
 LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
-'''
-PLATFORM_INIT_POSITION = [
-    [pg.Vector2(100, 730), pg.Vector2(700, 740)],
-    [pg.Vector2(100, 500), pg.Vector2(400, 510)]
-]
-'''
 PLATFORM_INIT_POSITION = [
     [ # stage 0
         [pg.Vector2(100, 700), pg.Vector2(700, 710)],
         [pg.Vector2(100, 550), pg.Vector2(300, 560)],
         [pg.Vector2(300, 450), pg.Vector2(500, 460)],
         [pg.Vector2(500, 550), pg.Vector2(700, 560)]
+    ],
+    [ # stage 1
+        [pg.Vector2(0, 150), pg.Vector2(100, 160)],
+        [pg.Vector2(0, 350), pg.Vector2(130, 360)],
+        [pg.Vector2(0, 550), pg.Vector2(190, 560)],
+        [pg.Vector2(0, 750), pg.Vector2(280, 760)],
+        [pg.Vector2(700, 150), pg.Vector2(800, 160)],
+        [pg.Vector2(670, 350), pg.Vector2(800, 360)],
+        [pg.Vector2(610, 550), pg.Vector2(800, 560)],
+        [pg.Vector2(520, 750), pg.Vector2(800, 760)]
     ]
 ]
 PLAYER_INIT_POSITION = [
@@ -44,6 +54,12 @@ PLAYER_INIT_POSITION = [
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
+    ],
+    [ # stage 1
+        pg.Vector2(100, 300),
+        pg.Vector2(100, 700),
+        pg.Vector2(700, 300),
+        pg.Vector2(700, 700)
     ]
 ]
 PLAYER_RESPAWN_POSITION = [
@@ -52,6 +68,12 @@ PLAYER_RESPAWN_POSITION = [
         pg.Vector2(300, 650),
         pg.Vector2(500, 650),
         pg.Vector2(700, 650)
+    ],
+    [ # stage 1
+        pg.Vector2(100, 300),
+        pg.Vector2(100, 700),
+        pg.Vector2(700, 300),
+        pg.Vector2(700, 700)
     ]
 ]
 
@@ -90,6 +112,8 @@ HAS_CUT_IN = [False, False, True, False, False, False, False, False]
 ZAP_ZAP_ZAP_RANGE = 5 * PLAYER_RADIUS
 ZAP_ZAP_ZAP_SELF_VOLTAGE_UP = 10
 ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP = 50
+ZAP_ZAP_ZAP_VERTICAL_ACCELERATION = 800
+ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION = 1000
 RAINBOW_GROUNDER_VOLTAGE_DOWN = 10
 INVINCIBLE_BATTERY_PLAYER_RADIUS = 2 * PLAYER_RADIUS
 INVINCIBLE_BATTERY_ATTACK_RADIUS = 2 * ATTACK_RADIUS
@@ -114,10 +138,11 @@ BANANA_PEEL_AFFECT_TIME = 1 * FPS
 BOMB_TIME = 3 * FPS
 BOMB_EXPLODE_RADIUS = 50
 BOMB_ATK = 50
+BOMB_MINIMUM_DISTANCE = 30
 
 BLACK_HOLE_TIME = 5 * FPS
 BLACK_HOLE_RADIUS = 10
-BLACK_HOLE_EFFECT_RADIUS = 2 * PLAYER_RADIUS
+BLACK_HOLE_EFFECT_RADIUS = 10 * PLAYER_RADIUS
 BLACK_HOLE_FLOATING_VELOCITY = 5
 BLACK_HOLE_GRAVITY_ACCELERATION = 500 * FPS
 
@@ -150,32 +175,25 @@ PLAYER_MOVE_KEYS = {
     pg.K_a: (0, 'left'),
     pg.K_d: (0, 'right'),
 }
-PLAYER_JUMP_KEYS = {
-    pg.K_UP: 3,
-    pg.K_i: 2,
-    pg.K_t: 1,
-    pg.K_w: 0
-}
-PLAYER_ITEM_KEYS = {
-    pg.K_RSHIFT: 3,
-    pg.K_u: 2,
-    pg.K_r: 1,
-    pg.K_q: 0
-}
-PLAYER_ATTACK_KEYS = {
-    pg.K_DOWN: 3,
-    pg.K_k: 2,
-    pg.K_g: 1,
-    pg.K_s: 0
-}
 GAME_STOP_KEY = pg.K_SPACE
 GAME_CONTINUE_KEY = pg.K_SPACE
 GAME_RESTART_KEY = pg.K_SPACE
 GAME_FULLSCREEN_KEY = pg.K_F11
 
-# Player setting
-NAME = ['manual', 'manual', 'manual', 'manual']
-IS_AI = [False, False, False, False]
+handle_keys = {
+    pg.K_UP: lambda self : self.ev_manager.post(EventPlayerJump(3)),
+    pg.K_i: lambda self : self.ev_manager.post(EventPlayerJump(2)),
+    pg.K_t: lambda self : self.ev_manager.post(EventPlayerJump(1)),
+    pg.K_w: lambda self : self.ev_manager.post(EventPlayerJump(0)),
+    pg.K_DOWN: lambda self : self.ev_manager.post(EventPlayerAttack(3)),
+    pg.K_k: lambda self : self.ev_manager.post(EventPlayerAttack(2)),
+    pg.K_g: lambda self : self.ev_manager.post(EventPlayerAttack(1)),
+    pg.K_s: lambda self : self.ev_manager.post(EventPlayerAttack(0)),
+    pg.K_RSHIFT: lambda self : self.ev_manager.post(EventPlayerItem(3)),
+    pg.K_u: lambda self : self.ev_manager.post(EventPlayerItem(2)),
+    pg.K_r: lambda self : self.ev_manager.post(EventPlayerItem(1)),
+    pg.K_q: lambda self : self.ev_manager.post(EventPlayerItem(0))
+}
 
 # Path
 IMAGE_PATH = os.path.join('View', 'img')
