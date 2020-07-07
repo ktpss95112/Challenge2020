@@ -4,7 +4,7 @@ import Const
 
 from Model.GameObject.entity import *
 
-'''
+
 AI_DIR_LEFT        = 0
 AI_DIR_RIGHT       = 1
 AI_DIR_JUMP        = 2
@@ -15,7 +15,7 @@ AI_DIR_USE_ITEM    = 6
 
 
 JUMP_CONST_DELAY   = 30
-'''
+
 
 '''
 When return timers or velocity, please use "second" as time unit.
