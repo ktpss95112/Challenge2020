@@ -26,6 +26,27 @@ class Helper(object):
         self.player_id = index
         self.jump_delay = 0
 
+    # get game information
+    def get_game_left_time(self):
+        return (Const.GAME_LENGTH - self.model.timer) / Const.FPS
+
+    def get_game_stage(self):
+        return self.model.stage
+
+    def get_game_arena_boundary(self):
+        # return top-left and bottom-right coordinate
+        return ((0, 0), Const.ARENA_SIZE)
+
+    def get_game_life_boundary(self):
+        # return top-left and bottom-right
+        return ((Const.LIFE_BOUNDARY[0], Const.LIFE_BOUNDARY[1]), (Const.LIFE_BOUNDARY[2], Const.LIFE_BOUNDARY[3]))
+
+    def get_game_player_gravity_acceleration(self):
+        return Const.GRAVITY_ACCELERATION / Const.FPS
+
+    def get_game_item_gravity_acceleration(self):
+        return Const.GRAVITY_ACCELERATION_FOR_ITEM / Const.FPS
+
     # get self information
     def get_self_id(self):
         return self.player_id
@@ -177,10 +198,6 @@ class Helper(object):
     # get platform information 
     def get_platform_position(self):
         return [(tuple(platform.upper_left), tuple(platform.bottom_right)) for platform in self.model.platforms]
-
-    # get which map is used
-    def get_which_map(self):
-        return self.model.stage
     
     # get special information
     def get_nearest_player(self):  # when the nearest_player not only one?
