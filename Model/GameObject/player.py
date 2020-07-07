@@ -5,6 +5,7 @@ import Const
 from Model.GameObject.entity import *
 
 class Player:
+
     def __init__(self, player_id, player_name, is_AI):
         # basic
         self.player_name = player_name
@@ -12,6 +13,7 @@ class Player:
         self.is_AI = is_AI
         # status
         self.life = Const.PLAYER_LIFE
+        self.attack_radius = Const.ATTACK_RADIUS
         self.player_radius = Const.PLAYER_RADIUS
         self.voltage = 0
         self.keep_item_id = Const.NO_ITEM
@@ -23,7 +25,7 @@ class Player:
         self.direction = pg.Vector2(1,0)
         self.position = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
-        self.normal_speed = Const.PLAYER_NORMAL_SPEED # speed gain when players try to move left and right
+        self.normal_speed = Const.PLAYER_INIT_SPEED # speed gain when players try to move left and right
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
         # others
         self.last_being_attacked_by = -1
@@ -49,10 +51,21 @@ class Player:
     def has_item(self):
         return self.keep_item_id != Const.NO_ITEM
 
+    def enhance(self, enhancement):
+        self.attack_radius *= (1 + enhancement[Const.ATTACK_RADIUS_ENHANCEMENT_INDEX] * Const.ATTACK_RADIUS_ENHANCEMENT)
+        self.normal_speed *= (1 + enhancement[Const.SPEED_ENHANCEMENT_INDEX] * Const.SPEED_ENHANCEMENT)
+        self.jump_speed *= (1 + enhancement[Const.JUMP_ENHANCEMENT_INDEX] * Const.JUMP_ENHANCEMENT)
+
     def set_position(self, position: pg.Vector2):
         self.position = pg.Vector2(position)
 
-    def update_every_tick(self, platforms: list):
+    def speed_function(self, time):
+        return Const.PLAYER_SPEED_PARAMETER * time ** 2 + Const.PLAYER_FINAL_SPEED
+
+    def update_every_tick(self, platforms: list, time):
+        # Maintain normal speed
+        self.maintain_speed_every_tick(time)
+
         # Maintain position
         self.move_every_tick()
 
@@ -61,6 +74,9 @@ class Player:
 
         # Maintain three timers
         self.maintain_timer_every_tick()
+
+    def maintain_speed_every_tick(self, time):
+        self.normal_speed = self.speed_function(time)
 
     def maintain_velocity_every_tick(self):
         # Modify the horizontal velocity (drag)
@@ -93,7 +109,6 @@ class Player:
             self.attack_cool_down_time -= 1
 
     def move_every_tick(self):
-        prev_position_y = self.position.y
         self.position += self.velocity / Const.FPS
 
     def find_item_every_tick(self, items: list):
@@ -187,7 +202,7 @@ class Player:
             if player.player_id == self.player_id or not player.is_alive() or player.is_invincible():
                 continue
             # attack if they are close enough
-            if (self.player_radius == Const.INVINCIBLE_BATTERY_PLAYER_RADIUS and magnitude < Const.INVINCIBLE_BATTERY_ATTACK_RADIUS) or magnitude < Const.ATTACK_RADIUS:
+            if (self.player_radius == Const.INVINCIBLE_BATTERY_PLAYER_RADIUS and magnitude < Const.INVINCIBLE_BATTERY_ATTACK_RADIUS) or magnitude < self.attack_radius:
                 unit = (player.position - self.position).normalize()
                 player.be_attacked(unit, magnitude, self.player_id, time)
 

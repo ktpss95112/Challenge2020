@@ -75,24 +75,23 @@ class GameEngine:
         while len(self.AI_names) < 4:
             self.AI_names.append("m")
 
+        self.item_amount = Const.ITEMS_INIT_AMOUNT
+
     def initialize(self):
         '''
         This method is called when a new game is instantiated.
         '''
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
-        self.stage = Const.STAGE_0
+        self.random_stage_timer = 0
+        self.stage = Const.NO_STAGE
         self.init_players()
         self.state_machine.push(Const.STATE_MENU)
 
     def init_players(self):
         self.players = [ Player(i, 'manual', False) if name == 'm' else Player(i, name, True) for name, i in zip(self.AI_names, range(4)) ]
 
-    def init_stage(self, stage):
-        if stage == Const.STAGE_RANDOM:
-            self.stage = random.randrange(0, Const.STAGE_NUMBER)
-        else:
-            self.stage = stage
+    def init_stage(self):
         for player in self.players:
             player.set_position(Const.PLAYER_INIT_POSITION[self.stage][player.player_id])
         self.platforms = [Platform(position[0], position[1]) for position in Const.PLATFORM_INIT_POSITION[self.stage]]
@@ -113,6 +112,7 @@ class GameEngine:
             elif cur_state == Const.STATE_PLAY:
                 self.update_players()
                 self.update_objects()
+                self.update_variable()
                 self.timer -= 1
                 # check if game ends
                 cnt = sum(player.is_alive() for player in self.players)
@@ -122,7 +122,7 @@ class GameEngine:
                 self.update_endgame()
 
         elif isinstance(event, EventPlay):
-            self.init_stage(event.stage)
+            self.init_stage()
             self.state_machine.push(Const.STATE_PLAY)
 
         elif isinstance(event, EventStop):
@@ -178,12 +178,35 @@ class GameEngine:
             for entity in entities:
                 self.entities.append(entity)
 
+        elif isinstance(event, EventPickArena):
+            if self.stage == event.stage:
+                self.stage = Const.NO_STAGE
+            elif event.stage != Const.RANDOM_STAGE:
+                self.stage = event.stage
+            else:
+                self.random_stage_timer = Const.RANDOM_STAGE_TIME
+                self.stage = random.randrange(Const.STAGE_NUMBER)
+                
+    def item_amount_function(self, time):
+        return Const.ITEMS_AMOUNT_PARAMETER * time ** 2 + Const.ITEMS_FINAL_AMOUNT
+
     def update_menu(self):
         '''
-        Update the objects in welcome scene.
-        For example: game title, hint text
+        Update stage
         '''
-        pass
+        if self.random_stage_timer > 0:
+            self.random_stage_timer -= 1
+            if self.random_stage_timer > 0.5 * Const.FPS:
+                self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+            elif self.random_stage_timer > 0.25 * Const.FPS:
+                if self.random_stage_timer % 2 == 0:
+                    self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+            else:
+                if self.random_stage_timer % 4 == 0:
+                    self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+
+    def update_variable(self):
+        self.item_amount = self.item_amount_function(self.timer)
 
     def update_players(self):
         '''
@@ -196,7 +219,7 @@ class GameEngine:
         for player in self.players:
             if player.is_alive():
                 # maintain position, velocity and timer
-                player.update_every_tick(self.platforms)
+                player.update_every_tick(self.platforms, self.timer)
 
                 # maintain items
                 if not player.has_item():
@@ -311,8 +334,8 @@ class GameEngine:
         return p1, p2, min_collision_time
 
     def generate_item(self):
-        # In every tick, if item is less than ITEMS_MAX_AMOUNT, it MAY generate one item
-        if len(self.items) < Const.ITEMS_MAX_AMOUNT and random.randint(1, 1000) > 985 :
+        # In every tick, if item is less than item_amount, it MAY generate one item
+        if len(self.items) < int(self.item_amount) and random.randint(1, 1000) > Const.GENERATE_ITEM_PROBABILITY:
             new_item = np.random.choice(np.arange(1, Const.ITEM_SPECIES + 1), p = Const.ITEM_PROBABILITY)
             find_position = False
             while not find_position:
