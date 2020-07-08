@@ -47,6 +47,7 @@ class GraphicalView:
         # convert images
         View.staticobjects.init_staticobjects()
         View.animations.init_animation()
+        View.cutins.init_cutin()
 
         # animations
         self.animation_list = []
@@ -109,8 +110,6 @@ class GraphicalView:
             if event.item_id == Const.ZAP_ZAP_ZAP:
                 self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id))
             elif event.item_id == Const.BIG_BLACK_HOLE:
-                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id))
-            else:
                 self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id))
 
     def display_fps(self):
