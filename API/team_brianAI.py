@@ -28,11 +28,6 @@ class TeamAI(BaseAI):
         return min_vec
     
     def decide(self):
-     
-        if len(self.stack) > 0:
-            rt = self.stack[-1]
-            self.stack.pop()
-            return rt
 
         my_pos = self.helper.get_self_position()
         my_radius = self.helper.get_self_radius()
@@ -46,10 +41,11 @@ class TeamAI(BaseAI):
         bound = self.helper.get_game_arena_boundary()
         lands = self.helper.get_platform_position()
 
-        if my_pos[0] < bound[0][0] + 5:
-            return AI_DIR_RIGHT_JUMP
-        elif my_pos[0] > bound[1][0] - 5:
-            return AI_DIR_LEFT_JUMP
+        if my_speed[1] >= 0:
+            if my_pos[0] < bound[0][0] + self.helper.get_self_radius():
+                return AI_DIR_RIGHT_JUMP
+            elif my_pos[0] > bound[1][0] - self.helper.get_self_radius():
+                return AI_DIR_LEFT_JUMP
 
         if self.helper.get_distance(my_pos, other_pos) < self.helper.get_self_attack_radius() / 8 and self.helper.get_self_can_attack_time() == 0:
             return AI_DIR_ATTACK
@@ -60,15 +56,21 @@ class TeamAI(BaseAI):
             if platform[0][1] > my_pos[1]:
                 h = platform[0][1] - my_pos[1]
                 t = (-my_speed[1] + math.sqrt(my_speed[1] ** 2 + 2 * h * self.helper.get_game_player_gravity_acceleration()))/ self.helper.get_game_player_gravity_acceleration()
-                if platform[0][0] + self.helper.get_self_radius()  < my_pos[0] + my_speed[0] * t < platform[1][0] - self.helper.get_self_radius():
+                if platform[0][0] + self.helper.get_self_radius() * 1.5  < my_pos[0] + my_speed[0] * t < platform[1][0] - self.helper.get_self_radius() * 1.5:
                     flag = 0
+        
+        if my_speed[1] >= 0:
+            if flag == 1:
+                land_vec = self.get_position_vector_to_closest_land(my_pos, lands)
+                if land_vec[0] > 0:
+                    return AI_DIR_RIGHT_JUMP
+                else:
+                    return AI_DIR_LEFT_JUMP
 
-        if flag == 1:
-            land_vec = self.get_position_vector_to_closest_land(my_pos, lands)
-            if land_vec[0] > 0:
-                return AI_DIR_RIGHT_JUMP
-            else:
-                return AI_DIR_LEFT_JUMP
+        if len(self.stack) > 0:
+            rt = self.stack[-1]
+            self.stack.pop()
+            return rt
 
         if self.helper.get_self_keep_item_id() > 0:
             if self.helper.get_self_keep_item_id() == 1:
