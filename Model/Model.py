@@ -76,6 +76,7 @@ class GameEngine:
             self.AI_names.append("m")
 
         self.item_amount = Const.ITEMS_INIT_AMOUNT
+        check_probability()
 
     def initialize(self):
         '''
@@ -362,6 +363,10 @@ class GameEngine:
         while self.running:
             self.ev_manager.post(EventEveryTick())
             self.clock.tick(Const.FPS)
+
+def check_probability():
+    if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
+        print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
 
 
 """ Events that model.py should handle.
