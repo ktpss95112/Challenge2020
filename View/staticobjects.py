@@ -50,6 +50,11 @@ class View_menu(__Object_base):
         screen.blit(background, (0, 0))
         pass
 
+
+
+        if self.model.stage == Const.NO_STAGE or self.model.random_stage_timer > 0:
+            pg.draw.rect(screen, Const.BACKGROUND_COLOR, (466, 692, 267, 42))
+
         if self.model.stage == Const.STAGE_1:
             highlight = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'stage_1.png')), 0.24)
             screen.blit(highlight, (219, 389))

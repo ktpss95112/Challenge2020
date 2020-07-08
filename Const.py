@@ -171,7 +171,7 @@ BLACK_HOLE_GRAVITY_ACCELERATION = 500 * FPS
 WINDOW_CAPTION = 'Challenge 2020'
 WINDOW_SIZE = (1200, 800)
 ARENA_SIZE = (800, 800)
-BACKGROUND_COLOR = pg.Color('black')
+BACKGROUND_COLOR = pg.Color(0x23, 0x23, 0x23)
 PLAYER_COLOR = [pg.Color('green'), pg.Color('magenta'), pg.Color('orange'), pg.Color('red')]
 PLAYER_PIC = ['player1_0.png', 'player1_1.png', 'player1_2.png', 'player1_3.png', 'player1_4.png',
               'player2_0.png', 'player2_2.png', 'player2_4.png', 'player2_1.png', 'player2_3.png',
