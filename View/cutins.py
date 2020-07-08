@@ -33,8 +33,6 @@ class Cutin_base():
 
 
 class Cutin_board(Cutin_base):
-    frames = tuple()
-
     # TODO: Image of board
     board_image = pg.Surface(Const.CUTIN_BOARD_SIZE, pg.SRCALPHA)
     board_image.fill((192, 192, 192))
@@ -50,14 +48,11 @@ class Cutin_board(Cutin_base):
 
     @classmethod
     def init_convert(cls):
-        cls.frames = tuple( _frame.convert_alpha() for _frame in cls.frames )
         cls.players = tuple( _player.convert_alpha() for _player in cls.players)
 
-    def __init__(self, player_id, delay_of_frames, expire_time):
+    def __init__(self, player_id, expire_time=Const.FPS):
         self.player_id = player_id
         self._timer = 0
-        self.delay_of_frames = delay_of_frames
-        self.frame_index_to_draw = 0
         self.expire_time = expire_time
         self.expired = False
         self.board = pg.Surface(Const.CUTIN_BOARD_SIZE, pg.SRCALPHA)
@@ -111,7 +106,7 @@ class Cutin_board(Cutin_base):
 class Cutin_text(Cutin_board):
     skill_name = 'Skill Name'
     def __init__(self, player_id):
-        super().__init__(player_id, 1, 3 * Const.FPS)
+        super().__init__(player_id)
         self.type_time = np.zeros(len(self.skill_name), dtype=np.int8)
         self.type_time[:] = np.random.randint(5, 20, size=len(self.skill_name))
         self.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
@@ -151,6 +146,10 @@ class Cutin_text(Cutin_board):
             else:
                 self.type_time[i] -= 1
                 break
+        if self.type_time[-1] == 0 and self._timer :
+
+        else:
+            word += '_'
         return word + '_'
         
 
