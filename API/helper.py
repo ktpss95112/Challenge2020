@@ -287,7 +287,7 @@ class Helper(object):
         return (True if self.model.entites else False)
     
     def get_all_pistol_bullet_position(self):
-        return [entity.position for entity in self.model.entities if isinstance(entity, PistolBullet)]
+        return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, PistolBullet)]
     
     def get_all_pistol_bullet_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, PistolBullet)]
@@ -296,19 +296,19 @@ class Helper(object):
         return [tuple(entity.velocity) for entity in self.model.entities if isinstance(entity, PistolBullet)]
             
     def get_all_banana_peel_position(self):
-        return [entity.position for entity in self.model.entities if isinstance(entity, BananaPeel)]
+        return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
     def get_all_banana_peel_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
     def get_all_cancer_bomb_position(self):
-        return [entity.position for entity in self.model.entities if isinstance(entity, CancerBomb)]
+        return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, CancerBomb)]
 
     def get_all_cancer_bomb_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, CancerBomb)]
     
     def get_all_big_black_hole_position(self):
-        return [entity.position for entity in self.model.entities if isinstance(entity, BigBlackHole)]
+        return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BigBlackHole)]
 
     def get_all_big_black_hole_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BigBlackHole)]
