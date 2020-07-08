@@ -4,7 +4,13 @@ import random
 import Const
 from Model.GameObject.entity import *
 
-class Player:
+class Player(object):
+    __slots__ = ('player_name', 'player_id', 'is_AI',\
+                'life', 'attack_radius', 'player_radius', 'voltage', 'keep_item_id',\
+                'invincible_time', 'uncontrollable_time', 'attack_cool_down_time', 'jump_quota',\
+                'direction', 'position', 'velocity', 'normal_speed', 'jump_speed',\
+                'last_being_attacked_by', 'last_being_attacked_time_elapsed',\
+                'KO_amount', 'be_KO_amount', 'score')
 
     def __init__(self, player_id, player_name, is_AI):
         # basic

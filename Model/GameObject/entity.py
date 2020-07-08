@@ -3,7 +3,9 @@ import pygame as pg
 import random
 
 # If update_every_tick return False,it should be removed from entity list
-class Entity:
+class Entity(object):
+    __slots__ = ('user_id', 'position')
+
     def __init__(self, user_id, position):
         self.user_id = user_id
         self.position = position
@@ -13,6 +15,8 @@ class Entity:
 
 
 class PistolBullet(Entity):
+    __slots__ = ('timer', 'velocity')
+
     def __init__(self, user_id, position, direction): # direction is a unit pg.vec2
         super().__init__(user_id, position)
         self.timer = Const.BULLET_TIME
@@ -39,6 +43,8 @@ class PistolBullet(Entity):
 
 
 class BigBlackHole(Entity):
+    __slots__ = ('timer',)
+
     def __init__(self, user_id, position):
         super().__init__(user_id, position)
         self.timer = Const.BLACK_HOLE_TIME
@@ -80,6 +86,8 @@ class BigBlackHole(Entity):
 
 
 class CancerBomb(Entity):
+    __slots__ = ('timer', 'velocity')
+
     def __init__(self, user_id, position):
         super().__init__(user_id, position)
         self.timer = Const.BOMB_TIME
@@ -113,6 +121,8 @@ class CancerBomb(Entity):
 
 
 class BananaPeel(Entity):
+    __slots__ = ('timer', 'velocity')
+
     # Make the player temparorily can't control move direction,the player wouldn't be affect by drag force while affected.
     def __init__(self, user_id, position): #direction is a unit pg.vec2
         super().__init__(user_id, position)

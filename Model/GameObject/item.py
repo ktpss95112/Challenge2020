@@ -1,7 +1,9 @@
 import Const
 import pygame as pg
 
-class Item:
+class Item(object):
+    __slots__ = ('item_id', 'position', 'item_radius', 'velocity', 'drag')
+
     def __init__(self, item_id, position, item_radius, drag):
         self.item_id = item_id
         self.position = position
