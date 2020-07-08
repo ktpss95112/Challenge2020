@@ -103,11 +103,12 @@ class GraphicalView:
                 self.animation_list.append(View.animations.Animation_Lightning(self.model.players[event.player_id].position.x))
         
         elif isinstance(event, EventCutInStart):
-            self.render_play(target=self.stop_screen, update=False)            
+            self.render_play(target=self.stop_screen, update=False)
+
             if event.item_id == Const.ZAP_ZAP_ZAP:
-                # TODO
                 self.cutin_list.append(View.animations.Animation_Lightning(self.model.players[event.player_id].position.x))
-                #self.ev_manager.post(EventCutInEnd())
+            elif event.item_id = Const.BIG_BLACK_HOLE:
+                self.cutin
 
     def display_fps(self):
         '''
