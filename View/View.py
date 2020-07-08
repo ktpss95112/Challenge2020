@@ -4,6 +4,7 @@ from Events.EventManager import *
 from Model.Model import GameEngine
 import View.staticobjects
 import View.animations
+import View.cutins
 import Const
 
 
@@ -106,8 +107,10 @@ class GraphicalView:
             self.render_play(target=self.stop_screen, update=False)
 
             if event.item_id == Const.ZAP_ZAP_ZAP:
-                self.cutin_list.append(View.animations.Animation_Lightning(self.model.players[event.player_id].position.x))
+                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap())
             elif event.item_id == Const.BIG_BLACK_HOLE:
+                self.cutin_list.append(View.cutins.Cutin_big_black_hole())
+            else:
                 self.cutin_list.append(View.cutins.Cutin_big_black_hole())
 
     def display_fps(self):

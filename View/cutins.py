@@ -34,11 +34,13 @@ class Cutin_base():
 
 class Cutin_raster(Cutin_base):
     frames = tuple()
+    # TODO: Make board beautiful
+    board = pg.Surface(Const.CUTIN_BOARD_SIZE, pg.SRCALPHA)
 
     @classmethod
     def init_convert(cls):
         cls.frames = tuple( _frame.convert_alpha() for _frame in cls.frames )
-    
+
     def __init__(self, delay_of_frames, expire_time):
         self._timer = 0
         self.delay_of_frames = delay_of_frames
@@ -48,21 +50,37 @@ class Cutin_raster(Cutin_base):
 
     def update(self):
         self._timer += 1
-        
+        self.update_board_position()
         if self._timer == self.expire_time:
             self.expired = True
-        elif self._timer % self.delay_of_frames == 0:
-            self.frame_index_to_draw = (self.frame_index_to_draw + 1) % len(self.frames)
 
     def draw(self, screen, update=True):
         screen.blit(
-            self.frames[self.frame_index_to_draw],
-            self.frames[self.frame_index_to_draw].get_rect(**self.pos),
+            self.board,
+            self.board.get_rect(center=self.board_position)
         )
 
-        if update: self.update()
+        if update:
+            self.update()
+    
+    def update_board_position(self):
+        self.board_position[1] += self.board_speed / Const.FPS
+        self.board_speed += Const.CUTIN_GRAVITY / Const.FPS
+        distance = Const.CUTIN_BOARD_FINAL_POSITION[1] - self.board_position[1]
+        if distance < 0:
+            self.board_speed *= -Const.ATTENUATION_COEFFICIENT
+            self.board_position[1] += 2 * distance
+        if abs(self.board_speed) < Const.CUTIN_SPEED_MINIMUM:
+            self.board_speed = 0
 
 
 class Cutin_big_black_hole(Cutin_raster):
     def __init__(self):
-        super().__init__(2, len(self.frames))
+        super().__init__(1, 120)
+        self.board_speed = 0
+        self.board_position = list(Const.CUTIN_BOARD_INITIAL_POSITION)
+        
+
+class Cutin_zap_zap_zap(Cutin_raster):
+    def __init__(self):
+        super().__init__(1, 120)
