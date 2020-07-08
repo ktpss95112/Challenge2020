@@ -120,7 +120,7 @@ class View_players(__Object_base):
 
 class View_entities(__Object_base):
     images = {
-        'bomber'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
+        'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber_normal.png')), 0.15),
         'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber_red.png')), 0.15),
         'bananabullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
         'lightning'   : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2)
@@ -134,7 +134,7 @@ class View_entities(__Object_base):
         # draw players
         for entity in self.model.entities:
             if isinstance(entity, CancerBomb):
-                img_bomb = 'bomber_red' if (entity.timer <= 60 or (int)(entity.timer / 9)  % 2 == 0) else 'bomber'
+                img_bomb = 'bomber_red' if (entity.timer <= 60 or (int)(entity.timer / 9)  % 2 == 0) else 'bomber_normal'
                 screen.blit(self.images[img_bomb], self.images[img_bomb].get_rect(center=entity.position))
 
             elif isinstance(entity, PistolBullet):
@@ -192,13 +192,13 @@ class View_scoreboard(__Object_base):
 
 class View_items(__Object_base):
     images = {
-        Const.BANANA_PISTOL     : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
-        Const.BIG_BLACK_HOLE    : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.2),
-        Const.CANCER_BOMB       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
-        Const.ZAP_ZAP_ZAP       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.15),
-        Const.BANANA_PEEL       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.1),
+        Const.BANANA_PISTOL     : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.04),
+        Const.BIG_BLACK_HOLE    : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.05),
+        Const.CANCER_BOMB       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.055),
+        Const.ZAP_ZAP_ZAP       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.06),
+        Const.BANANA_PEEL       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.04),
         Const.RAINBOW_GROUNDER  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_rainbowGrounder.png')), 0.05),
-        Const.INVINCIBLE_BATTERY: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.02)
+        Const.INVINCIBLE_BATTERY: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.05)
     }
 
     @classmethod
