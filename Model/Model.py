@@ -16,6 +16,8 @@ class StateMachine(object):
     peek(), pop() and push() perform as traditionally expected.
     peeking and popping an empty stack returns None.
     '''
+    __slots__ = ('statestack',)
+
     def __init__(self):
         self.statestack = []
 
@@ -56,10 +58,14 @@ class StateMachine(object):
         self.statestack = []
 
 
-class GameEngine:
+class GameEngine(object):
     '''
     The main game engine. The main loop of the game is in GameEngine.run()
     '''
+    __slots__ = ('ev_manager', 'state_machine', 'AI_names',\
+                'clock', 'timer', 'item_amount', 'random_stage_timer', 'stage', 'players',\
+                'platforms', 'platforms', 'items', 'entities',\
+                'running')
 
     def __init__(self, ev_manager: EventManager, AI_names: list):
         '''
