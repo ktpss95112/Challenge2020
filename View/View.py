@@ -50,6 +50,9 @@ class GraphicalView:
         # animations
         self.animation_list = []
 
+        # cut-ins
+        self.cutin_list = []
+
         # static objects
         self.scoreboard = View.staticobjects.View_scoreboard(self.model)
         self.players = View.staticobjects.View_players(self.model)
@@ -74,6 +77,7 @@ class GraphicalView:
             if cur_state == Const.STATE_MENU: self.render_menu()
             elif cur_state == Const.STATE_PLAY: self.render_play()
             elif cur_state == Const.STATE_STOP: self.render_stop()
+            elif cur_state == Const.STATE_CUTIN: self.render_cutin()
             elif cur_state == Const.STATE_ENDGAME: self.render_endgame()
 
         elif isinstance(event, EventToggleFullScreen):
@@ -97,6 +101,13 @@ class GraphicalView:
         elif isinstance(event, EventPlayerUseItem):
             if event.item_id == 4:
                 self.animation_list.append(View.animations.Animation_Lightning(self.model.players[event.player_id].position.x))
+        
+        elif isinstance(event, EventCutInStart):
+            self.render_play(target=self.stop_screen, update=False)            
+            if event.item_id == Const.ZAP_ZAP_ZAP:
+                # TODO
+                self.cutin_list.append(View.animations.Animation_Lightning(self.model.players[event.player_id].position.x))
+                #self.ev_manager.post(EventCutInEnd())
 
     def display_fps(self):
         '''
@@ -149,6 +160,18 @@ class GraphicalView:
         text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
         self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
 
+        pg.display.flip()
+
+    def render_cutin(self):
+        self.screen.blit(self.stop_screen, (0, 0))
+
+        if not self.cutin_list:
+            self.ev_manager.post(EventCutInEnd())
+            return
+
+        if self.cutin_list[0].expired: self.cutin_list.pop(0)
+        else:                          self.cutin_list[0].draw(self.screen, True)
+        
         pg.display.flip()
 
     def render_endgame(self, target=None, update=True):
