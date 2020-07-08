@@ -154,7 +154,7 @@ class Cutin_text(Cutin_board):
         )
 
         # Draw skill's name on board
-        text_surface = self.font.render(self.word(), 1, pg.Color('white'))
+        text_surface = self.font.render(self.text(), 1, pg.Color('white'))
         self.board.blit(
             text_surface,
             Const.CUTIN_TEXT_POSITION
@@ -169,7 +169,7 @@ class Cutin_text(Cutin_board):
         if update:
             self.update()
 
-    def word(self):
+    def text(self):
         # Determine the text to show
         word = ''
         for i in range(len(self.type_time)):
