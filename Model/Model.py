@@ -174,9 +174,9 @@ class GameEngine:
             self.items.remove(event.item)
 
         elif isinstance(event, EventPlayerUseItem):
-            item = self.players[event.player_id].keep_item_id
-            if Const.HAS_CUT_IN[item]:
-                self.ev_manager.post(EventCutInStart(item))
+            item_id = self.players[event.player_id].keep_item_id
+            if Const.HAS_CUT_IN[item_id]:
+                self.ev_manager.post(EventCutInStart(event.player_id, item_id))
             entities = self.players[event.player_id].use_item(self.players, self.timer)
             for entity in entities:
                 self.entities.append(entity)
