@@ -1,3 +1,13 @@
+'''
+* How to add a cut-in:
+
+class Cutin_example(Cutin_text):
+    skill_name = 'A great name of your skill'
+
+    # Override draw() function to modify the place text appeard
+    def draw():
+        ...
+'''
 import os
 import pygame as pg
 import numpy as np
@@ -136,15 +146,21 @@ class Cutin_text(Cutin_board):
     def draw(self, screen, update=True):
         # Draw board with name of skill and player
         self.board.fill((19, 19, 19)) # For Test
+        
+        # Draw player on board
         self.board.blit(
             self.players[self.player_id],
             self.players[self.player_id].get_rect(center=(Const.CUTIN_PLAYER_POSITION))
         )
+
+        # Draw skill's name on board
         text_surface = self.font.render(self.word(), 1, pg.Color('white'))
         self.board.blit(
             text_surface,
             Const.CUTIN_TEXT_POSITION
         )
+
+        # Draw board to screen
         screen.blit(
             self.board,
             self.board.get_rect(center=self.board_position)
