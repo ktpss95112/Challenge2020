@@ -14,7 +14,9 @@ class TeamAI(BaseAI):
     def decide(self):
         my_pos = self.helper.get_self_position()
         my_radius = self.helper.get_self_radius()
-        other_pos = self.helper.get_other_position(self.helper.get_nearest_player())
+        other_pos = self.helper.get_other_position(3)
+        return self.helper.walk_to_position(other_pos)
+        '''
         if self.helper.get_self_keep_item_id() > 0:
             return AI_DIR_USE_ITEM
         if my_pos[0] < 250:
@@ -29,4 +31,4 @@ class TeamAI(BaseAI):
             return AI_DIR_JUMP
         else:
             return AI_DIR_ATTACK
-        
+        '''

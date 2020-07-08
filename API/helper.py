@@ -275,7 +275,12 @@ class Helper(object):
                 count+=1
             if position[0] > self.model.platforms[2].upper_left.x - 15 and position[0] < self.model.platforms[2].bottom_right.x + 15 and position[1] < self.model.platforms[2].upper_left.y:
                 index = 2
-        if self.model.stage == Const.STAGE_2:
+        elif self.model.stage == Const.STAGE_2:
+            for platform in self.model.platforms:
+                if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y and index < 0:
+                    index = count
+                count+=1
+        elif self.model.stage == Const.STAGE_3:
             for platform in self.model.platforms:
                 if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y and index < 0:
                     index = count
@@ -380,6 +385,14 @@ class Helper(object):
                     command = AI_DIR_RIGHT
                 elif player_position[0] > target_position[0]:
                     command = AI_DIR_LEFT
+            else:
+                if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] < target_position[0]:
+                    command = AI_DIR_RIGHT
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
         elif self.model.stage == Const.STAGE_2:
             if player_above_which_land == -1:
                 if self.jump_delay == 0:
@@ -421,12 +434,38 @@ class Helper(object):
                     command = AI_DIR_LEFT
             else:
                 if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
-                        self.jump_delay = JUMP_CONST_DELAY
-                        command = AI_DIR_JUMP
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
                 elif player_position[0] < target_position[0]:
                     command = AI_DIR_RIGHT
                 elif player_position[0] > target_position[0]:
                     command = AI_DIR_LEFT
+        elif self.model.stage == Const.STAGE_3:
+            if player_above_which_land == -1:
+                if self.jump_delay == 0:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
+                else:
+                    command = AI_DIR_RIGHT
+            elif player_above_which_land == target_above_which_land:
+                if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] < target_position[0]:
+                    command = AI_DIR_RIGHT
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
+            else:
+                if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] < target_position[0]:
+                    command = AI_DIR_RIGHT
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
+
         if(self.jump_delay > 0):
             self.jump_delay-=1
         return command
