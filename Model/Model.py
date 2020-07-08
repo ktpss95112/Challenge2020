@@ -74,8 +74,6 @@ class GameEngine:
         self.AI_names = AI_names
         while len(self.AI_names) < 4:
             self.AI_names.append("m")
-
-        self.item_amount = Const.ITEMS_INIT_AMOUNT
         check_probability()
 
     def initialize(self):
@@ -84,6 +82,7 @@ class GameEngine:
         '''
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
+        self.item_amount = Const.ITEMS_INIT_AMOUNT
         self.random_stage_timer = 0
         self.stage = Const.NO_STAGE
         self.init_players()
