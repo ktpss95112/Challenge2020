@@ -107,11 +107,11 @@ class GraphicalView:
             self.render_play(target=self.stop_screen, update=False)
 
             if event.item_id == Const.ZAP_ZAP_ZAP:
-                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap())
+                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id))
             elif event.item_id == Const.BIG_BLACK_HOLE:
-                self.cutin_list.append(View.cutins.Cutin_big_black_hole())
+                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id))
             else:
-                self.cutin_list.append(View.cutins.Cutin_big_black_hole())
+                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id))
 
     def display_fps(self):
         '''
