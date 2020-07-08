@@ -335,8 +335,14 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick, if item is less than item_amount, it MAY generate one item
-        if len(self.items) < int(self.item_amount) and random.randint(1, 1000) > Const.GENERATE_ITEM_PROBABILITY:
-            new_item = np.random.choice(np.arange(1, Const.ITEM_SPECIES + 1), p = Const.ITEM_PROBABILITY)
+        if len(self.items) < int(self.item_amount) and random.random() < Const.GENERATE_ITEM_PROBABILITY:
+            enabled_items, p = [], []
+            for item_id in Const.ITEM_ENABLED.keys():
+                if Const.ITEM_ENABLED[item_id]:
+                    enabled_items.append(item_id)
+                    p.append(Const.ITEM_PROBABILITY[item_id])
+            p = np.array(p)
+            new_item = np.random.choice(enabled_items, p = p / np.sum(p))
             find_position = False
             while not find_position:
                 find_position = True
