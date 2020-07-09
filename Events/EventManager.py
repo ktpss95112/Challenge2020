@@ -157,16 +157,6 @@ class EventPlayerItem(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id}'
 
-
-class EventPlayerUseItem(BaseEvent):
-    name = 'Player use item event (model => view)'
-
-    def __init__(self, player_id, item_id):
-        self.player_id = player_id
-        self.item_id = item_id
-    def __str__(self):
-        return f'{self.name} => player_id {self.player_id} use item'
-
     
 class EventPlayerPickItem(BaseEvent):
     name = 'Player pick item event (model => view)'
