@@ -110,8 +110,8 @@ class Helper(object):
         platforms = self.get_platform_position()
         for platform in platforms:
             if platform[0][0] < my_x and platform[1][0] > my_x:
-                return 0
-        return 1
+                return False
+        return True
     
     # get all player information 
     def get_all_position(self):
@@ -222,6 +222,14 @@ class Helper(object):
 
     def get_other_can_attack(self, index):
         return self.model.players[index].can_attack
+
+    def get_other_will_drop(self, index):
+        x = self.get_other_position(index)[0]
+        platforms = self.get_platform_position()
+        for platform in platforms:
+            if platform[0][0] < x and platform[1][0] > x:
+                return False
+        return True
 
     def get_live_player_num(self):
         lives = self.get_all_life()
