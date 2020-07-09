@@ -48,9 +48,6 @@ class View_menu(__Object_base):
 
         background = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'menu.png')), 0.24)
         screen.blit(background, (0, 0))
-        pass
-
-
 
         if self.model.stage == Const.NO_STAGE or self.model.random_stage_timer > 0:
             pg.draw.rect(screen, Const.BACKGROUND_COLOR, (466, 692, 267, 42))
@@ -147,47 +144,57 @@ class View_entities(__Object_base):
 
 class View_scoreboard(__Object_base):
     images = {
+        'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'scoreboard.png')), 0.24),
         'Heart': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.03125)
     }
 
     @classmethod
     def init_convert(cls):
         cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
-        cls.namefont = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 18)
-        cls.numfont = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 25)
+        cls.namefont = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 15)
+        cls.numfont = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 25)
 
     def draw(self, screen):
-        fontsize = 24
-        posX = (Const.WINDOW_SIZE[0] * 7 / 8)
-        posY = (Const.WINDOW_SIZE[1] * 1 / 32)
-        heart_image = self.images['Heart']
-        for player_id in range(1, 5):
-            heartposX = posX + 43
-            heartposY = posY + (fontsize + 14)
-            position = posX, posY
-            # TODO: f'Voltage: {voltage:.2f}'
-            voltage = round(self.model.players[player_id - 1].voltage, 2)
-            item = self.model.players[player_id - 1].keep_item_id
-            score = self.model.players[player_id - 1].score
-            text = [f"Player {player_id}", "Life: ", f"Voltage: {voltage}", f"Item: {item}", f"Score: {score}"]
-            # TODO: no need to use a list to store the labels
-            label = []
+        background = self.images['Background']
+        screen.blit(background, (0, 0))
 
-            # TODO: merge the for loop with the following one
-            for line in text:
-                label.append(self.namefont.render(line, True, pg.Color('white')))
+        name_posx = [42, 301, 560 + 140, 819 + 140]
+        for player_id in range(4):
+            name_surface = self.namefont.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
+            screen.blit(name_surface, (name_posx[player_id], 683))
+            
 
-            # TODO: merge the for loop with the previous one
-            # draw words
-            for line in range(len(label)):
-                screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
+        # fontsize = 24
+        # posX = (Const.WINDOW_SIZE[0] * 7 / 8)
+        # posY = (Const.WINDOW_SIZE[1] * 1 / 32)
+        # heart_image = self.images['Heart']
+        # for player_id in range(1, 5):
+        #     heartposX = posX + 43
+        #     heartposY = posY + (fontsize + 14)
+        #     position = posX, posY
+        #     # TODO: f'Voltage: {voltage:.2f}'
+        #     voltage = round(self.model.players[player_id - 1].voltage, 2)
+        #     item = self.model.players[player_id - 1].keep_item_id
+        #     score = self.model.players[player_id - 1].score
+        #     text = [f"Player {player_id}", "Life: ", f"Voltage: {voltage}", f"Item: {item}", f"Score: {score}"]
+        #     # TODO: no need to use a list to store the labels
+        #     label = []
 
-            # draw heart
-            lives = self.model.players[player_id - 1].life
-            for i in range(lives):
-                screen.blit(heart_image, (heartposX, heartposY))
-                heartposX += 20
-            posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
+        #     # TODO: merge the for loop with the following one
+        #     for line in text:
+        #         label.append(self.namefont.render(line, True, pg.Color('white')))
+
+        #     # TODO: merge the for loop with the previous one
+        #     # draw words
+        #     for line in range(len(label)):
+        #         screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
+
+        #     # draw heart
+        #     lives = self.model.players[player_id - 1].life
+        #     for i in range(lives):
+        #         screen.blit(heart_image, (heartposX, heartposY))
+        #         heartposX += 20
+        #     posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
 
 
 class View_items(__Object_base):
@@ -219,23 +226,21 @@ class View_items(__Object_base):
 
 
 class View_timer(__Object_base):
-    images = {
-        'Heart' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.2)
-    }
 
     @classmethod
     def init_convert(cls):
         #cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
-        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 24)
+        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 18)
 
     def draw(self, screen):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
         # TODO: create a class MutableText() similar to PureText()
-        timer_surface = self.font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
-        timer_pos = (Const.WINDOW_SIZE[0] * 1 / 10, Const.WINDOW_SIZE[1] * 1 / 10)
-        screen.blit(timer_surface, timer_surface.get_rect(center=timer_pos))
+        timer_surface = self.font.render(f"{self.model.timer / Const.FPS:.0f}", 1, pg.Color('white'))
+        timer_rect = timer_surface.get_rect()
+        timer_rect.midright = (642, 752)
+        screen.blit(timer_surface, timer_rect)
 
 
 def init_staticobjects():

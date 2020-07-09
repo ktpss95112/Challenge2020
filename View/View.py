@@ -130,14 +130,14 @@ class GraphicalView:
         # draw items
         self.items.draw(target)
 
+        # draw scoreboard
+        self.scoreboard.draw(target)
+
         # draw entities
         self.entities.draw(target)
 
         # draw timer
         self.timer.draw(target)
-
-        # draw scoreboard
-        self.scoreboard.draw(target)
 
         # draw animation
         for ani in self.animation_list:
