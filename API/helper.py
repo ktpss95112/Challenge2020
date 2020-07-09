@@ -104,6 +104,14 @@ class Helper(object):
 
     def get_self_can_attack(self):
         return self.model.players[self.player_id].can_attack
+
+    def get_self_will_drop(self):
+        my_x = self.get_self_position()[0]
+        platforms = self.get_platform_position()
+        for platform in platforms:
+            if platform[0][0] < my_x and platform[1][0] > my_x:
+                return 0
+        return 1
     
     # get all player information 
     def get_all_position(self):
@@ -118,8 +126,8 @@ class Helper(object):
     def get_all_player_distance(self):
         return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
 
-    def get_all_player_vector():
-        return [self.get_vector(self.get_self_position, self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
+    def get_all_player_vector(self):
+        return [self.get_vector(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
 
     def get_all_keep_item_id(self):
         return [player.keep_item_id for player in self.model.players]
@@ -169,6 +177,12 @@ class Helper(object):
 
     def get_other_direction(self, index):
         return tuple(self.model.players[index].direction)
+
+    def get_other_vector(self, index):
+        return self.get_vector(self.get_self_position(), self.get_other_position(index))
+
+    def get_other_distance(self, index):
+        return self.get_distance(self.get_self_position(), self.get_other_position(index))
 
     def get_other_keep_item_id(self, index):
         return self.model.players[index].keep_item_id
@@ -307,9 +321,7 @@ class Helper(object):
             if self.model.players[self.player_id].position.x > platform.upper_left.x and self.model.players[self.player_id].position.x < platform.bottom_right.x:
                 distance =  abs(self.model.players[self.player_id].position.y - platform.upper_left.y)
             else:
-                distance_r = ((platform.bottom_right.x - self.model.players[self.player_id].position.x) ** 2 + (platform.upper_left.y - self.model.players[self.player_id].position.y) ** 2) ** (1 / 2)
-                distance_l = ((platform.upper_left.x - self.model.players[self.player_id].position.x) ** 2 + (platform.upper_left.y - self.model.players[self.player_id].position.y) ** 2) ** (1 / 2)
-                distance = min(distance_r, distance_l)
+                distance = min(self.get_distance(self.model.players[self.player_id].position, platform.upper_left), self.get_distance(self.model.players[self.player_id].position, platform.bottom_right))
             if distance < minimum_distance:
                 minimum_distance = distance
         return minimum_distance
@@ -324,14 +336,12 @@ class Helper(object):
                 distance =  abs(self.model.players[self.player_id].position.y - platform.upper_left.y)
                 vector = (0, platform.upper_left.y - self.model.players[self.player_id].position.y)
             else:
-                distance_r = ((platform.bottom_right.x - self.model.players[self.player_id].position.x) ** 2 + (platform.upper_left.y - self.model.players[self.player_id].position.y) ** 2) ** (1 / 2)
-                distance_l = ((platform.upper_left.x - self.model.players[self.player_id].position.x) ** 2 + (platform.upper_left.y - self.model.players[self.player_id].position.y) ** 2) ** (1 / 2)
-                if distance_r < distance_l:
-                    distance = distance_r
-                    vector = (platform.bottom_right.x - self.model.players[self.player_id].position.x, platform.upper_left.y - self.model.players[self.player_id].position.y)
+                if self.get_distance(self.model.players[self.player_id].position, platform.upper_left) > self.get_distance(self.model.players[self.player_id].position, platform.bottom_right):
+                    distance = self.get_distance(self.model.players[self.player_id].position, platform.bottom_right)
+                    vector = tuple(platform.bottom_right - self.model.players[self.player_id].position)
                 else:
-                    distance = distance_l
-                    vector = (platform.upper_left.x - self.model.players[self.player_id].position.x, platform.upper_left.y - self.model.players[self.player_id].position.y)
+                    distance = self.get_distance(self.model.players[self.player_id].position, platform.upper_left)
+                    vector = tuple(platform.upper_left - self.model.players[self.player_id].position)
             if distance < minimum_distance:
                 minimum_distance = distance
                 minimum_vector = vector
