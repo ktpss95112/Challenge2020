@@ -99,9 +99,8 @@ class GraphicalView:
         elif isinstance(event, EventBombExplode):
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
-        elif isinstance(event, EventPlayerUseItem):
-            if event.item_id == Const.ZAP_ZAP_ZAP:
-                self.animation_list.append(View.animations.Animation_Lightning(self.model.players[event.player_id].position.x))
+        elif isinstance(event, EventUseZapZapZap):
+            self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
     def display_fps(self):
         '''
@@ -133,16 +132,17 @@ class GraphicalView:
         # draw entities
         self.entities.draw(target)
 
-        # draw timer
-        self.timer.draw(target)
-
-        # draw scoreboard
-        self.scoreboard.draw(target)
-
         # draw animation
         for ani in self.animation_list:
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(target, update)
+
+        # draw scoreboard
+        self.scoreboard.draw(target)
+
+        # draw timer
+        self.timer.draw(target)
+
 
         pg.display.flip()
 

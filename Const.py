@@ -36,65 +36,74 @@ STAGE_2 = 1
 STAGE_3 = 2
 
 LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
+
+X_OFFSET = 34.5
+Y_OFFSET = 31.85
 PLATFORM_INIT_POSITION = [
     [ # stage 1
-        [pg.Vector2(100, 700), pg.Vector2(700, 710)],
-        [pg.Vector2(100, 550), pg.Vector2(300, 560)],
-        [pg.Vector2(300, 450), pg.Vector2(500, 460)],
-        [pg.Vector2(500, 550), pg.Vector2(700, 560)]
+        [pg.Vector2(150 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(982 + X_OFFSET, 580 + Y_OFFSET)],
+        [pg.Vector2(100 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(400 + X_OFFSET, 450 + Y_OFFSET)],
+        [pg.Vector2(350 + X_OFFSET, 270 + Y_OFFSET), pg.Vector2(782 + X_OFFSET, 280 + Y_OFFSET)],
+        [pg.Vector2(732 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(1032 + X_OFFSET, 450 + Y_OFFSET)]
     ],
     [ # stage 2
-        [pg.Vector2(0, 150), pg.Vector2(100, 160)],
-        [pg.Vector2(0, 350), pg.Vector2(130, 360)],
-        [pg.Vector2(0, 550), pg.Vector2(190, 560)],
-        [pg.Vector2(0, 750), pg.Vector2(280, 760)],
-        [pg.Vector2(700, 150), pg.Vector2(800, 160)],
-        [pg.Vector2(670, 350), pg.Vector2(800, 360)],
-        [pg.Vector2(610, 550), pg.Vector2(800, 560)],
-        [pg.Vector2(520, 750), pg.Vector2(800, 760)]
+        [pg.Vector2(0 + X_OFFSET, 100 + Y_OFFSET), pg.Vector2(180 + X_OFFSET, 110 + Y_OFFSET)],
+        [pg.Vector2(0 + X_OFFSET, 250 + Y_OFFSET), pg.Vector2(210 + X_OFFSET, 260 + Y_OFFSET)],
+        [pg.Vector2(0 + X_OFFSET, 400 + Y_OFFSET), pg.Vector2(300 + X_OFFSET, 410 + Y_OFFSET)],
+        [pg.Vector2(0 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(420 + X_OFFSET, 580 + Y_OFFSET)],
+        [pg.Vector2(952 + X_OFFSET, 100 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 110 + Y_OFFSET)],
+        [pg.Vector2(922 + X_OFFSET, 250 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 260 + Y_OFFSET)],
+        [pg.Vector2(832 + X_OFFSET, 400 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 410 + Y_OFFSET)],
+        [pg.Vector2(712 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 580 + Y_OFFSET)]
     ],
     [ # stage 3
-        [pg.Vector2(100, 700), pg.Vector2(700, 710)],
+        [pg.Vector2(0 + X_OFFSET, 532 + Y_OFFSET), pg.Vector2(230 + X_OFFSET, 542 + Y_OFFSET)],
+        [pg.Vector2(892 + X_OFFSET, 532 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 542 + Y_OFFSET)],
+        [pg.Vector2(380 + X_OFFSET, 602 + Y_OFFSET), pg.Vector2(752 + X_OFFSET, 612 + Y_OFFSET)],
+        [pg.Vector2(330 + X_OFFSET, 342 + Y_OFFSET), pg.Vector2(802 + X_OFFSET, 352 + Y_OFFSET)],
+        [pg.Vector2(0 + X_OFFSET, 232 + Y_OFFSET), pg.Vector2(200 + X_OFFSET, 242 + Y_OFFSET)],
+        [pg.Vector2(932 + X_OFFSET, 232 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 242 + Y_OFFSET)],
+
     ],
 ]
 PLAYER_INIT_POSITION = [
     [ # stage 1
-        pg.Vector2(100, 650),
-        pg.Vector2(300, 650),
-        pg.Vector2(500, 650),
-        pg.Vector2(700, 650)
+        pg.Vector2(150 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(420 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(690 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 2
-        pg.Vector2(100, 300),
-        pg.Vector2(100, 700),
-        pg.Vector2(700, 300),
-        pg.Vector2(700, 700)
+        pg.Vector2(100 + X_OFFSET, 75 + Y_OFFSET),
+        pg.Vector2(100 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(1042 + X_OFFSET, 75 + Y_OFFSET),
+        pg.Vector2(1042 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 3
-        pg.Vector2(100, 650),
-        pg.Vector2(300, 650),
-        pg.Vector2(500, 650),
-        pg.Vector2(700, 650)
+        pg.Vector2(100 + X_OFFSET, 507 + Y_OFFSET),
+        pg.Vector2(405 + X_OFFSET, 577 + Y_OFFSET),
+        pg.Vector2(732 + X_OFFSET, 577 + Y_OFFSET),
+        pg.Vector2(1032 + X_OFFSET, 507 + Y_OFFSET)
     ],
 ]
 PLAYER_RESPAWN_POSITION = [
     [ # stage 1
-        pg.Vector2(100, 650),
-        pg.Vector2(300, 650),
-        pg.Vector2(500, 650),
-        pg.Vector2(700, 650)
+        pg.Vector2(150 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(420 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(690 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 2
-        pg.Vector2(100, 300),
-        pg.Vector2(100, 700),
-        pg.Vector2(700, 300),
-        pg.Vector2(700, 700)
+        pg.Vector2(100 + X_OFFSET, 75 + Y_OFFSET),
+        pg.Vector2(100 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(1042 + X_OFFSET, 75 + Y_OFFSET),
+        pg.Vector2(1042 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 3
-        pg.Vector2(100, 300),
-        pg.Vector2(100, 700),
-        pg.Vector2(700, 300),
-        pg.Vector2(700, 700)
+        pg.Vector2(100 + X_OFFSET, 507 + Y_OFFSET),
+        pg.Vector2(405 + X_OFFSET, 577 + Y_OFFSET),
+        pg.Vector2(732 + X_OFFSET, 577 + Y_OFFSET),
+        pg.Vector2(1032 + X_OFFSET, 507 + Y_OFFSET)
     ]
 ]
 
