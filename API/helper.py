@@ -60,6 +60,9 @@ class Helper(object):
     def get_self_normal_speed(self):
         return self.model.players[self.player_id].normal_speed
 
+    def get_self_jump_speed(self):
+        return self.model.players[self.player_id].jump_speed
+
     def get_self_keep_item_id(self):
         return self.model.players[self.player_id].keep_item_id
 
@@ -113,7 +116,10 @@ class Helper(object):
         return [tuple(player.direction) for player in self.model.players]
 
     def get_all_player_distance(self):
-        return [self.get_distance(self.player_id, i) for i in range(4)]
+        return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
+
+    def get_all_player_vector():
+        return [self.get_vector(self.get_self_position, self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
 
     def get_all_keep_item_id(self):
         return [player.keep_item_id for player in self.model.players]
@@ -288,6 +294,11 @@ class Helper(object):
 
     def get_distance(self, p1, p2):
         return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
+
+    def get_vector(self, p1, p2):
+        # get vector from p1 to p2
+        return ((p2[0] - p1[0]), (p2[1] - p1[1])) 
+
 
     def get_distance_to_closest_land(self):
         minimum_distance = 10000 ** 2
