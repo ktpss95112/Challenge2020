@@ -41,13 +41,17 @@ class View_platform(__Object_base):
 
 
 class View_menu(__Object_base):
+    background = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'menu.png')), 0.24)
+
+    @classmethod
+    def init_convert(cls):
+        cls.background = cls.background.convert()
+
     def draw(self, screen):
         # screen.blit(self.menu, (0, 0))
         # screen.blit(self.base, (10, 645))
         screen.fill(Const.BACKGROUND_COLOR)
-
-        background = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'menu.png')), 0.24)
-        screen.blit(background, (0, 0))
+        screen.blit(self.background, (0, 0))
 
         if self.model.stage == Const.NO_STAGE or self.model.random_stage_timer > 0:
             pg.draw.rect(screen, Const.BACKGROUND_COLOR, (466, 692, 267, 42))
@@ -66,22 +70,39 @@ class View_menu(__Object_base):
 
 
 class View_endgame(__Object_base):
+    images = {
+        'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'background.png')), 0.24),
+        0: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
+        1: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
+        2: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24)
+    }
+
     @classmethod
     def init_convert(cls):
         # TODO: use View.utils.PureText to render static words
-        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
+        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 28)
+        cls.score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 22)
         # cls.menu = cls.menu.convert()
         # cls.base = cls.base.convert_alpha()
         pass
 
     def draw(self, screen):
         # draw background
-        screen.fill(Const.BACKGROUND_COLOR)
+        screen.blit(self.images['Background'], (0, 0))
 
-        # draw text
-        text_surface = self.font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
-        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
-        screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        for player_id in range(4):
+            name_surface = self.font.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
+            name_rect = name_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 390))
+            screen.blit(name_surface, name_rect)
+
+            score_surface = self.score_font.render(f"{self.model.players[player_id].score}", 1, pg.Color('white'))
+            score_rect = score_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 430))
+            screen.blit(score_surface, score_rect)
+
+            if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
+                medal_surface = self.images[self.model.players[player_id].rank - 1]
+                medal_rect = medal_surface.get_rect(center=(675 + (player_id - 1.5) * 200, 340))
+                screen.blit(medal_surface, medal_rect)
 
 
 class View_players(__Object_base):
@@ -245,8 +266,9 @@ class View_items(__Object_base):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
+        floating = (0, Const.FLOATING_RADIUS*math.sin(Const.FLOATING_THETA*self.model.timer))
         for item in self.model.items:
-            screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position))
+            screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position + floating))
             #pg.draw.circle(screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
             #font = pg.font.Font(None, 15)
             #item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))

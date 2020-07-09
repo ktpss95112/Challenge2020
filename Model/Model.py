@@ -141,6 +141,17 @@ class GameEngine:
                 self.state_machine.pop()
 
         elif isinstance(event, EventTimesUp):
+            scores = []
+            for player in self.players:
+                scores.append(player.score)
+            sorted_score = sorted(scores)
+            sorted_score.reverse()
+            for player in self.players:
+                for i in range(len(sorted_score)):
+                    if player.score == sorted_score[i]:
+                        player.rank = i + 1
+                        break
+                
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventRestart):
@@ -221,13 +232,14 @@ class GameEngine:
         '''
         if self.random_stage_timer > 0:
             self.random_stage_timer -= 1
-            if self.random_stage_timer > 0.5 * Const.FPS:
-                self.stage = (self.stage + 1) % Const.STAGE_NUMBER
-            elif self.random_stage_timer > 0.25 * Const.FPS:
+            if self.random_stage_timer > 1.5 * Const.FPS:
                 if self.random_stage_timer % 2 == 0:
                     self.stage = (self.stage + 1) % Const.STAGE_NUMBER
-            else:
+            elif self.random_stage_timer > 1 * Const.FPS:
                 if self.random_stage_timer % 4 == 0:
+                    self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+            else:
+                if self.random_stage_timer % 8 == 0:
                     self.stage = (self.stage + 1) % Const.STAGE_NUMBER
 
     def update_variable(self):
