@@ -121,7 +121,7 @@ class Animation_Lightning(Animation_raster):
     def __init__(self, pos):
         self._timer = 0
         self.delay_of_frames = 2
-        self.expire_time = 50
+        self.expire_time = 65
         self.expired = False # turn tuple into vec2
         self.pos = pos - Const.ZAP_ZAP_ZAP_RANGE
 
@@ -131,11 +131,13 @@ class Animation_Lightning(Animation_raster):
             self.expired = True
 
     def draw(self, screen, update=True):
-        self.image = self.lightning.subsurface(pg.Rect(0, 0, 2 * Const.ZAP_ZAP_ZAP_RANGE, (Const.ARENA_SIZE[0] / self.expire_time) * self._timer))
+        self.image = self.lightning.subsurface(pg.Rect(0, 0, 2 * Const.ZAP_ZAP_ZAP_RANGE, (Const.ARENA_SIZE[0] / self.expire_time ) * self._timer))
         screen.blit(
             self.image,
             (self.pos,0),
-        )
+            )
+        if (self._timer>16 and self._timer<22) or (self._timer>25 and self._timer<29):
+            pg.draw.rect(screen, (255, 255, 255, 10), pg.Rect((0, 0), Const.ARENA_SIZE))
 
         if update: self.update()
 
