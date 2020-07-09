@@ -26,6 +26,27 @@ class Helper(object):
         self.player_id = index
         self.jump_delay = 0
 
+    # get game information
+    def get_game_left_time(self):
+        return (Const.GAME_LENGTH - self.model.timer) / Const.FPS
+
+    def get_game_stage(self):
+        return self.model.stage
+
+    def get_game_arena_boundary(self):
+        # return top-left and bottom-right coordinate
+        return ((0, 0), Const.ARENA_SIZE)
+
+    def get_game_life_boundary(self):
+        # return top-left and bottom-right
+        return ((Const.LIFE_BOUNDARY[0], Const.LIFE_BOUNDARY[1]), (Const.LIFE_BOUNDARY[2], Const.LIFE_BOUNDARY[3]))
+
+    def get_game_player_gravity_acceleration(self):
+        return Const.GRAVITY_ACCELERATION / Const.FPS
+
+    def get_game_item_gravity_acceleration(self):
+        return Const.GRAVITY_ACCELERATION_FOR_ITEM / Const.FPS
+
     # get self information
     def get_self_id(self):
         return self.player_id
@@ -74,7 +95,9 @@ class Helper(object):
 
     def get_self_can_attack_time(self):
         return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
-
+    def get_self_can_attack(self):
+        return self.model.players[self.player_id].can_attack
+    
     # get all player information    
     def get_all_position(self):
         return [tuple(player.position) for player in self.model.players]
@@ -120,6 +143,9 @@ class Helper(object):
     
     def get_all_can_attack_time(self):
         return [player.attack_cool_down_time / Const.FPS for player in self.model.players]
+    
+    def get_all_can_attack(self):
+        return [player.can_attack for player in self.model.players]
     
     # get other players information
     def get_other_position(self, index):
@@ -167,20 +193,61 @@ class Helper(object):
     def get_other_can_attack_time(self, index):
         return self.model.players[index].attack_cool_down_time / Const.FPS
 
+    def get_other_can_attack(self, index):
+        return self.model.players[index].can_attack
+    
     # get item information
-    def get_all_item_position(self):
-        itemlist = [ [] for i in range(Const.ITEM_SPECIES + 1) ]
-        for item in self.model.items:
-            itemlist[item.item_id].append(tuple(item.position))
-        return itemlist
+    def item_exists(self):
+        return (True if self.model.items else False)
+    
+    def get_all_banana_pistol_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 1]
+    
+    def get_all_banana_pistol_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 1]
+            
+    def get_all_big_black_hole_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 2]
+    
+    def get_all_big_black_hole_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 2]
+    
+    def get_all_cancer_bomb_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 3]
 
+    def get_all_cancer_bomb_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 3]
+
+    def get_all_zap_zap_zap_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 4]
+
+    def get_all_zap_zap_zap_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 4]
+
+    def get_all_banana_peel_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 5]
+
+    def get_all_banana_peel_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 5]
+
+    def get_all_rainbow_grounder_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 6]
+
+    def get_all_rainbow_grounder_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 6]
+
+    def get_all_invincible_battery_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 7]
+
+    def get_all_invincible_battery_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 7]
+                
+    def get_all_item_position(self):
+        return [tuple(item.position) for item in self.model.items]
+    
     # get platform information 
     def get_platform_position(self):
         return [(tuple(platform.upper_left), tuple(platform.bottom_right)) for platform in self.model.platforms]
-
-    # get which map is used
-    def get_which_map(self):
-        return self.model.stage
     
     # get special information
     def get_nearest_player(self):  # when the nearest_player not only one?
@@ -258,7 +325,12 @@ class Helper(object):
                 count+=1
             if position[0] > self.model.platforms[2].upper_left.x - 15 and position[0] < self.model.platforms[2].bottom_right.x + 15 and position[1] < self.model.platforms[2].upper_left.y:
                 index = 2
-        if self.model.stage == Const.STAGE_2:
+        elif self.model.stage == Const.STAGE_2:
+            for platform in self.model.platforms:
+                if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y and index < 0:
+                    index = count
+                count+=1
+        elif self.model.stage == Const.STAGE_3:
             for platform in self.model.platforms:
                 if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y and index < 0:
                     index = count
@@ -267,10 +339,10 @@ class Helper(object):
 
     # get all entity information
     def entity_exists(self):
-        return (True if self.model.entites else False)
+        return (True if self.model.entities else False)
     
     def get_all_pistol_bullet_position(self):
-        return [entity.position for entity in self.model.entities if isinstance(entity, PistolBullet)]
+        return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, PistolBullet)]
     
     def get_all_pistol_bullet_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, PistolBullet)]
@@ -279,23 +351,26 @@ class Helper(object):
         return [tuple(entity.velocity) for entity in self.model.entities if isinstance(entity, PistolBullet)]
             
     def get_all_banana_peel_position(self):
-        return [entity.position for entity in self.model.entities if isinstance(entity, BananaPeel)]
+        return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
     def get_all_banana_peel_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
     def get_all_cancer_bomb_position(self):
-        return [entity.position for entity in self.model.entities if isinstance(entity, CancerBomb)]
+        return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, CancerBomb)]
 
     def get_all_cancer_bomb_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, CancerBomb)]
     
     def get_all_big_black_hole_position(self):
-        return [entity.position for entity in self.model.entities if isinstance(entity, BigBlackHole)]
+        return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BigBlackHole)]
 
     def get_all_big_black_hole_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BigBlackHole)]
 
+    def get_all_entity_position(self):
+        return [tuple(entity.position) for entity in self.model.entities]
+    
     def walk_to_position(self,target_position):
         player_position = tuple(self.model.players[self.player_id].position)
         player_above_which_land = self.get_above_which_land(player_position)
@@ -363,6 +438,14 @@ class Helper(object):
                     command = AI_DIR_RIGHT
                 elif player_position[0] > target_position[0]:
                     command = AI_DIR_LEFT
+            else:
+                if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] < target_position[0]:
+                    command = AI_DIR_RIGHT
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
         elif self.model.stage == Const.STAGE_2:
             if player_above_which_land == -1:
                 if self.jump_delay == 0:
@@ -404,12 +487,38 @@ class Helper(object):
                     command = AI_DIR_LEFT
             else:
                 if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
-                        self.jump_delay = JUMP_CONST_DELAY
-                        command = AI_DIR_JUMP
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
                 elif player_position[0] < target_position[0]:
                     command = AI_DIR_RIGHT
                 elif player_position[0] > target_position[0]:
                     command = AI_DIR_LEFT
+        elif self.model.stage == Const.STAGE_3:
+            if player_above_which_land == -1:
+                if self.jump_delay == 0:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
+                else:
+                    command = AI_DIR_RIGHT
+            elif player_above_which_land == target_above_which_land:
+                if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] < target_position[0]:
+                    command = AI_DIR_RIGHT
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
+            else:
+                if abs(player_position[0] - target_position[0]) < 10 and self.jump_delay == 0 and self.model.players[self.player_id].jump_quota > 0 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
+                    self.jump_delay = JUMP_CONST_DELAY
+                    command = AI_DIR_JUMP
+                elif player_position[0] < target_position[0]:
+                    command = AI_DIR_RIGHT
+                elif player_position[0] > target_position[0]:
+                    command = AI_DIR_LEFT
+
         if(self.jump_delay > 0):
             self.jump_delay-=1
         return command
