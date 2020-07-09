@@ -14,7 +14,6 @@ class GraphicalView:
     '''
     background = pg.Surface(Const.ARENA_SIZE)
     fullscreen = True
-    current_stop_index = None
 
     def __init__(self, ev_manager: EventManager, model: GameEngine):
         '''
@@ -32,6 +31,7 @@ class GraphicalView:
         self.stop_screen = None
         self.clock = None
         self.last_update = 0
+        self.current_stop_index = None
 
     def initialize(self):
         '''
