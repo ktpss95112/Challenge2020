@@ -70,9 +70,6 @@ class Controller:
                     self.ev_manager.post(EventPlay())
             self.check_screen_keys(event_pg.key)
 
-
-
-
     def ctrl_play(self, key_down_events):
         keys = pg.key.get_pressed()
         for k, v in Const.PLAYER_MOVE_KEYS.items():

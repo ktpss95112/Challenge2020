@@ -145,23 +145,52 @@ class View_entities(__Object_base):
 class View_scoreboard(__Object_base):
     images = {
         'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'scoreboard.png')), 0.24),
-        'Heart': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.03125)
+        Const.BANANA_PISTOL     : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.04 * 0.7),
+        Const.BIG_BLACK_HOLE    : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.05 * 0.7),
+        Const.CANCER_BOMB       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.055 * 0.7),
+        Const.ZAP_ZAP_ZAP       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.06 * 0.7),
+        Const.BANANA_PEEL       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.04 * 0.7),
+        Const.RAINBOW_GROUNDER  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_rainbowGrounder.png')), 0.05 * 0.7),
+        Const.INVINCIBLE_BATTERY: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.05 * 0.7)
     }
 
     @classmethod
     def init_convert(cls):
         cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
         cls.namefont = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 15)
-        cls.numfont = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 25)
+        cls.numfont = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 16)
 
     def draw(self, screen):
         background = self.images['Background']
         screen.blit(background, (0, 0))
 
-        name_posx = [42, 301, 560 + 140, 819 + 140]
+        name_posx = [44, 303, 700, 959]
+        voltage_posx = name_posx
+        item_posx = name_posx
+        live_posx = name_posx
         for player_id in range(4):
             name_surface = self.namefont.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
             screen.blit(name_surface, (name_posx[player_id], 683))
+            
+            voltage_surface = self.numfont.render(f"{self.model.players[player_id].voltage:.1f}", 1, pg.Color('white'))
+            voltage_rect = voltage_surface.get_rect()
+            voltage_rect.topright = (voltage_posx[player_id] + 136, 713)
+            screen.blit(voltage_surface, voltage_rect)
+
+            score_surface = self.numfont.render(f"{self.model.players[player_id].score}", 1, pg.Color('white'))
+            score_rect = score_surface.get_rect()
+            score_rect.topright = (voltage_posx[player_id] + 136, 739)
+            screen.blit(score_surface, score_rect)
+
+            if self.model.players[player_id].keep_item_id != Const.NO_ITEM:
+                screen.blit(
+                    self.images[self.model.players[player_id].keep_item_id],
+                    self.images[self.model.players[player_id].keep_item_id].get_rect(center=(item_posx[player_id] + 177, 742))
+                )
+
+            lives = self.model.players[player_id].life
+            pg.draw.rect(screen, Const.BACKGROUND_COLOR, (live_posx[player_id] + 118, 686, 18 * (5 - lives), 15))
+
             
 
         # fontsize = 24
