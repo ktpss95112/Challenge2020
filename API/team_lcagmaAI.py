@@ -7,6 +7,7 @@ AI_DIR_LEFT_JUMP   = 3
 AI_DIR_RIGHT_JUMP  = 4
 AI_DIR_ATTACK      = 5
 AI_DIR_USE_ITEM    = 6
+AI_DIR_STAY        = 7
 
 class TeamAI(BaseAI):
     def __init__(self, helper):
@@ -25,6 +26,10 @@ class TeamAI(BaseAI):
         platform_position = self.helper.get_platform_position()
         banana_pistol_position = self.helper.get_all_banana_pistol_position()
         banana_peel_position = self.helper.get_all_banana_peel_position()
+        bad_position = []
+        bad_position.extend(entity_position)
+        bad_position.extend(banana_pistol_position)
+        bad_position.extend(banana_peel_position)
         
         if self.helper.get_self_keep_item_id() > 0:
             return AI_DIR_USE_ITEM
@@ -35,12 +40,16 @@ class TeamAI(BaseAI):
             elif my_pos[0] > 550:
                 return AI_DIR_LEFT
         elif stage_index == 1:
-            if my_pos[0] < 50 or my_pos[0] > 600:
+            if my_pos[0] < 50:
                 return AI_DIR_RIGHT
-            elif my_pos[0] > 200 or my_pos[0] > 750:
+            elif my_pos[0] < 550 and my_pos[0] > 400:
+                return AI_DIR_RIGHT
+            elif my_pos[0] > 200 and my_pos[0] < 400:
+                return AI_DIR_LEFT
+            elif my_pos[0] > 700:
                 return AI_DIR_LEFT
             
-        for pos in entity_position:
+        for pos in bad_position:
             if self.helper.get_distance(my_pos, pos) < 2 * my_radius:
                 if abs(my_pos[0] - pos[0]) > 1.5 * my_radius:
                     return AI_DIR_JUMP

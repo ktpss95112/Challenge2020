@@ -7,6 +7,7 @@ FPS = 60 # frame per second
 GAME_LENGTH = 180 * FPS
 
 # model-player
+PLAYER_NUM = 4
 PLAYER_RADIUS = 25
 VALID_KO_TIME = 3 * FPS
 PLAYER_LIFE = 5

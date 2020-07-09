@@ -9,6 +9,7 @@ AI_DIR_LEFT_JUMP   = 3
 AI_DIR_RIGHT_JUMP  = 4
 AI_DIR_ATTACK      = 5
 AI_DIR_USE_ITEM    = 6
+AI_DIR_STAY        = 7
 
 class TeamAI(BaseAI):
     def __init__(self, helper):
@@ -92,8 +93,8 @@ class TeamAI(BaseAI):
             elif self.helper.get_self_keep_item_id() == 7:
                 return AI_DIR_USE_ITEM
             
-        cancer_pos = self.helper.get_all_cancer_bomb_position()
-        cancer_time = self.helper.get_all_cancer_bomb_timer()
+        cancer_pos = self.helper.get_all_drop_cancer_bomb_position()
+        cancer_time = self.helper.get_all_drop_cancer_bomb_timer()
 
         for pos, time in zip(cancer_pos, cancer_time):
             if time <= 1 and self.helper.get_distance(my_pos, pos) < 400:

@@ -1,9 +1,6 @@
 import pygame as pg
-
 import Const
-
 from Model.GameObject.entity import *
-
 
 AI_DIR_LEFT        = 0
 AI_DIR_RIGHT       = 1
@@ -12,7 +9,7 @@ AI_DIR_LEFT_JUMP   = 3
 AI_DIR_RIGHT_JUMP  = 4
 AI_DIR_ATTACK      = 5
 AI_DIR_USE_ITEM    = 6
-
+AI_DIR_STAY        = 7
 
 JUMP_CONST_DELAY   = 30
 
@@ -60,6 +57,12 @@ class Helper(object):
     def get_self_direction(self):
         return tuple(self.model.players[self.player_id].direction)
 
+    def get_self_normal_speed(self):
+        return self.model.players[self.player_id].normal_speed
+
+    def get_self_jump_speed(self):
+        return self.model.players[self.player_id].jump_speed
+
     def get_self_keep_item_id(self):
         return self.model.players[self.player_id].keep_item_id
 
@@ -87,6 +90,9 @@ class Helper(object):
     def get_self_score(self):
         return self.model.players[self.player_id].score
 
+    def get_self_can_jump(self):
+        return (self.get_self_jump_quota() > 0)
+
     def get_self_jump_quota(self):
         return self.model.players[self.player_id].jump_quota
 
@@ -95,10 +101,19 @@ class Helper(object):
 
     def get_self_can_attack_time(self):
         return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
+
     def get_self_can_attack(self):
         return self.model.players[self.player_id].can_attack
+
+    def get_self_will_drop(self):
+        my_x = self.get_self_position()[0]
+        platforms = self.get_platform_position()
+        for platform in platforms:
+            if platform[0][0] < my_x and platform[1][0] > my_x:
+                return 0
+        return 1
     
-    # get all player information    
+    # get all player information 
     def get_all_position(self):
         return [tuple(player.position) for player in self.model.players]
 
@@ -107,6 +122,12 @@ class Helper(object):
 
     def get_all_direction(self):
         return [tuple(player.direction) for player in self.model.players]
+
+    def get_all_player_distance(self):
+        return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
+
+    def get_all_player_vector(self):
+        return [self.get_vector(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
 
     def get_all_keep_item_id(self):
         return [player.keep_item_id for player in self.model.players]
@@ -156,6 +177,12 @@ class Helper(object):
 
     def get_other_direction(self, index):
         return tuple(self.model.players[index].direction)
+
+    def get_other_vector(self, index):
+        return self.get_vector(self.get_self_position(), self.get_other_position(index))
+
+    def get_other_distance(self, index):
+        return self.get_distance(self.get_self_position(), self.get_other_position(index))
 
     def get_other_keep_item_id(self, index):
         return self.model.players[index].keep_item_id
@@ -282,6 +309,11 @@ class Helper(object):
     def get_distance(self, p1, p2):
         return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
 
+    def get_vector(self, p1, p2):
+        # get vector from p1 to p2
+        return ((p2[0] - p1[0]), (p2[1] - p1[1])) 
+
+
     def get_distance_to_closest_land(self):
         minimum_distance = 10000 ** 2
         distance = 0
@@ -341,31 +373,31 @@ class Helper(object):
     def entity_exists(self):
         return (True if self.model.entities else False)
     
-    def get_all_pistol_bullet_position(self):
+    def get_all_drop_pistol_bullet_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, PistolBullet)]
     
-    def get_all_pistol_bullet_timer(self):
+    def get_all_drop_pistol_bullet_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, PistolBullet)]
     
     def get_all_pistol_bullet_velocity(self):
         return [tuple(entity.velocity) for entity in self.model.entities if isinstance(entity, PistolBullet)]
             
-    def get_all_banana_peel_position(self):
+    def get_all_drop_banana_peel_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
-    def get_all_banana_peel_timer(self):
+    def get_all_drop_banana_peel_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
-    def get_all_cancer_bomb_position(self):
+    def get_all_drop_cancer_bomb_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, CancerBomb)]
 
-    def get_all_cancer_bomb_timer(self):
+    def get_all_drop_cancer_bomb_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, CancerBomb)]
     
-    def get_all_big_black_hole_position(self):
+    def get_all_drop_big_black_hole_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BigBlackHole)]
 
-    def get_all_big_black_hole_timer(self):
+    def get_all_drop_big_black_hole_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BigBlackHole)]
 
     def get_all_entity_position(self):
