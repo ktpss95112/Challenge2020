@@ -83,9 +83,13 @@ class GameEngine:
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
         self.item_amount = Const.ITEMS_INIT_AMOUNT
+        self.init_players()
+        # menu
         self.random_stage_timer = 0
         self.stage = Const.NO_STAGE
-        self.init_players()
+        # pause
+        self.pause_screen_timer = 2 * Const.FPS # set to 2 seconds
+        self.pause_screen_index = 0
         self.state_machine.push(Const.STATE_MENU)
 
     def init_players(self):
@@ -118,6 +122,8 @@ class GameEngine:
                 cnt = sum(player.is_alive() for player in self.players)
                 if self.timer == 0 or cnt <= 1:
                     self.ev_manager.post(EventTimesUp())
+            elif cur_state == Const.STATE_STOP:
+                self.update_stop()
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
@@ -252,6 +258,13 @@ class GameEngine:
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))
                 self.entities.remove(entity)
+
+    def update_stop(self):
+        if self.pause_screen_timer == 0:
+            self.pause_screen_index = (self.pause_screen_index + 1) % 3
+            self.pause_screen_timer = 2 * Const.FPS
+        else:
+            self.pause_screen_timer -= 1
 
     def update_endgame(self):
         '''
