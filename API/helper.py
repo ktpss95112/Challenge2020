@@ -222,6 +222,14 @@ class Helper(object):
 
     def get_other_can_attack(self, index):
         return self.model.players[index].can_attack
+
+    def get_live_player_num(self):
+        lives = self.get_all_life()
+        num = Const.PLAYER_NUM
+        for life in lives:
+            if life == 0:
+                num = num - 1
+        return num
     
     # get item information
     def item_exists(self):
