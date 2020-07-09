@@ -87,9 +87,9 @@ class GameEngine:
         # menu
         self.random_stage_timer = 0
         self.stage = Const.NO_STAGE
-        # pause
-        self.pause_screen_timer = 2 * Const.FPS # set to 2 seconds
-        self.pause_screen_index = 0
+        # stop
+        self.stop_screen_timer = 2 * Const.FPS # set to 2 seconds
+        self.stop_screen_index = 0
         self.state_machine.push(Const.STATE_MENU)
 
     def init_players(self):
@@ -132,6 +132,8 @@ class GameEngine:
             self.state_machine.push(Const.STATE_PLAY)
 
         elif isinstance(event, EventStop):
+            self.stop_screen_timer = 2 * Const.FPS
+            self.stop_screen_index = 0
             self.state_machine.push(Const.STATE_STOP)
 
         elif isinstance(event, EventContinue):
@@ -260,11 +262,11 @@ class GameEngine:
                 self.entities.remove(entity)
 
     def update_stop(self):
-        if self.pause_screen_timer == 0:
-            self.pause_screen_index = (self.pause_screen_index + 1) % 3
-            self.pause_screen_timer = 2 * Const.FPS
+        if self.stop_screen_timer == 0:
+            self.stop_screen_index = (self.stop_screen_index + 1) % 3
+            self.stop_screen_timer = 2 * Const.FPS
         else:
-            self.pause_screen_timer -= 1
+            self.stop_screen_timer -= 1
 
     def update_endgame(self):
         '''
