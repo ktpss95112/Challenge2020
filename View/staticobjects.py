@@ -41,13 +41,17 @@ class View_platform(__Object_base):
 
 
 class View_menu(__Object_base):
+    background = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'menu.png')), 0.24)
+
+    @classmethod
+    def init_convert(cls):
+        cls.background = cls.background.convert()
+
     def draw(self, screen):
         # screen.blit(self.menu, (0, 0))
         # screen.blit(self.base, (10, 645))
         screen.fill(Const.BACKGROUND_COLOR)
-
-        background = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'menu.png')), 0.24)
-        screen.blit(background, (0, 0))
+        screen.blit(self.background, (0, 0))
 
         if self.model.stage == Const.NO_STAGE or self.model.random_stage_timer > 0:
             pg.draw.rect(screen, Const.BACKGROUND_COLOR, (466, 692, 267, 42))
