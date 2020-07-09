@@ -95,7 +95,9 @@ class Helper(object):
 
     def get_self_can_attack_time(self):
         return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
-
+    def get_self_can_attack(self):
+        return self.model.players[self.player_id].can_attack
+    
     # get all player information    
     def get_all_position(self):
         return [tuple(player.position) for player in self.model.players]
@@ -141,6 +143,9 @@ class Helper(object):
     
     def get_all_can_attack_time(self):
         return [player.attack_cool_down_time / Const.FPS for player in self.model.players]
+    
+    def get_all_can_attack(self):
+        return [player.can_attack for player in self.model.players]
     
     # get other players information
     def get_other_position(self, index):
@@ -188,13 +193,58 @@ class Helper(object):
     def get_other_can_attack_time(self, index):
         return self.model.players[index].attack_cool_down_time / Const.FPS
 
+    def get_other_can_attack(self, index):
+        return self.model.players[index].can_attack
+    
     # get item information
-    def get_all_item_position(self):
-        itemlist = [ [] for i in range(Const.ITEM_SPECIES + 1) ]
-        for item in self.model.items:
-            itemlist[item.item_id].append(tuple(item.position))
-        return itemlist
+    def item_exists(self):
+        return (True if self.model.items else False)
+    
+    def get_all_banana_pistol_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 1]
+    
+    def get_all_banana_pistol_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 1]
+            
+    def get_all_big_black_hole_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 2]
+    
+    def get_all_big_black_hole_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 2]
+    
+    def get_all_cancer_bomb_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 3]
 
+    def get_all_cancer_bomb_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 3]
+
+    def get_all_zap_zap_zap_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 4]
+
+    def get_all_zap_zap_zap_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 4]
+
+    def get_all_banana_peel_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 5]
+
+    def get_all_banana_peel_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 5]
+
+    def get_all_rainbow_grounder_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 6]
+
+    def get_all_rainbow_grounder_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 6]
+
+    def get_all_invincible_battery_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 7]
+
+    def get_all_invincible_battery_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 7]
+                
+    def get_all_item_position(self):
+        return [tuple(item.position) for item in self.model.items]
+    
     # get platform information 
     def get_platform_position(self):
         return [(tuple(platform.upper_left), tuple(platform.bottom_right)) for platform in self.model.platforms]
@@ -289,7 +339,7 @@ class Helper(object):
 
     # get all entity information
     def entity_exists(self):
-        return (True if self.model.entites else False)
+        return (True if self.model.entities else False)
     
     def get_all_pistol_bullet_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, PistolBullet)]
@@ -318,6 +368,9 @@ class Helper(object):
     def get_all_big_black_hole_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BigBlackHole)]
 
+    def get_all_entity_position(self):
+        return [tuple(entity.position) for entity in self.model.entities]
+    
     def walk_to_position(self,target_position):
         player_position = tuple(self.model.players[self.player_id].position)
         player_above_which_land = self.get_above_which_land(player_position)
