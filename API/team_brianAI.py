@@ -93,8 +93,8 @@ class TeamAI(BaseAI):
             elif self.helper.get_self_keep_item_id() == 7:
                 return AI_DIR_USE_ITEM
             
-        cancer_pos = self.helper.get_all_cancer_bomb_position()
-        cancer_time = self.helper.get_all_cancer_bomb_timer()
+        cancer_pos = self.helper.get_all_drop_cancer_bomb_position()
+        cancer_time = self.helper.get_all_drop_cancer_bomb_timer()
 
         for pos, time in zip(cancer_pos, cancer_time):
             if time <= 1 and self.helper.get_distance(my_pos, pos) < 400:
