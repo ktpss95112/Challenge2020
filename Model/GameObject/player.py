@@ -33,6 +33,7 @@ class Player:
         self.KO_amount = 0
         self.be_KO_amount = 0
         self.score = 0
+        self.rank = 4
 
     def is_alive(self):
         return self.life > 0

@@ -141,6 +141,16 @@ class GameEngine:
                 self.state_machine.pop()
 
         elif isinstance(event, EventTimesUp):
+            scores = []
+            for player in self.players:
+                scores.append(player.score)
+            sorted_score = sorted(scores)
+            for player in self.players:
+                for i in range(len(sorted_score)):
+                    if player.score == sorted_score[i]:
+                        player.rank = i + 1
+                        break
+                
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventRestart):
