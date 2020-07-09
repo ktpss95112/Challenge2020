@@ -175,16 +175,33 @@ class GameEngine:
         elif isinstance(event, EventPlayerItem):
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
-                self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
-
-        elif isinstance(event, EventPlayerPickItem):
-            self.players[event.player_id].pick_item(event.item)
-            self.items.remove(event.item)
-
-        elif isinstance(event, EventPlayerUseItem):
-            entities = self.players[event.player_id].use_item(self.players, self.timer)
-            for entity in entities:
-                self.entities.append(entity)
+                item_id = self.players[event.player_id].keep_item_id
+                entities = self.players[event.player_id].use_item(self.players, self.timer)
+                peel_position, bullet_position, black_hole_position, bomb_position = None, None, None, None
+                for entity in entities:
+                    if isinstance(entity, PistolBullet):
+                        bullet_position = entity.position
+                    elif isinstance(entity, BigBlackHole):
+                        black_hole_position = entity.position
+                    elif isinstance(entity, CancerBomb):
+                        bomb_position = entity.position
+                    elif isinstance(entity, BananaPeel):
+                        peel_position = entity.position
+                    self.entities.append(entity)
+                if item_id == Const.BANANA_PISTOL:
+                    self.ev_manager.post(EventUseBananaPistol(peel_position, bullet_position, self.timer))
+                elif item_id == Const.BIG_BLACK_HOLE:
+                    self.ev_manager.post(EventUseBigBlackHole(black_hole_position, self.timer))
+                elif item_id == Const.CANCER_BOMB:
+                    self.ev_manager.post(EventUseCancerBomb(bomb_position, self.timer))
+                elif item_id == Const.ZAP_ZAP_ZAP:
+                    self.ev_manager.post(EventUseZapZapZap(player.position, self.timer))
+                elif item_id == Const.BANANA_PEEL:
+                    self.ev_manager.post(EventUseBananaPeel(peel_position, self.timer))
+                elif item_id == Const.RAINBOW_GROUNDER:
+                    self.ev_manager.post(EventUseRainbowGrounder(player.position, self.timer))
+                elif item_id == Const.INVINCIBLE_BATTERY:
+                    self.ev_manager.post(EventUseInvincibleBattery(player.position, self.timer))
 
         elif isinstance(event, EventPickArena):
             if self.stage == event.stage:
@@ -231,10 +248,12 @@ class GameEngine:
 
                 # maintain items
                 if not player.has_item():
-                    item = player.find_item_every_tick(self.items)
+                    item = player.find_item_every_tick(self.items) # item is ref to an item in self.items
                     if not item is None:
-                        self.ev_manager.post(EventPlayerPickItem(player.player_id, item))
-
+                        player.pick_item(item.item_id)
+                        self.ev_manager.post(EventPlayerPickItem(player.player_id, item.item_id))
+                        self.items.remove(item)
+                        
                 # maintain scores
                 player.maintain_score_every_tick(highest_KO_amount)
 
