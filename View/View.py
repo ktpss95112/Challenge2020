@@ -51,6 +51,7 @@ class GraphicalView:
 
         # animations
         self.animation_list = []
+        self.animation_black_hole_list = [] # should be rendered lastly
 
         # static objects
         self.scoreboard = View.staticobjects.View_scoreboard(self.model)
@@ -102,6 +103,9 @@ class GraphicalView:
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
+        elif isinstance(event, EventUseBigBlackHole):
+            self.animation_black_hole_list.append(View.animations.Animation_Black_Hole(event.black_hole_position))
+
     def display_fps(self):
         '''
         Display the current fps on the window caption.
@@ -137,6 +141,11 @@ class GraphicalView:
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(target, update)
 
+        # draw blackhole
+        for ani in self.animation_black_hole_list:
+            if ani.expired: self.animation_black_hole_list.remove(ani)
+            else          : ani.draw(target, update)
+
         # draw scoreboard
         self.scoreboard.draw(target)
 
@@ -149,14 +158,14 @@ class GraphicalView:
     def render_stop(self):
         if self.current_stop_index == self.model.stop_screen_index:
             return
-        
+
         self.current_stop_index = self.model.stop_screen_index
 
         self.stop_screen = scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, 'pause', f'paused{self.current_stop_index}.png')),
             0.24
         )
-        
+
         self.screen.blit(self.stop_screen, (0, 0))
 
         # font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
