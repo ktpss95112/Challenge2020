@@ -33,8 +33,6 @@ class Player:
         self.KO_amount = 0
         self.be_KO_amount = 0
         self.score = 0
-        self.is_AI = is_AI
-        self.player_name = player_name
 
     def is_alive(self):
         return self.life > 0

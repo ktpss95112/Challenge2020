@@ -74,8 +74,7 @@ class GameEngine:
         self.AI_names = AI_names
         while len(self.AI_names) < 4:
             self.AI_names.append("m")
-
-        self.item_amount = Const.ITEMS_INIT_AMOUNT
+        check_probability()
 
     def initialize(self):
         '''
@@ -83,6 +82,7 @@ class GameEngine:
         '''
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
+        self.item_amount = Const.ITEMS_INIT_AMOUNT
         self.random_stage_timer = 0
         self.stage = Const.NO_STAGE
         self.init_players()
@@ -335,8 +335,14 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick, if item is less than item_amount, it MAY generate one item
-        if len(self.items) < int(self.item_amount) and random.randint(1, 1000) > Const.GENERATE_ITEM_PROBABILITY:
-            new_item = np.random.choice(np.arange(1, Const.ITEM_SPECIES + 1), p = Const.ITEM_PROBABILITY)
+        if len(self.items) < int(self.item_amount) and random.random() < Const.GENERATE_ITEM_PROBABILITY:
+            enabled_items, p = [], []
+            for item_id in Const.ITEM_ENABLED.keys():
+                if Const.ITEM_ENABLED[item_id]:
+                    enabled_items.append(item_id)
+                    p.append(Const.ITEM_PROBABILITY[item_id])
+            p = np.array(p)
+            new_item = np.random.choice(enabled_items, p = p / np.sum(p))
             find_position = False
             while not find_position:
                 find_position = True
@@ -356,6 +362,10 @@ class GameEngine:
         while self.running:
             self.ev_manager.post(EventEveryTick())
             self.clock.tick(Const.FPS)
+
+def check_probability():
+    if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
+        print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
 
 
 """ Events that model.py should handle.

@@ -144,8 +144,29 @@ ITEMS_AMOUNT_PARAMETER = (ITEMS_INIT_AMOUNT - ITEMS_FINAL_AMOUNT) / GAME_LENGTH 
 ITEM_RADIUS = [7, 7, 7, 7, 7, 7, 7]
 ITEM_DRAG = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 ITEM_INIT_HEIGHT = 10
-ITEM_PROBABILITY = [0.2, 0.05, 0.2, 0.05, 0.2, 0.2, 0.1] # make sure sum = 1
-GENERATE_ITEM_PROBABILITY = 985 # GENERATE_ITEM_PROBABILITY / 1000
+'''
+if item is enabled, then its probability is (its item_probability / sum of item_probability of all enabled items)
+if item is disabled, then its probability is 0
+'''
+ITEM_ENABLED = {
+    BANANA_PISTOL: 1,
+    BIG_BLACK_HOLE: 1,
+    CANCER_BOMB: 1,
+    ZAP_ZAP_ZAP: 1,
+    BANANA_PEEL: 1,
+    RAINBOW_GROUNDER: 1,
+    INVINCIBLE_BATTERY: 1,
+}
+ITEM_PROBABILITY = {
+    BANANA_PISTOL: 0.2,
+    BIG_BLACK_HOLE: 0.05,
+    CANCER_BOMB: 0.2,
+    ZAP_ZAP_ZAP: 0.05,
+    BANANA_PEEL: 0.2,
+    RAINBOW_GROUNDER: 0.2,
+    INVINCIBLE_BATTERY: 0.1,
+} 
+GENERATE_ITEM_PROBABILITY = 0.015
 
 # model-entities
 BULLET_TIME = 5 * FPS
