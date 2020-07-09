@@ -1,9 +1,6 @@
 import pygame as pg
-
 import Const
-
 from Model.GameObject.entity import *
-
 
 AI_DIR_LEFT        = 0
 AI_DIR_RIGHT       = 1
@@ -12,7 +9,7 @@ AI_DIR_LEFT_JUMP   = 3
 AI_DIR_RIGHT_JUMP  = 4
 AI_DIR_ATTACK      = 5
 AI_DIR_USE_ITEM    = 6
-
+AI_DIR_STAY        = 7
 
 JUMP_CONST_DELAY   = 30
 

@@ -50,7 +50,8 @@ class Interface(object):
                     self.ev_manager.post(EventPlayerAttack(player.player_id)) 
                 elif AI_dir == 6 and player.has_item():
                     self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
-                    
+                elif AI_dir == 7:
+                    pass
 
     def initialize(self):
         if self.is_init_AI:
