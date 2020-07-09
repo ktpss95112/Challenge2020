@@ -245,8 +245,9 @@ class View_items(__Object_base):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
+        floating = (0, Const.FLOATING_RADIUS*math.sin(Const.FLOATING_THETA*self.model.timer))
         for item in self.model.items:
-            screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position))
+            screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position + floating))
             #pg.draw.circle(screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
             #font = pg.font.Font(None, 15)
             #item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))

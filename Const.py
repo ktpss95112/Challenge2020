@@ -174,7 +174,7 @@ ITEM_PROBABILITY = {
     BANANA_PEEL: 0.2,
     RAINBOW_GROUNDER: 0.2,
     INVINCIBLE_BATTERY: 0.1,
-} 
+}
 GENERATE_ITEM_PROBABILITY = 0.015
 
 # model-entities
@@ -216,6 +216,8 @@ PLAYER_PIC = ['player1_0.png', 'player1_1.png', 'player1_2.png', 'player1_3.png'
              ]
 ATTACK_ERROR = 2.8
 ITEM_COLOR = [pg.Color('white'), pg.Color('yellow'), pg.Color('deepskyblue'), pg.Color('gray'), pg.Color('mediumpurple'), pg.Color('darkgreen'), pg.Color('tan'), pg.Color('olivedrab')]
+FLOATING_RADIUS = 4
+FLOATING_THETA = 0.06
 
 # controller
 PLAYER_MOVE_KEYS = {
