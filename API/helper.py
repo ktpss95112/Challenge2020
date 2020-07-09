@@ -60,6 +60,9 @@ class Helper(object):
     def get_self_direction(self):
         return tuple(self.model.players[self.player_id].direction)
 
+    def get_self_normal_speed(self):
+        return self.model.players[self.player_id].normal_speed
+
     def get_self_keep_item_id(self):
         return self.model.players[self.player_id].keep_item_id
 
@@ -87,6 +90,9 @@ class Helper(object):
     def get_self_score(self):
         return self.model.players[self.player_id].score
 
+    def get_self_can_jump(self):
+        return (self.get_self_jump_quota() > 0)
+
     def get_self_jump_quota(self):
         return self.model.players[self.player_id].jump_quota
 
@@ -95,10 +101,11 @@ class Helper(object):
 
     def get_self_can_attack_time(self):
         return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
+
     def get_self_can_attack(self):
         return self.model.players[self.player_id].can_attack
     
-    # get all player information    
+    # get all player information 
     def get_all_position(self):
         return [tuple(player.position) for player in self.model.players]
 
@@ -107,6 +114,9 @@ class Helper(object):
 
     def get_all_direction(self):
         return [tuple(player.direction) for player in self.model.players]
+
+    def get_all_player_distance(self):
+        return [self.get_distance(self.player_id, i) for i in range(4)]
 
     def get_all_keep_item_id(self):
         return [player.keep_item_id for player in self.model.players]
