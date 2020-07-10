@@ -63,8 +63,9 @@ class GameEngine(object):
     The main game engine. The main loop of the game is in GameEngine.run()
     '''
     __slots__ = ('ev_manager', 'state_machine', 'AI_names',\
-                'clock', 'timer', 'item_amount', 'random_stage_timer', 'stage', 'players',\
-                'platforms', 'platforms', 'items', 'entities',\
+                'clock', 'timer', 'item_amount', 'players',\
+                'random_stage_timer', 'stage', 'stop_screen_timer', 'stop_screen_index',\
+                'platforms', 'items', 'entities',\
                 'running')
 
     def __init__(self, ev_manager: EventManager, AI_names: list):

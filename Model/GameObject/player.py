@@ -10,7 +10,7 @@ class Player(object):
                 'invincible_time', 'uncontrollable_time', 'attack_cool_down_time', 'jump_quota',\
                 'direction', 'position', 'velocity', 'normal_speed', 'jump_speed',\
                 'last_being_attacked_by', 'last_being_attacked_time_elapsed',\
-                'KO_amount', 'be_KO_amount', 'score')
+                'KO_amount', 'be_KO_amount', 'score', 'rank')
 
     def __init__(self, player_id, player_name, is_AI):
         # basic
