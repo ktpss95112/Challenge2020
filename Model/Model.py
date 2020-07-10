@@ -387,12 +387,12 @@ class GameEngine:
         if self.death_rain_time != 0:
             self.death_rain_time -= 1
             if random.random() < Const.DEATH_RAIN_GENERATE_ITEM_PROBABILITY:
-                self.determine_generate_item()
+                self.generate_item_in_range(0, -100, Const.ARENA_SIZE[0], 100)
 
         if len(self.items) < int(self.item_amount) and random.random() < self.generate_item_probability:
-            self.determine_generate_item()
+            self.generate_item_in_range(0, 0, Const.ARENA_SIZE[0], Const.ARENA_SIZE[1])
 
-    def determine_generate_item(self):
+    def generate_item_in_range(self, left, upper, width, height):
         enabled_items, p = [], []
         for item_id in Const.ITEM_ENABLED.keys():
             if Const.ITEM_ENABLED[item_id]:
@@ -404,7 +404,7 @@ class GameEngine:
         find_limit = 60
         while not find_position:
             find_position = True
-            pos = pg.Vector2(random.randint(50, Const.ARENA_SIZE[0]), random.randint(0, 600))
+            pos = pg.Vector2(random.randint(left, left + width), random.randint(upper, upper + height))
             for item in self.items:
                 if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
                     find_position = False
