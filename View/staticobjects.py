@@ -41,16 +41,17 @@ class View_platform(__Object_base):
 
 
 class View_menu(__Object_base):
+    background = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'menu.png')), 0.24)
+
+    @classmethod
+    def init_convert(cls):
+        cls.background = cls.background.convert()
+
     def draw(self, screen):
         # screen.blit(self.menu, (0, 0))
         # screen.blit(self.base, (10, 645))
         screen.fill(Const.BACKGROUND_COLOR)
-
-        background = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'menu.png')), 0.24)
-        screen.blit(background, (0, 0))
-        pass
-
-
+        screen.blit(self.background, (0, 0))
 
         if self.model.stage == Const.NO_STAGE or self.model.random_stage_timer > 0:
             pg.draw.rect(screen, Const.BACKGROUND_COLOR, (466, 692, 267, 42))
@@ -69,22 +70,39 @@ class View_menu(__Object_base):
 
 
 class View_endgame(__Object_base):
+    images = {
+        'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'background.png')), 0.24),
+        0: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
+        1: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
+        2: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24)
+    }
+
     @classmethod
     def init_convert(cls):
         # TODO: use View.utils.PureText to render static words
-        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
+        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 28)
+        cls.score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 22)
         # cls.menu = cls.menu.convert()
         # cls.base = cls.base.convert_alpha()
         pass
 
     def draw(self, screen):
         # draw background
-        screen.fill(Const.BACKGROUND_COLOR)
+        screen.blit(self.images['Background'], (0, 0))
 
-        # draw text
-        text_surface = self.font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
-        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
-        screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        for player_id in range(4):
+            name_surface = self.font.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
+            name_rect = name_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 390))
+            screen.blit(name_surface, name_rect)
+
+            score_surface = self.score_font.render(f"{self.model.players[player_id].score}", 1, pg.Color('white'))
+            score_rect = score_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 430))
+            screen.blit(score_surface, score_rect)
+
+            if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
+                medal_surface = self.images[self.model.players[player_id].rank - 1]
+                medal_rect = medal_surface.get_rect(center=(675 + (player_id - 1.5) * 200, 340))
+                screen.blit(medal_surface, medal_rect)
 
 
 class View_players(__Object_base):
@@ -120,7 +138,7 @@ class View_players(__Object_base):
 
 class View_entities(__Object_base):
     images = {
-        'bomber'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
+        'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber_normal.png')), 0.15),
         'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber_red.png')), 0.15),
         'bananabullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
         'lightning'   : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2)
@@ -134,7 +152,7 @@ class View_entities(__Object_base):
         # draw players
         for entity in self.model.entities:
             if isinstance(entity, CancerBomb):
-                img_bomb = 'bomber_red' if (entity.timer <= 60 or (int)(entity.timer / 9)  % 2 == 0) else 'bomber'
+                img_bomb = 'bomber_red' if (entity.timer <= 60 or (int)(entity.timer / 9)  % 2 == 0) else 'bomber_normal'
                 screen.blit(self.images[img_bomb], self.images[img_bomb].get_rect(center=entity.position))
 
             elif isinstance(entity, PistolBullet):
@@ -147,58 +165,97 @@ class View_entities(__Object_base):
 
 class View_scoreboard(__Object_base):
     images = {
-        'Heart': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.03125)
+        'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'scoreboard.png')), 0.24),
+        Const.BANANA_PISTOL     : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.04 * 0.7),
+        Const.BIG_BLACK_HOLE    : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.05 * 0.7),
+        Const.CANCER_BOMB       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.055 * 0.7),
+        Const.ZAP_ZAP_ZAP       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.06 * 0.7),
+        Const.BANANA_PEEL       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.04 * 0.7),
+        Const.RAINBOW_GROUNDER  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_rainbowGrounder.png')), 0.05 * 0.7),
+        Const.INVINCIBLE_BATTERY: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.05 * 0.7)
     }
 
     @classmethod
     def init_convert(cls):
         cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
-        cls.namefont = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 18)
-        cls.numfont = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 25)
+        cls.namefont = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 15)
+        cls.numfont = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 16)
 
     def draw(self, screen):
-        fontsize = 24
-        posX = (Const.WINDOW_SIZE[0] * 7 / 8)
-        posY = (Const.WINDOW_SIZE[1] * 1 / 32)
-        heart_image = self.images['Heart']
-        for player_id in range(1, 5):
-            heartposX = posX + 43
-            heartposY = posY + (fontsize + 14)
-            position = posX, posY
-            # TODO: f'Voltage: {voltage:.2f}'
-            voltage = round(self.model.players[player_id - 1].voltage, 2)
-            item = self.model.players[player_id - 1].keep_item_id
-            score = self.model.players[player_id - 1].score
-            text = [f"Player {player_id}", "Life: ", f"Voltage: {voltage}", f"Item: {item}", f"Score: {score}"]
-            # TODO: no need to use a list to store the labels
-            label = []
+        background = self.images['Background']
+        screen.blit(background, (0, 0))
 
-            # TODO: merge the for loop with the following one
-            for line in text:
-                label.append(self.namefont.render(line, True, pg.Color('white')))
+        name_posx = [44, 303, 700, 959]
+        voltage_posx = name_posx
+        item_posx = name_posx
+        live_posx = name_posx
+        for player_id in range(4):
+            name_surface = self.namefont.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
+            screen.blit(name_surface, (name_posx[player_id], 683))
+            
+            voltage_surface = self.numfont.render(f"{self.model.players[player_id].voltage:.1f}", 1, pg.Color('white'))
+            voltage_rect = voltage_surface.get_rect()
+            voltage_rect.topright = (voltage_posx[player_id] + 136, 713)
+            screen.blit(voltage_surface, voltage_rect)
 
-            # TODO: merge the for loop with the previous one
-            # draw words
-            for line in range(len(label)):
-                screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
+            score_surface = self.numfont.render(f"{self.model.players[player_id].score}", 1, pg.Color('white'))
+            score_rect = score_surface.get_rect()
+            score_rect.topright = (voltage_posx[player_id] + 136, 739)
+            screen.blit(score_surface, score_rect)
 
-            # draw heart
-            lives = self.model.players[player_id - 1].life
-            for i in range(lives):
-                screen.blit(heart_image, (heartposX, heartposY))
-                heartposX += 20
-            posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
+            if self.model.players[player_id].keep_item_id != Const.NO_ITEM:
+                screen.blit(
+                    self.images[self.model.players[player_id].keep_item_id],
+                    self.images[self.model.players[player_id].keep_item_id].get_rect(center=(item_posx[player_id] + 177, 742))
+                )
+
+            lives = self.model.players[player_id].life
+            pg.draw.rect(screen, Const.BACKGROUND_COLOR, (live_posx[player_id] + 118, 686, 18 * (5 - lives), 15))
+
+            
+
+        # fontsize = 24
+        # posX = (Const.WINDOW_SIZE[0] * 7 / 8)
+        # posY = (Const.WINDOW_SIZE[1] * 1 / 32)
+        # heart_image = self.images['Heart']
+        # for player_id in range(1, 5):
+        #     heartposX = posX + 43
+        #     heartposY = posY + (fontsize + 14)
+        #     position = posX, posY
+        #     # TODO: f'Voltage: {voltage:.2f}'
+        #     voltage = round(self.model.players[player_id - 1].voltage, 2)
+        #     item = self.model.players[player_id - 1].keep_item_id
+        #     score = self.model.players[player_id - 1].score
+        #     text = [f"Player {player_id}", "Life: ", f"Voltage: {voltage}", f"Item: {item}", f"Score: {score}"]
+        #     # TODO: no need to use a list to store the labels
+        #     label = []
+
+        #     # TODO: merge the for loop with the following one
+        #     for line in text:
+        #         label.append(self.namefont.render(line, True, pg.Color('white')))
+
+        #     # TODO: merge the for loop with the previous one
+        #     # draw words
+        #     for line in range(len(label)):
+        #         screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
+
+        #     # draw heart
+        #     lives = self.model.players[player_id - 1].life
+        #     for i in range(lives):
+        #         screen.blit(heart_image, (heartposX, heartposY))
+        #         heartposX += 20
+        #     posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
 
 
 class View_items(__Object_base):
     images = {
-        Const.BANANA_PISTOL     : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.1),
-        Const.BIG_BLACK_HOLE    : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.2),
-        Const.CANCER_BOMB       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.15),
-        Const.ZAP_ZAP_ZAP       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.15),
-        Const.BANANA_PEEL       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.1),
+        Const.BANANA_PISTOL     : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.04),
+        Const.BIG_BLACK_HOLE    : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.05),
+        Const.CANCER_BOMB       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber.png')), 0.055),
+        Const.ZAP_ZAP_ZAP       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.06),
+        Const.BANANA_PEEL       : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.04),
         Const.RAINBOW_GROUNDER  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_rainbowGrounder.png')), 0.05),
-        Const.INVINCIBLE_BATTERY: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.02)
+        Const.INVINCIBLE_BATTERY: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_battery.png')), 0.05)
     }
 
     @classmethod
@@ -209,8 +266,9 @@ class View_items(__Object_base):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
+        floating = (0, Const.FLOATING_RADIUS*math.sin(Const.FLOATING_THETA*self.model.timer))
         for item in self.model.items:
-            screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position))
+            screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position + floating))
             #pg.draw.circle(screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
             #font = pg.font.Font(None, 15)
             #item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))
@@ -219,23 +277,21 @@ class View_items(__Object_base):
 
 
 class View_timer(__Object_base):
-    images = {
-        'Heart' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 0.2)
-    }
 
     @classmethod
     def init_convert(cls):
         #cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
-        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 24)
+        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 18)
 
     def draw(self, screen):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
         # TODO: create a class MutableText() similar to PureText()
-        timer_surface = self.font.render(f"time left: {self.model.timer / Const.FPS:.2f}", 1, pg.Color('white'))
-        timer_pos = (Const.WINDOW_SIZE[0] * 1 / 10, Const.WINDOW_SIZE[1] * 1 / 10)
-        screen.blit(timer_surface, timer_surface.get_rect(center=timer_pos))
+        timer_surface = self.font.render(f"{self.model.timer / Const.FPS:.0f}", 1, pg.Color('white'))
+        timer_rect = timer_surface.get_rect()
+        timer_rect.midright = (642, 752)
+        screen.blit(timer_surface, timer_rect)
 
 
 def init_staticobjects():

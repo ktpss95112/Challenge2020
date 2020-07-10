@@ -157,23 +157,13 @@ class EventPlayerItem(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id}'
 
-
-class EventPlayerUseItem(BaseEvent):
-    name = 'Player use item event (model => view)'
-
-    def __init__(self, player_id, item_id):
-        self.player_id = player_id
-        self.item_id = item_id
-    def __str__(self):
-        return f'{self.name} => player_id {self.player_id} use item'
-
     
 class EventPlayerPickItem(BaseEvent):
     name = 'Player pick item event (model => view)'
 
-    def __init__(self, player_id, item):
+    def __init__(self, player_id, item_id):
         self.player_id = player_id
-        self.item = item # reference to item
+        self.item_id = item_id
 
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} pick item {self.item_id}'
@@ -181,6 +171,63 @@ class EventPlayerPickItem(BaseEvent):
 
 class EventToggleFullScreen(BaseEvent):
     name = 'ToggleFullScreen event'
+
+
+class EventUseBananaPistol(BaseEvent):
+    name = 'UseBananaPistol event'
+
+    def __init__(self, peel_position, bullet_position, used_time):
+        self.peel_position = peel_position # initial position, it'll be affected by gravity
+        self.bullet_position = bullet_position # initial position, it'll fly
+        self.used_time = used_time
+
+
+class EventUseBigBlackHole(BaseEvent):
+    name = 'UseBigBlackHole event'
+
+    def __init__(self, black_hole_position, used_time):
+        self.black_hole_position = black_hole_position
+        self.used_time = used_time
+
+
+class EventUseCancerBomb(BaseEvent):
+    name = 'UseCancerBomb event'
+
+    def __init__(self, cancer_bomb_position, used_time):
+        self.bomb_position = cancer_bomb_position # initial position, it'll be affected by gravity
+        self.used_time = used_time
+
+
+class EventUseZapZapZap(BaseEvent):
+    name = 'UseCancerBomb event'
+
+    def __init__(self, player_position, used_time):
+        self.player_position = player_position
+        self.used_time = used_time
+
+
+class EventUseBananaPeel(BaseEvent):
+    name = 'UseBananaPeel event'
+
+    def __init__(self, peel_position, used_time):
+        self.peel_position = peel_position # initial position, it'll be affected by gravity
+        self.used_time = used_time
+
+
+class EventUseRainbowGrounder(BaseEvent):
+    name = 'UseRainbowGrounder event'
+
+    def __init__(self, player_position, used_time):
+        self.player_position = player_position
+        self.used_time = used_time
+
+
+class EventUseInvincibleBattery(BaseEvent):
+    name = 'UseInvincibleBattery event'
+
+    def __init__(self, player_position, used_time):
+        self.player_position = player_position
+        self.used_time = used_time
 
 
 class EventBombExplode(BaseEvent):

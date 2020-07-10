@@ -2,6 +2,7 @@ import pygame as pg
 import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
+from View.utils import scaled_surface, load_image
 import View.staticobjects
 import View.animations
 import Const
@@ -30,6 +31,7 @@ class GraphicalView:
         self.stop_screen = None
         self.clock = None
         self.last_update = 0
+        self.current_stop_index = None
 
     def initialize(self):
         '''
@@ -79,6 +81,9 @@ class GraphicalView:
         elif isinstance(event, EventToggleFullScreen):
             self.toggle_fullscreen()
 
+        elif isinstance(event, EventContinue):
+            self.current_stop_index = None
+
         elif isinstance(event, EventPlayerAttack):
             if self.model.players[event.player_id].player_radius / Const.PLAYER_RADIUS == 1:
                 self.animation_list.append(View.animations.Animation_player_attack(self.model.players[event.player_id]))
@@ -94,9 +99,8 @@ class GraphicalView:
         elif isinstance(event, EventBombExplode):
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
-        elif isinstance(event, EventPlayerUseItem):
-            if event.item_id == 4:
-                self.animation_list.append(View.animations.Animation_Lightning(self.model.players[event.player_id].position.x))
+        elif isinstance(event, EventUseZapZapZap):
+            self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
     def display_fps(self):
         '''
@@ -128,26 +132,37 @@ class GraphicalView:
         # draw entities
         self.entities.draw(target)
 
-        # draw timer
-        self.timer.draw(target)
-
-        # draw scoreboard
-        self.scoreboard.draw(target)
-
         # draw animation
         for ani in self.animation_list:
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(target, update)
 
+        # draw scoreboard
+        self.scoreboard.draw(target)
+
+        # draw timer
+        self.timer.draw(target)
+
+
         pg.display.flip()
 
     def render_stop(self):
+        if self.current_stop_index == self.model.stop_screen_index:
+            return
+        
+        self.current_stop_index = self.model.stop_screen_index
+
+        self.stop_screen = scaled_surface(
+            load_image(os.path.join(Const.IMAGE_PATH, 'pause', f'paused{self.current_stop_index}.png')),
+            0.24
+        )
+        
         self.screen.blit(self.stop_screen, (0, 0))
 
-        font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
-        text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
-        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        # font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
+        # text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
+        # text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
+        # self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
 
         pg.display.flip()
 

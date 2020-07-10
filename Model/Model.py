@@ -89,9 +89,13 @@ class GameEngine(object):
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
         self.item_amount = Const.ITEMS_INIT_AMOUNT
+        self.init_players()
+        # menu
         self.random_stage_timer = 0
         self.stage = Const.NO_STAGE
-        self.init_players()
+        # stop
+        self.stop_screen_timer = 1.5 * Const.FPS # set to 2 seconds
+        self.stop_screen_index = 0
         self.state_machine.push(Const.STATE_MENU)
 
     def init_players(self):
@@ -124,6 +128,8 @@ class GameEngine(object):
                 cnt = sum(player.is_alive() for player in self.players)
                 if self.timer == 0 or cnt <= 1:
                     self.ev_manager.post(EventTimesUp())
+            elif cur_state == Const.STATE_STOP:
+                self.update_stop()
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
@@ -132,6 +138,8 @@ class GameEngine(object):
             self.state_machine.push(Const.STATE_PLAY)
 
         elif isinstance(event, EventStop):
+            self.stop_screen_timer = 1.5 * Const.FPS
+            self.stop_screen_index = 0
             self.state_machine.push(Const.STATE_STOP)
 
         elif isinstance(event, EventContinue):
@@ -139,6 +147,17 @@ class GameEngine(object):
                 self.state_machine.pop()
 
         elif isinstance(event, EventTimesUp):
+            scores = []
+            for player in self.players:
+                scores.append(player.score)
+            sorted_score = sorted(scores)
+            sorted_score.reverse()
+            for player in self.players:
+                for i in range(len(sorted_score)):
+                    if player.score == sorted_score[i]:
+                        player.rank = i + 1
+                        break
+                
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventRestart):
@@ -173,16 +192,33 @@ class GameEngine(object):
         elif isinstance(event, EventPlayerItem):
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
-                self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
-
-        elif isinstance(event, EventPlayerPickItem):
-            self.players[event.player_id].pick_item(event.item)
-            self.items.remove(event.item)
-
-        elif isinstance(event, EventPlayerUseItem):
-            entities = self.players[event.player_id].use_item(self.players, self.timer)
-            for entity in entities:
-                self.entities.append(entity)
+                item_id = self.players[event.player_id].keep_item_id
+                entities = self.players[event.player_id].use_item(self.players, self.timer)
+                peel_position, bullet_position, black_hole_position, bomb_position = None, None, None, None
+                for entity in entities:
+                    if isinstance(entity, PistolBullet):
+                        bullet_position = entity.position
+                    elif isinstance(entity, BigBlackHole):
+                        black_hole_position = entity.position
+                    elif isinstance(entity, CancerBomb):
+                        bomb_position = entity.position
+                    elif isinstance(entity, BananaPeel):
+                        peel_position = entity.position
+                    self.entities.append(entity)
+                if item_id == Const.BANANA_PISTOL:
+                    self.ev_manager.post(EventUseBananaPistol(peel_position, bullet_position, self.timer))
+                elif item_id == Const.BIG_BLACK_HOLE:
+                    self.ev_manager.post(EventUseBigBlackHole(black_hole_position, self.timer))
+                elif item_id == Const.CANCER_BOMB:
+                    self.ev_manager.post(EventUseCancerBomb(bomb_position, self.timer))
+                elif item_id == Const.ZAP_ZAP_ZAP:
+                    self.ev_manager.post(EventUseZapZapZap(player.position, self.timer))
+                elif item_id == Const.BANANA_PEEL:
+                    self.ev_manager.post(EventUseBananaPeel(peel_position, self.timer))
+                elif item_id == Const.RAINBOW_GROUNDER:
+                    self.ev_manager.post(EventUseRainbowGrounder(player.position, self.timer))
+                elif item_id == Const.INVINCIBLE_BATTERY:
+                    self.ev_manager.post(EventUseInvincibleBattery(player.position, self.timer))
 
         elif isinstance(event, EventPickArena):
             if self.stage == event.stage:
@@ -202,13 +238,14 @@ class GameEngine(object):
         '''
         if self.random_stage_timer > 0:
             self.random_stage_timer -= 1
-            if self.random_stage_timer > 0.5 * Const.FPS:
-                self.stage = (self.stage + 1) % Const.STAGE_NUMBER
-            elif self.random_stage_timer > 0.25 * Const.FPS:
+            if self.random_stage_timer > 1.5 * Const.FPS:
                 if self.random_stage_timer % 2 == 0:
                     self.stage = (self.stage + 1) % Const.STAGE_NUMBER
-            else:
+            elif self.random_stage_timer > 1 * Const.FPS:
                 if self.random_stage_timer % 4 == 0:
+                    self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+            else:
+                if self.random_stage_timer % 8 == 0:
                     self.stage = (self.stage + 1) % Const.STAGE_NUMBER
 
     def update_variable(self):
@@ -229,10 +266,12 @@ class GameEngine(object):
 
                 # maintain items
                 if not player.has_item():
-                    item = player.find_item_every_tick(self.items)
+                    item = player.find_item_every_tick(self.items) # item is ref to an item in self.items
                     if not item is None:
-                        self.ev_manager.post(EventPlayerPickItem(player.player_id, item))
-
+                        player.pick_item(item.item_id)
+                        self.ev_manager.post(EventPlayerPickItem(player.player_id, item.item_id))
+                        self.items.remove(item)
+                        
                 # maintain scores
                 player.maintain_score_every_tick(highest_KO_amount)
 
@@ -258,6 +297,13 @@ class GameEngine(object):
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))
                 self.entities.remove(entity)
+
+    def update_stop(self):
+        if self.stop_screen_timer == 0:
+            self.stop_screen_index = (self.stop_screen_index + 1) % 3
+            self.stop_screen_timer = 1.5 * Const.FPS
+        else:
+            self.stop_screen_timer -= 1
 
     def update_endgame(self):
         '''

@@ -39,6 +39,7 @@ class Player(object):
         self.KO_amount = 0
         self.be_KO_amount = 0
         self.score = 0
+        self.rank = 4
 
     def is_alive(self):
         return self.life > 0
@@ -245,12 +246,10 @@ class Player(object):
         self.last_being_attacked_by = -1
         self.last_being_attacked_time_elapsed = 0
 
-    def pick_item(self, item):
-        # EventPlayerPickItem
-        self.keep_item_id = item.item_id
+    def pick_item(self, item_id):
+        self.keep_item_id = item_id
         
     def use_item(self, players, time):
-        # EventPlayerUseItem
         entities = []
         if self.keep_item_id == Const.BANANA_PISTOL:
             pos = self.position + self.direction * (self.player_radius + Const.BULLET_RADIUS) * 1.02

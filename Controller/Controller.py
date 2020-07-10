@@ -70,9 +70,6 @@ class Controller:
                     self.ev_manager.post(EventPlay())
             self.check_screen_keys(event_pg.key)
 
-
-
-
     def ctrl_play(self, key_down_events):
         keys = pg.key.get_pressed()
         for k, v in Const.PLAYER_MOVE_KEYS.items():
@@ -94,8 +91,7 @@ class Controller:
         # detect continue event
         for event_pg in key_down_events:
             if event_pg.key == Const.GAME_CONTINUE_KEY:
-                # pop out Const.GAME_STOP
-                self.model.state_machine.pop()
+                self.ev_manager.post(EventContinue())
             else:
                 self.check_screen_keys(event_pg.key)
 
