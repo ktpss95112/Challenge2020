@@ -66,22 +66,34 @@ class View_menu(__Object_base):
 
 
 class View_endgame(__Object_base):
+    images = {
+        'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'background.png')), 0.24),
+        0: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
+        1: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
+        2: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24)
+    }
+
     @classmethod
     def init_convert(cls):
         # TODO: use View.utils.PureText to render static words
-        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
+        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 28)
+        cls.score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 22)
         # cls.menu = cls.menu.convert()
         # cls.base = cls.base.convert_alpha()
         pass
 
     def draw(self, screen):
         # draw background
-        screen.fill(Const.BACKGROUND_COLOR)
+        screen.blit(self.images['Background'], (0, 0))
 
-        # draw text
-        text_surface = self.font.render("Press [space] to restart ...", 1, pg.Color('gray88'))
-        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
-        screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        for player_id in range(4):
+            name_surface = self.font.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
+            name_rect = name_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 390))
+            screen.blit(name_surface, name_rect)
+
+            score_surface = self.score_font.render(f"{self.model.players[player_id].score}", 1, pg.Color('white'))
+            score_rect = score_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 430))
+            screen.blit(score_surface, score_rect)
 
 
 class View_players(__Object_base):
