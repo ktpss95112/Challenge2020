@@ -58,7 +58,7 @@ class PistolBullet(Entity):
         for player in players:
             if player.is_alive() and not player.is_invincible():
                 vec = player.position - self.position
-                magnitude = vec.magnitude() * 10
+                magnitude = vec.magnitude() * 5
                 if vec.magnitude() < player.player_radius + Const.BULLET_RADIUS:
                     # print("someone got shoot")
                     player.be_attacked(self.velocity.normalize(), magnitude, self.user_id, time)

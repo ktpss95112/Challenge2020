@@ -246,8 +246,10 @@ class Player:
     def use_item(self, players, time):
         entities = []
         if self.keep_item_id == Const.BANANA_PISTOL:
-            pos = self.position + self.direction * (self.player_radius + Const.BULLET_RADIUS) * 1.02
-            entities.append(PistolBullet(self.player_id, pos, self.direction * Const.BULLET_VELOCITY))
+            for angle in Const.BULLET_ANGLE:
+                direction = self.direction.rotate(angle)
+                pos = self.position + direction * (self.player_radius + Const.BULLET_RADIUS) * 1.02
+                entities.append(PistolBullet(self.player_id, pos, direction * Const.BULLET_SPEED))
             pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
             entities.append(BananaPeel(self.player_id, pos, pg.Vector2(0, 0)))
 
