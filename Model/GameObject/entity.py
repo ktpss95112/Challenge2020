@@ -57,11 +57,13 @@ class BigBlackHole(Entity):
                     magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - player.position).magnitude() ** 0.3
                     player.velocity += magnitude * unit / Const.FPS
                 else:
+                    # counterclockwise rotation
                     normal = (self.position - player.position).normalize()
-                    tangent = pg.Vector2(normal.y, -normal.x)
-                    if tangent.dot(player.velocity) < 0:
-                        tangent = -tangent
-                    player.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
+                    tangent = pg.Vector2(-normal.y, normal.x)
+                    # below can be change into "normal.y * tangent.x > 0" but current one is clearer
+                    if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0):
+                        tangent *= -1
+                    player.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 180
         # attract items
         for item in items:
             dist = (self.position - item.position).magnitude()
@@ -71,11 +73,12 @@ class BigBlackHole(Entity):
                 magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - item.position).magnitude() ** 0.3
                 item.velocity += magnitude * unit / Const.FPS
             else:
+                # counterclockwise rotation
                 normal = (self.position - item.position).normalize()
-                tangent = pg.Vector2(normal.y, -normal.x)
-                if tangent.dot(item.velocity) < 0:
-                    tangent = -tangent
-                item.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
+                tangent = pg.Vector2(-normal.y, normal.x)
+                if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0): # can be change into normal.y * tangent.x > 0
+                    tangent *= -1
+                item.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 180
         return True
 
 
