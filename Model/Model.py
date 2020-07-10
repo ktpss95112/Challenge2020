@@ -93,6 +93,7 @@ class GameEngine:
         self.stop_screen_timer = 1.5 * Const.FPS # set to 2 seconds
         self.stop_screen_index = 0
         self.state_machine.push(Const.STATE_MENU)
+        self.death_rain()
 
     def init_players(self):
         self.players = [ Player(i, 'manual', False) if name == 'm' else Player(i, name, True) for name, i in zip(self.AI_names, range(4)) ]
