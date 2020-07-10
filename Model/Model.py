@@ -83,6 +83,8 @@ class GameEngine:
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
         self.item_amount = Const.ITEMS_INIT_AMOUNT
+        self.generate_item_probability = Const.GENERATE_ITEM_PROBABILITY
+        self.death_rain_time = 0
         self.init_players()
         # menu
         self.random_stage_timer = 0
@@ -381,22 +383,38 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick, if item is less than item_amount, it MAY generate one item
-        if len(self.items) < int(self.item_amount) and random.random() < Const.GENERATE_ITEM_PROBABILITY:
-            enabled_items, p = [], []
-            for item_id in Const.ITEM_ENABLED.keys():
-                if Const.ITEM_ENABLED[item_id]:
-                    enabled_items.append(item_id)
-                    p.append(Const.ITEM_PROBABILITY[item_id])
-            p = np.array(p)
-            new_item = np.random.choice(enabled_items, p = p / np.sum(p))
-            find_position = False
-            while not find_position:
+        if self.death_rain_time != 0:
+            self.death_rain_time -= 1
+            if random.random() < Const.DEATH_RAIN_GENERATE_ITEM_PROBABILITY:
+                self.determine_generate_item()
+
+        if len(self.items) < int(self.item_amount) and random.random() < self.generate_item_probability:
+            self.determine_generate_item()
+
+    def determine_generate_item(self):
+        enabled_items, p = [], []
+        for item_id in Const.ITEM_ENABLED.keys():
+            if Const.ITEM_ENABLED[item_id]:
+                enabled_items.append(item_id)
+                p.append(Const.ITEM_PROBABILITY[item_id])
+        p = np.array(p)
+        new_item = np.random.choice(enabled_items, p = p / np.sum(p))
+        find_position = False
+        find_limit = 60
+        while not find_position:
+            find_position = True
+            pos = pg.Vector2(random.randint(50, Const.ARENA_SIZE[0]), random.randint(0, 600))
+            for item in self.items:
+                if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
+                    find_position = False
+            find_limit -= 1
+            if find_limit == 0:
                 find_position = True
-                pos = pg.Vector2(random.randint(50, Const.ARENA_SIZE[0]), random.randint(0, 600))
-                for item in self.items:
-                    if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
-                        find_position = False
-            self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
+        
+        self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
+
+    def death_rain(self):
+        self.death_rain_time = Const.DEATH_RAIN_LAST_TIME
 
     def run(self):
         '''
