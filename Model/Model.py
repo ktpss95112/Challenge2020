@@ -84,7 +84,7 @@ class GameEngine:
         self.timer = Const.GAME_LENGTH
         self.item_amount = Const.ITEMS_INIT_AMOUNT
         self.generate_item_probability = Const.GENERATE_ITEM_PROBABILITY
-        self.death_rain_emerge_time = random.randint(4 * Const.GAME_LENGTH // 4, 3 * Const.GAME_LENGTH // 3)
+        self.death_rain_emerge_time = random.randint(*Const.DEATH_RAIN_EMERGE_TIME_RANGE)
         self.death_rain_last_time = 0
         self.init_players()
         # menu
