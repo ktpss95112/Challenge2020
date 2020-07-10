@@ -63,7 +63,7 @@ class BigBlackHole(Entity):
                     # below can be change into "normal.y * tangent.x > 0" but current one is clearer
                     if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0):
                         tangent *= -1
-                    player.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 180
+                    player.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
         # attract items
         for item in items:
             dist = (self.position - item.position).magnitude()
@@ -78,7 +78,7 @@ class BigBlackHole(Entity):
                 tangent = pg.Vector2(-normal.y, normal.x)
                 if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0): # can be change into normal.y * tangent.x > 0
                     tangent *= -1
-                item.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 180
+                item.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
         return True
 
 
