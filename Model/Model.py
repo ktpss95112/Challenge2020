@@ -84,7 +84,8 @@ class GameEngine:
         self.timer = Const.GAME_LENGTH
         self.item_amount = Const.ITEMS_INIT_AMOUNT
         self.generate_item_probability = Const.GENERATE_ITEM_PROBABILITY
-        self.death_rain_time = 0
+        self.death_rain_emerge_time = random.randint(4 * Const.GAME_LENGTH // 4, 3 * Const.GAME_LENGTH // 3)
+        self.death_rain_last_time = 0
         self.init_players()
         # menu
         self.random_stage_timer = 0
@@ -93,7 +94,6 @@ class GameEngine:
         self.stop_screen_timer = 1.5 * Const.FPS # set to 2 seconds
         self.stop_screen_index = 0
         self.state_machine.push(Const.STATE_MENU)
-        self.death_rain()
 
     def init_players(self):
         self.players = [ Player(i, 'manual', False) if name == 'm' else Player(i, name, True) for name, i in zip(self.AI_names, range(4)) ]
@@ -225,7 +225,13 @@ class GameEngine:
             else:
                 self.random_stage_timer = Const.RANDOM_STAGE_TIME
                 self.stage = random.randrange(Const.STAGE_NUMBER)
-                
+
+        elif isinstance(event, EventDeathRainTrigger):
+            self.ev_manager.post(EventDeathRainStart())
+
+        elif isinstance(event, EventDeathRainStart):
+            self.death_rain()
+
     def item_amount_function(self, time):
         return Const.ITEMS_AMOUNT_PARAMETER * time ** 2 + Const.ITEMS_FINAL_AMOUNT
 
@@ -281,6 +287,8 @@ class GameEngine:
         Update the objects not controlled by user.
         For example: obstacles, items, special effects, platform
         '''
+        if self.timer == self.death_rain_emerge_time:
+            self.entities.append(DeathRain(self.platforms))
         self.generate_item()
 
         for item in self.items:
@@ -293,6 +301,8 @@ class GameEngine:
                 # tell view to draw explosion animation
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))
+                elif isinstance(entity, DeathRain):
+                    self.ev_manager.post(EventDeathRainTrigger())
                 self.entities.remove(entity)
 
     def update_stop(self):
@@ -384,8 +394,8 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick, if item is less than item_amount, it MAY generate one item
-        if self.death_rain_time != 0:
-            self.death_rain_time -= 1
+        if self.death_rain_last_time != 0:
+            self.death_rain_last_time -= 1
             if random.random() < Const.DEATH_RAIN_GENERATE_ITEM_PROBABILITY:
                 self.generate_item_in_range(0, -100, Const.ARENA_SIZE[0], 100)
 
@@ -415,7 +425,7 @@ class GameEngine:
         self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
 
     def death_rain(self):
-        self.death_rain_time = Const.DEATH_RAIN_LAST_TIME
+        self.death_rain_last_time = Const.DEATH_RAIN_LAST_TIME
 
     def run(self):
         '''

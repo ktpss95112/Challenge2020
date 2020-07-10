@@ -230,6 +230,16 @@ class EventUseInvincibleBattery(BaseEvent):
         self.used_time = used_time
 
 
+class EventDeathRainTrigger(BaseEvent):
+    # Call when the death rain box be touched
+    name = 'Death rain trigger event (model => view)'
+
+
+class EventDeathRainStart(BaseEvent):
+    # Call when going to rain
+    name = 'Death rain event (view => model)'
+
+
 class EventBombExplode(BaseEvent):
     name = 'BombExplode event'
 
