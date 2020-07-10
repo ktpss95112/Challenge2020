@@ -117,10 +117,10 @@ class CancerBomb(Entity):
 
 class BananaPeel(Entity):
     # Make the player temparorily can't control move direction,the player wouldn't be affect by drag force while affected.
-    def __init__(self, user_id, position): #direction is a unit pg.vec2
+    def __init__(self, user_id, position: pg.Vector2, velocity: pg.Vector2):
         super().__init__(user_id, position)
         self.timer = Const.BANANA_PEEL_TIME
-        self.velocity = pg.Vector2(0,0)
+        self.velocity = velocity
 
     def update_every_tick(self, players, items, platforms, time):
        # gravity effect
@@ -133,6 +133,18 @@ class BananaPeel(Entity):
                 self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
                 self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
                 break
+        # maintain horizontal velocity
+        if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
+            self.velocity.x = 0
+        elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
+            self.velocity.x /= 2
+        elif self.velocity.x > 0:
+            self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
+            self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
+        elif self.velocity.x < 0:
+            self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
+            self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
+
         self.timer -= 1
         if self.timer <= 0:
             return False

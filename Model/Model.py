@@ -188,7 +188,7 @@ class GameEngine:
             if player.is_alive() and player.has_item():
                 item_id = self.players[event.player_id].keep_item_id
                 entities = self.players[event.player_id].use_item(self.players, self.timer)
-                peel_position, bullet_position, black_hole_position, bomb_position = None, None, None, None
+                peel_position, bullet_position, black_hole_position, bomb_position = [], None, None, None
                 for entity in entities:
                     if isinstance(entity, PistolBullet):
                         bullet_position = entity.position
@@ -197,10 +197,10 @@ class GameEngine:
                     elif isinstance(entity, CancerBomb):
                         bomb_position = entity.position
                     elif isinstance(entity, BananaPeel):
-                        peel_position = entity.position
+                        peel_position.append(entity.position)
                     self.entities.append(entity)
                 if item_id == Const.BANANA_PISTOL:
-                    self.ev_manager.post(EventUseBananaPistol(peel_position, bullet_position, self.timer))
+                    self.ev_manager.post(EventUseBananaPistol(peel_position[0], bullet_position, self.timer))
                 elif item_id == Const.BIG_BLACK_HOLE:
                     self.ev_manager.post(EventUseBigBlackHole(black_hole_position, self.timer))
                 elif item_id == Const.CANCER_BOMB:
@@ -208,7 +208,8 @@ class GameEngine:
                 elif item_id == Const.ZAP_ZAP_ZAP:
                     self.ev_manager.post(EventUseZapZapZap(player.position, self.timer))
                 elif item_id == Const.BANANA_PEEL:
-                    self.ev_manager.post(EventUseBananaPeel(peel_position, self.timer))
+                    for i in range(3):
+                        self.ev_manager.post(EventUseBananaPeel(peel_position[i], self.timer))
                 elif item_id == Const.RAINBOW_GROUNDER:
                     self.ev_manager.post(EventUseRainbowGrounder(player.position, self.timer))
                 elif item_id == Const.INVINCIBLE_BATTERY:

@@ -249,7 +249,7 @@ class Player:
             pos = self.position + self.direction * (self.player_radius + Const.BULLET_RADIUS) * 1.02
             entities.append(PistolBullet(self.player_id, pos, self.direction))
             pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
-            entities.append(BananaPeel(self.player_id, pos))
+            entities.append(BananaPeel(self.player_id, pos, pg.Vector2(0, 0)))
 
         elif self.keep_item_id == Const.BIG_BLACK_HOLE:
             entities.append(BigBlackHole(self.player_id, pg.Vector2(self.position.x, self.position.y)))
@@ -269,8 +269,13 @@ class Player:
                                        * (1 if self.position.x < other.position.x else -1)
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
-            pos = self.position - self.direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02 
-            entities.append(BananaPeel(self.player_id, pos))
+            for angle, speed in zip(Const.BANANA_PEEL_DROP_ANGLE, Const.BANANA_PEEL_DROP_SPEED):
+                if self.direction.x > 0:
+                    direction = -self.direction.rotate(angle)
+                else:
+                    direction = -self.direction.rotate(-angle)
+                pos = self.position + direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02
+                entities.append(BananaPeel(self.player_id, pos, direction * speed))
 
         elif self.keep_item_id == Const.RAINBOW_GROUNDER:
             self.voltage -= Const.RAINBOW_GROUNDER_VOLTAGE_DOWN
