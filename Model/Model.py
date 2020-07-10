@@ -295,7 +295,7 @@ class GameEngine:
     def update_stop(self):
         if self.stop_screen_timer == 0:
             self.stop_screen_index = (self.stop_screen_index + 1) % 3
-            self.stop_screen_timer = 1.5 * Const.FPS
+            self.stop_screen_timer = 1 * Const.FPS
         else:
             self.stop_screen_timer -= 1
 

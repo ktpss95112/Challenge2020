@@ -275,6 +275,20 @@ class View_items(__Object_base):
             #item_pos = item.position
             #screen.blit(item_surface, item_surface.get_rect(center = item_pos))
 
+class View_stop(__Object_base):
+    images = {
+        'Background0': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'pause', 'paused0.png')), 0.24),
+        'Background1': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'pause', 'paused1.png')), 0.24),
+        'Background2': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'pause', 'paused2.png')), 0.24)
+    }
+
+    @classmethod
+    def init_convert(cls):
+        cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
+    
+    def draw(self, screen):
+        screen.blit(self.images[f'Background{self.model.stop_screen_index}'], (0, 0))
+        
 
 class View_timer(__Object_base):
 
@@ -303,3 +317,4 @@ def init_staticobjects():
     View_scoreboard.init_convert()
     View_menu.init_convert()
     View_timer.init_convert()
+    View_stop.init_convert()
