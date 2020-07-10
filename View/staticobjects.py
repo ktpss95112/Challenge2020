@@ -43,6 +43,10 @@ class View_platform(__Object_base):
 class View_menu(__Object_base):
     background = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'menu', 'menu.png')), 0.24)
 
+    @classmethod
+    def init_convert(cls):
+        cls.background = cls.background.convert()
+
     def draw(self, screen):
         # screen.blit(self.menu, (0, 0))
         # screen.blit(self.base, (10, 645))
