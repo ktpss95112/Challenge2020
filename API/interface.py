@@ -11,6 +11,8 @@ class Interface(object):
         evManager (EventManager): Allows posting messages to the event queue.
         model (GameEngine): a strong reference to the game Model.
         """
+        __slots__ = ('ev_manager', 'model', 'player_AI', 'is_init_AI')
+        
         self.ev_manager = ev_manager
         ev_manager.register_listener(self)
         self.model = model

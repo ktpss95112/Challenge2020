@@ -18,6 +18,8 @@ JUMP_CONST_DELAY   = 30
 When return timers or velocity, please use "second" as time unit.
 '''
 class Helper(object):
+    __slots__ = ('model', 'player_id', 'jump_delay')
+
     def __init__(self, model, index):
         self.model = model
         self.player_id = index
