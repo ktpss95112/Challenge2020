@@ -4,26 +4,57 @@ import random
 
 # If update_every_tick return False,it should be removed from entity list
 class Entity:
-    def __init__(self, user_id, position):
+    def __init__(self, user_id, position: pg.Vector2, velocity: pg.Vector2, timer):
         self.user_id = user_id
         self.position = position
+        self.velocity = velocity
+        self.timer = timer
 
-    def update_every_tick(self, players):
+    def update_every_tick(self, players, items, platforms, time):
         return False
+
+    def maintain_velocity_every_tick(self, gravity_effect = True):
+        # Modify the horizontal velocity (drag)
+        if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
+            self.velocity.x = 0
+        elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
+            self.velocity.x /= 2
+        elif self.velocity.x > 0:
+            self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
+            self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
+        elif self.velocity.x < 0:
+            self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
+            self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
+
+        # Modify the vertical velocity (drag and gravity)
+        self.velocity.y += Const.GRAVITY_ACCELERATION_FOR_ENTITY / Const.FPS
+        if self.velocity.y <= 2 * Const.VERTICAL_DRAG_EMERGE_SPEED:
+            self.velocity.y /= 2
+        elif self.velocity.y <= Const.VERTICAL_DRAG_EMERGE_SPEED:
+            self.velocity.y = Const.VERTICAL_DRAG_EMERGE_SPEED
+
+    def move_every_tick(self, platforms, radius):
+        prev_position = pg.Vector2(self.position)
+        self.position += self.velocity / Const.FPS
+        for platform in platforms:
+            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
+                if prev_position.y <= platform.upper_left.y - radius <= self.position.y:
+                    self.position.y = platform.upper_left.y - radius
+                    self.velocity.y = 0
+                    break
+
+    def maintain_timer_every_tick(self):
+        self.timer -= 1
 
 
 class PistolBullet(Entity):
-    def __init__(self, user_id, position, direction): # direction is a unit pg.vec2
-        super().__init__(user_id, position)
-        self.timer = Const.BULLET_TIME
-        self.velocity = Const.BULLET_VELOCITY * direction
+    def __init__(self, user_id, position, velocity): # direction is a unit pg.vec2
+        super().__init__(user_id, position, velocity, Const.BULLET_TIME)
     
     def update_every_tick(self, players, items, platforms, time):
-        self.timer -= 1
-        self.position += self.velocity / Const.FPS
-        # print("bullet flying, " + str(self.position))
-        if self.timer <= 0:
-            return False
+        self.move_every_tick(platforms, Const.BULLET_RADIUS)
+        self.maintain_timer_every_tick()
+        
         for player in players:
             if player.is_alive() and not player.is_invincible():
                 vec = player.position - self.position
@@ -35,72 +66,48 @@ class PistolBullet(Entity):
                     self.position = pg.Vector2(-1000, -2000)
                     self.velocity = pg.Vector2(0, 0)
                     return False
-        return True
+        return True if self.timer > 0 else False
 
 
 class BigBlackHole(Entity):
     def __init__(self, user_id, position):
-        super().__init__(user_id, position)
-        self.timer = Const.BLACK_HOLE_TIME
+        super().__init__(user_id, position, pg.Vector2(0, 0), Const.BLACK_HOLE_TIME)
 
     def update_every_tick(self, players, items, platforms, time):
-        self.timer -= 1
-        if self.timer <= 0:
-            return False
-        # attract players
-        for player in players:
-            if player.is_alive() and not player.is_invincible() and player.player_id != self.user_id:
-                dist = (self.position - player.position).magnitude()
-                # check whether player is outside BLACK_HOLE_EFFECT_RADIUS
-                if dist > Const.BLACK_HOLE_EFFECT_RADIUS:
-                    unit = (self.position - player.position).normalize()
-                    magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - player.position).magnitude() ** 0.3
-                    player.velocity += magnitude * unit / Const.FPS
-                else:
-                    # counterclockwise rotation
-                    normal = (self.position - player.position).normalize()
-                    tangent = pg.Vector2(-normal.y, normal.x)
-                    # below can be change into "normal.y * tangent.x > 0" but current one is clearer
-                    if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0):
-                        tangent *= -1
-                    player.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
-        # attract items
-        for item in items:
-            dist = (self.position - item.position).magnitude()
-            # check whether item is outside BLACK_HOLE_EFFECT_RADIUS
+        self.maintain_timer_every_tick()
+        valid_players = [player for player in players if player.is_alive() and not player.is_invincible() and\
+                        player.player_id != self.user_id]
+        self.attract(valid_players + items)
+        return True if self.timer > 0 else False
+
+    def attract(self, objects):
+        for obj in objects: 
+            dist = (self.position - obj.position).magnitude()
+            # check whether object is outside BLACK_HOLE_EFFECT_RADIUS
             if dist > Const.BLACK_HOLE_EFFECT_RADIUS:
-                unit = (self.position - item.position).normalize()
-                magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - item.position).magnitude() ** 0.3
-                item.velocity += magnitude * unit / Const.FPS
+                unit = (self.position - obj.position).normalize()
+                magnitude = Const.BLACK_HOLE_GRAVITY_ACCELERATION / (self.position - obj.position).magnitude() ** 0.3
+                obj.velocity += magnitude * unit / Const.FPS
             else:
                 # counterclockwise rotation
-                normal = (self.position - item.position).normalize()
+                normal = (self.position - obj.position).normalize()
                 tangent = pg.Vector2(-normal.y, normal.x)
-                if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0): # can be change into normal.y * tangent.x > 0
+                # below can be change into "normal.y * tangent.x > 0" but current one is clearer
+                if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0):
                     tangent *= -1
-                item.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
-        return True
+                obj.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
 
 
 class CancerBomb(Entity):
     def __init__(self, user_id, position):
-        super().__init__(user_id, position)
-        self.timer = Const.BOMB_TIME
-        self.velocity = pg.Vector2(0,0)
+        super().__init__(user_id, position, pg.Vector2(0, 0), Const.BOMB_TIME)
 
     def update_every_tick(self, players, items, platforms, time):
-       # gravity effect
-        self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
-        prev_position_y = self.position.y
-        self.position += self.velocity / Const.FPS
-        for platform in platforms:
-            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x and\
-                prev_position_y <= platform.upper_left.y - Const.BANANA_PEEL_RADIUS <= self.position.y:
-                self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
-                self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
-                break
-        self.timer -= 1
-        if self.timer <= 0:
+        self.maintain_velocity_every_tick()
+        self.move_every_tick(platforms, Const.BOMB_RADIUS)
+        self.maintain_timer_every_tick()
+
+        if self.timer == 0:
             for player in players:
                 if player.is_alive() and not player.is_invincible():
                     distance = player.position - self.position
@@ -117,43 +124,19 @@ class CancerBomb(Entity):
 
 class BananaPeel(Entity):
     # Make the player temparorily can't control move direction,the player wouldn't be affect by drag force while affected.
-    def __init__(self, user_id, position: pg.Vector2, velocity: pg.Vector2):
-        super().__init__(user_id, position)
-        self.timer = Const.BANANA_PEEL_TIME
-        self.velocity = velocity
+    def __init__(self, user_id, position, velocity):
+        super().__init__(user_id, position, velocity, Const.BANANA_PEEL_TIME)
 
     def update_every_tick(self, players, items, platforms, time):
-       # gravity effect
-        self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
-        prev_position_y = self.position.y
-        self.position += self.velocity / Const.FPS
-        for platform in platforms:
-            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x and\
-                prev_position_y <= platform.upper_left.y - Const.BANANA_PEEL_RADIUS <= self.position.y:
-                self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
-                self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
-                break
-        # maintain horizontal velocity
-        if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
-            self.velocity.x = 0
-        elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
-            self.velocity.x /= 2
-        elif self.velocity.x > 0:
-            self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
-        elif self.velocity.x < 0:
-            self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
+        self.maintain_velocity_every_tick()
+        self.move_every_tick(platforms, Const.BANANA_PEEL_RADIUS)
+        self.maintain_timer_every_tick()
 
-        self.timer -= 1
-        if self.timer <= 0:
-            return False
         for player in players:
             if player.is_alive() and not player.is_invincible() and\
                 (player.position - self.position).magnitude() < player.player_radius + Const.BANANA_PEEL_RADIUS:
-                player.uncontrollable_time = Const.BANANA_PEEL_AFFECT_TIME
+                player.uncontrollable_time += Const.BANANA_PEEL_AFFECT_TIME
                 return False
         if not Const.LIFE_BOUNDARY.collidepoint(self.position):
             return False
-        return True
-
+        return True if self.timer > 0 else False
