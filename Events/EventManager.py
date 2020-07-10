@@ -2,6 +2,8 @@ class EventManager:
     '''
     We coordinate communication between the Model, View, and Controller.
     '''
+    __slots__ = ('listeners',)
+
     def __init__(self):
         self.listeners = []
 
@@ -54,6 +56,7 @@ class EventInitialize(BaseEvent):
 
 class EventPickArena(BaseEvent):
     name = 'StageSelect Event'
+    __slots__ = ('stage',)
 
     def __init__(self, stage):
         self.stage = stage
@@ -101,6 +104,7 @@ class EventEveryTick(BaseEvent):
 
 class EventPlayerMove(BaseEvent):
     name = 'PlayerMove event'
+    __slots__ = ('player_id', 'direction')
 
     def __init__(self, player_id, direction):
         self.player_id = player_id
@@ -112,6 +116,7 @@ class EventPlayerMove(BaseEvent):
 
 class EventPlayerJump(BaseEvent):
     name = 'PlayerJump event'
+    __slots__ = ('player_id',)
 
     def __init__(self, player_id):
         self.player_id = player_id
@@ -121,6 +126,7 @@ class EventPlayerJump(BaseEvent):
 
 class EventPlayerAttack(BaseEvent):
     name = 'PlayerAttack event'
+    __slots__ = ('player_id',)
 
     def __init__(self, player_id):
         self.player_id = player_id
@@ -130,6 +136,7 @@ class EventPlayerAttack(BaseEvent):
 
 class EventPlayerRespawn(BaseEvent):
     name = 'PlayerRespawn event'
+    __slots__ = ('player_id')
 
     def __init__(self, player_id):
         self.player_id = player_id
@@ -140,6 +147,7 @@ class EventPlayerRespawn(BaseEvent):
 
 class EventPlayerDied(BaseEvent):
     name = 'PlayerDied event'
+    __slots__ = ('player_id',)
 
     def __init__(self, player_id):
         self.player_id = player_id
@@ -150,6 +158,7 @@ class EventPlayerDied(BaseEvent):
 
 class EventPlayerItem(BaseEvent):
     name = 'Player press item button (contoller => model)'
+    __slots__ = ('player_id',)
 
     def __init__(self, player_id):
         self.player_id = player_id
@@ -160,6 +169,7 @@ class EventPlayerItem(BaseEvent):
     
 class EventPlayerPickItem(BaseEvent):
     name = 'Player pick item event (model => view)'
+    __slots__ = ('player_id', 'item_id')
 
     def __init__(self, player_id, item_id):
         self.player_id = player_id
@@ -175,6 +185,7 @@ class EventToggleFullScreen(BaseEvent):
 
 class EventUseBananaPistol(BaseEvent):
     name = 'UseBananaPistol event'
+    __slots__ = ('peel_position', 'bullet_position', 'used_time')
 
     def __init__(self, peel_position, bullet_position, used_time):
         self.peel_position = peel_position # initial position, it'll be affected by gravity
@@ -184,6 +195,7 @@ class EventUseBananaPistol(BaseEvent):
 
 class EventUseBigBlackHole(BaseEvent):
     name = 'UseBigBlackHole event'
+    __slots__ = ('black_hole_position', 'used_time')
 
     def __init__(self, black_hole_position, used_time):
         self.black_hole_position = black_hole_position
@@ -192,6 +204,7 @@ class EventUseBigBlackHole(BaseEvent):
 
 class EventUseCancerBomb(BaseEvent):
     name = 'UseCancerBomb event'
+    __slots__ = ('bomb_position', 'used_time')
 
     def __init__(self, cancer_bomb_position, used_time):
         self.bomb_position = cancer_bomb_position # initial position, it'll be affected by gravity
@@ -200,6 +213,7 @@ class EventUseCancerBomb(BaseEvent):
 
 class EventUseZapZapZap(BaseEvent):
     name = 'UseCancerBomb event'
+    __slots__ = ('player_position', 'used_time')
 
     def __init__(self, player_position, used_time):
         self.player_position = player_position
@@ -208,6 +222,7 @@ class EventUseZapZapZap(BaseEvent):
 
 class EventUseBananaPeel(BaseEvent):
     name = 'UseBananaPeel event'
+    __slots__ = ('peel_position', 'used_time')
 
     def __init__(self, peel_position, used_time):
         self.peel_position = peel_position # initial position, it'll be affected by gravity
@@ -216,6 +231,7 @@ class EventUseBananaPeel(BaseEvent):
 
 class EventUseRainbowGrounder(BaseEvent):
     name = 'UseRainbowGrounder event'
+    __slots__ = ('player_position', 'used_time')
 
     def __init__(self, player_position, used_time):
         self.player_position = player_position
@@ -224,6 +240,7 @@ class EventUseRainbowGrounder(BaseEvent):
 
 class EventUseInvincibleBattery(BaseEvent):
     name = 'UseInvincibleBattery event'
+    __slots__ = ('player_position', 'used_time')
 
     def __init__(self, player_position, used_time):
         self.player_position = player_position
@@ -232,6 +249,7 @@ class EventUseInvincibleBattery(BaseEvent):
 
 class EventBombExplode(BaseEvent):
     name = 'BombExplode event'
+    __slots__ = ('position',)
 
     def __init__(self, position):
         self.position = position
