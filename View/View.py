@@ -12,6 +12,11 @@ class GraphicalView:
     '''
     Draws the state of GameEngine onto the screen.
     '''
+    __slots__ = ('ev_manager', 'model', 'is_initialized', 'screen', 'stop_screen',\
+                'clock', 'last_update', 'current_stop_index',\
+                'animation_list', 'scoreboard', 'players', 'platform', 'items', 'timer',\
+                'entities', 'menu', 'endgame')
+
     background = pg.Surface(Const.ARENA_SIZE)
     fullscreen = True
 

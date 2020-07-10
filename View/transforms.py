@@ -14,7 +14,8 @@ class RGBTransform(object):
     For example:
         grayish = RGBTransform.desaturate(factor=0.5).applied_to(some_image)
     """
-
+    __slots__ = ('_matrix',)
+    
     def __init__(self, matrix=None):
         self._matrix = matrix if matrix is not None else np.eye(4)
 

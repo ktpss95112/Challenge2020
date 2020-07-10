@@ -22,6 +22,7 @@ in the init_otherobjects() function!
 
 
 class __Object_base():
+    __slots__ = ('model',)
     images = tuple()
 
     @classmethod

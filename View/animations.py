@@ -43,6 +43,7 @@ class Animation_base():
     To start an animation, you have to append the new Animation to ANI.
     Every animation in ANI should be drawn (if valid) or be discarded (if expired) in every tick.
     '''
+    __slots__ = ('_timer', 'expired')
 
     def __init__(self, delay_of_frames, **pos):
         self._timer = 0
@@ -59,6 +60,7 @@ class Animation_base():
 
 
 class Animation_raster(Animation_base):
+    __slots__ = ('delay_of_frames', 'frame_index_to_draw', 'expire_time', 'pos')
     frames = tuple()
 
     @classmethod
@@ -143,6 +145,7 @@ class Animation_Lightning(Animation_raster):
 
 
 class Animation_player_attack(Animation_raster):
+    __slots__ = ('player',)
     frames = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, 'electricattack.png')),
@@ -170,6 +173,7 @@ class Animation_player_attack(Animation_raster):
 
 
 class Animation_player_attack_big(Animation_raster):
+    __slots__ = ('player',)
     frames = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, 'electricattack.png')),
@@ -197,6 +201,7 @@ class Animation_player_attack_big(Animation_raster):
 
 
 class Animation_Bomb_Explode(Animation_raster):
+    __slots__ = ('vibration',)
     frames = tuple(
         scaled_surface(
             pg.transform.rotate(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 2*_i),

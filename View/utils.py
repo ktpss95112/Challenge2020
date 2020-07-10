@@ -4,6 +4,8 @@ import numpy as np
 from View.transforms import RGBTransform
 
 class PureText:
+    __slots__ = ('font', 'text_surface', 'pos_rect')
+
     def __init__(self, text, size, font, color, **pos):
         '''
         pos: refer to the attributes of pg.Rect
