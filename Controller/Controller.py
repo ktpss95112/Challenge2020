@@ -9,6 +9,7 @@ class Controller:
     '''
     Handles the control input. Either from keyboard or from AI.
     '''
+    __slots__ = ('ev_manager', 'model')
 
     def __init__(self, ev_manager: EventManager, model: GameEngine):
         '''
