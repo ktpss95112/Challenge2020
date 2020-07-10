@@ -106,12 +106,13 @@ class Helper(object):
         return self.model.players[self.player_id].can_attack
 
     def get_self_will_drop(self):
-        my_x = self.get_self_position()[0]
+        self_position = self.get_self_position()
+        self_radius = self.get_self_radius()
         platforms = self.get_platform_position()
         for platform in platforms:
-            if platform[0][0] < my_x and platform[1][0] > my_x:
-                return 0
-        return 1
+            if platform[0][0] < self_position[0] < platform[1][0] and self_position[1] + self_radius <= platform[0][1]:
+                return False
+        return True
     
     # get all player information 
     def get_all_position(self):
@@ -223,6 +224,15 @@ class Helper(object):
     def get_other_can_attack(self, index):
         return self.model.players[index].can_attack
 
+    def get_other_will_drop(self, index):
+        other_position = self.get_other_position(index)
+        other_radius = self.get_other_radius(index)
+        platforms = self.get_platform_position()
+        for platform in platforms:
+            if platform[0][0] < other_position[0] < platform[1][0] and other_position[1] + other_radius <= platform[0][1]:
+                return False
+        return True
+
     def get_live_player_num(self):
         lives = self.get_all_life()
         num = Const.PLAYER_NUM
@@ -321,6 +331,13 @@ class Helper(object):
         # get vector from p1 to p2
         return ((p2[0] - p1[0]), (p2[1] - p1[1])) 
 
+    def get_position_will_drop(self, pos):
+        # Doesn't consider radius
+        platforms = self.get_platform_position()
+        for platform in platforms:
+            if platform[0][0] < pos[0] < platform[1][0] and pos[1] <= platform[0][1]:
+                return False
+        return True
 
     def get_distance_to_closest_land(self):
         minimum_distance = 10000 ** 2
@@ -360,19 +377,19 @@ class Helper(object):
         count = 0
         if self.model.stage == Const.STAGE_1:
             for platform in self.model.platforms:
-                if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y:
+                if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] <= platform.upper_left.y:
                     index = count
                 count+=1
             if position[0] > self.model.platforms[2].upper_left.x - 15 and position[0] < self.model.platforms[2].bottom_right.x + 15 and position[1] < self.model.platforms[2].upper_left.y:
                 index = 2
         elif self.model.stage == Const.STAGE_2:
             for platform in self.model.platforms:
-                if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y and index < 0:
+                if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] <= platform.upper_left.y and index < 0:
                     index = count
                 count+=1
         elif self.model.stage == Const.STAGE_3:
             for platform in self.model.platforms:
-                if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] < platform.upper_left.y and index < 0:
+                if position[0] > platform.upper_left.x - 15 and position[0] < platform.bottom_right.x + 15 and position[1] <= platform.upper_left.y and index < 0:
                     index = count
                 count+=1
         return index
