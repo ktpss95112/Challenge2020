@@ -244,6 +244,17 @@ class Helper(object):
     # get item information
     def item_exists(self):
         return (True if self.model.items else False)
+
+    def get_nearest_item_position(self):
+        player_pos = self.get_self_position()
+        minimum_distance = 10000
+        position = (0, 0)
+        for item in self.model.items:
+            distance = self.get_distance(player_pos, item.position)
+            if distance < minimum_distance:
+                minimum_distance = distance
+                position = item.position
+        return position
     
     def get_all_banana_pistol_position(self):
         return [tuple(item.position) for item in self.model.items if item.item_id == 1]

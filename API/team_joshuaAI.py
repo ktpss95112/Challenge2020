@@ -13,6 +13,11 @@ class TeamAI(BaseAI):
     def __init__(self, helper):
         self.helper = helper
         self.enhancement = [0, 0, 0]
+        self.item_timer = 0
+    
+    def jump_distance(self,t):
+        return self.helper.get_self_velocity()[1] * t + self.helper.get_self_jump_speed() * t + 1/2 * self.helper.get_game_player_gravity_acceleration() * t ** 2
+
     def get_position_vector_to_closest_land(self, position):
         minimum_distance = 10000 ** 2
         distance = 0
@@ -29,10 +34,13 @@ class TeamAI(BaseAI):
                 else:
                     distance = self.helper.get_distance(position, platform.upper_left)
                     vector = (platform.upper_left[0] - position[0], platform.upper_left[1] - position[1])
-            if distance < minimum_distance:
+            if distance < minimum_distance and (vector[1] > 0 or abs(vector[1]) < self.jump_distance(2)):
                 minimum_distance = distance
                 minimum_vector = vector
         return minimum_vector
+
+    def can_jump(self):
+        return (self.helper.get_self_velocity()[1] > -250 and self.helper.get_self_can_jump())
 
     def use_item(self):
         item_id = self.helper.get_self_keep_item_id()
@@ -64,8 +72,8 @@ class TeamAI(BaseAI):
         return 0
 
     def where_to_go(self, direction):
-        if self.helper.get_self_can_jump() and direction[1] < 0 and not self.helper.get_self_will_drop():
-            if(direction[0] > 0):
+        if self.can_jump() and direction[1] < 0:
+            if direction[0] > 0:
                 return AI_DIR_RIGHT_JUMP
             else:
                 return AI_DIR_LEFT_JUMP
@@ -82,16 +90,16 @@ class TeamAI(BaseAI):
         my_normal_speed = self.helper.get_self_normal_speed()
         my_jump_speed = self.helper.get_self_jump_speed()
         game_boundary = self.helper.get_game_arena_boundary()
-        live_time = 1
+        live_time = 2
         future_pos = (my_pos[0] + my_v[0] * live_time, my_pos[1] + my_v[1] * live_time - 1/2 * g * live_time ** 2)
         if future_pos[1] > game_boundary[1][1] or self.helper.get_self_will_drop():
-            if self.get_position_vector_to_closest_land(future_pos)[0] > -2:
-                if self.helper.get_self_can_jump():
+            if self.get_position_vector_to_closest_land(future_pos)[0] > -10:
+                if self.can_jump():
                     return AI_DIR_RIGHT_JUMP
                 else:
                     return AI_DIR_RIGHT
-            elif self.get_position_vector_to_closest_land(future_pos)[0] < -2:
-                if self.helper.get_self_can_jump():
+            elif self.get_position_vector_to_closest_land(future_pos)[0] < -10:
+                if self.can_jump():
                     return AI_DIR_LEFT_JUMP
                 else:
                     return AI_DIR_LEFT
@@ -103,13 +111,13 @@ class TeamAI(BaseAI):
             return AI_DIR_LEFT
         after_pos = (my_pos[0] + (my_normal_speed * (1 if direction[0] > 0 else -1) + my_v[0]) * live_time, my_pos[1] + (my_jump_speed * (-1 if direction[1] < 0 else 0) + my_v[1]) * live_time - 1/2 * g * live_time ** 2)
         if after_pos[1] > game_boundary[1][1] or self.helper.get_self_will_drop():
-            if self.get_position_vector_to_closest_land(after_pos)[0] > 0:
-                if self.helper.get_self_can_jump():
+            if self.get_position_vector_to_closest_land(after_pos)[0] > -10:
+                if self.can_jump():
                     return AI_DIR_RIGHT_JUMP
                 else:
                     return AI_DIR_RIGHT
-            elif self.get_position_vector_to_closest_land(after_pos)[0] < 0:
-                if self.helper.get_self_can_jump():
+            elif self.get_position_vector_to_closest_land(after_pos)[0] < -10:
+                if self.can_jump():
                     return AI_DIR_LEFT_JUMP
                 else:
                     return AI_DIR_LEFT
@@ -119,16 +127,29 @@ class TeamAI(BaseAI):
             direction = (direction[0], 0)
         elif after_pos[0] > game_boundary[1][0]:
             return AI_DIR_LEFT
-        all_bomb = self.helper.get_all_drop_cancer_bomb_position()
-        vector = (0, 0)
-        for bomb in all_bomb:
-            bomb_vector = self.helper.get_vector(self.helper.get_self_position(), bomb)
-            vector = (vector[0] + bomb_vector[0], vector[1] + bomb_vector[1])
-        if len(all_bomb) != 0:
-            vector = (-vector[0] / len(all_bomb), 0)
-            direction = vector
-        if(self.helper.get_self_can_attack() and enemy_dst < self.helper.get_self_attack_radius() / 3 and not self.helper.get_other_is_invincible(enemy_id)):
+        nearest = (0, 0)
+        nearest_distance = 10000
+        for bomb in self.helper.get_all_drop_cancer_bomb_position():
+            distance = self.helper.get_distance(my_pos, bomb)
+            if distance < Const.BOMB_EXPLODE_RADIUS and distance < nearest_distance:
+                nearest_distance = distance
+                nearest = bomb
+        for banana in self.helper.get_all_drop_banana_peel_position():
+            distance = self.helper.get_distance(my_pos, banana)
+            if self.helper.get_distance(my_pos, banana) < 200 and distance < nearest_distance:
+                nearest_distance = distance
+                nearest = banana
+        for black_hole in self.helper.get_all_drop_big_black_hole_position():
+            distance = self.helper.get_distance(my_pos, black_hole)
+            if self.helper.get_distance(my_pos, black_hole) < Const.BLACK_HOLE_EFFECT_RADIUS * 0.9 and distance < nearest_distance:
+                nearest_distance = distance
+                nearest = black_hole
+        if nearest != (0, 0):
+            direction = self.helper.get_vector(my_pos, nearest)
+        if(self.helper.get_self_can_attack() and enemy_dst < self.helper.get_self_attack_radius() / 2.5 and not self.helper.get_other_is_invincible(enemy_id)):
             return AI_DIR_ATTACK
+        if self.helper.get_self_will_drop() and direction[0] * self.helper.get_position_vector_to_closest_land()[0] < 0:
+            direction = (- direction[0], direction[1])
         return self.where_to_go(direction)
 
     def decide(self):
@@ -140,9 +161,11 @@ class TeamAI(BaseAI):
         enemy_id = self.helper.get_nearest_player()
         enemy_pos = self.helper.get_other_position(enemy_id)
         enemy_dst = self.helper.get_distance(my_pos, enemy_pos)
+        enemy_vector = self.helper.get_vector(my_pos, enemy_pos)
+        item_vector = self.helper.get_vector(my_pos, self.helper.get_nearest_item_position())
         voltages = self.helper.get_all_voltage()
         mean_voltage = sum(voltages) / len(voltages)
-        if(my_voltage > mean_voltage * 1.5) and self.helper.get_live_player_num() > 2:
+        if(my_voltage > mean_voltage * 1.5 and not self.helper.get_self_is_invincible()) and self.helper.get_live_player_num() > 2:
             '''
             all_distance = self.helper.get_all_player_distance()
             all_vector = self.helper.get_all_player_vector()
@@ -151,6 +174,15 @@ class TeamAI(BaseAI):
                 ideal_vector = (ideal_vector[0] + all_vector[i][0] * all_distance[i],ideal_vector[1] + all_vector[i][1] * all_distance[i])
             ideal_direction = (- ideal_vector[0] / sum(all_distance), - ideal_vector[1] / sum(all_distance))
             '''
-            return self.to_live((-self.helper.get_vector(my_pos, enemy_pos)[0], -self.helper.get_vector(my_pos, enemy_pos)[1]), enemy_dst, enemy_id)
+            vector = (- enemy_vector[0], 0)
+            if enemy_dst > 200:
+                vector = item_vector
+            return self.to_live(vector, enemy_dst, enemy_id)
         else:
-            return self.to_live(self.helper.get_vector(my_pos, enemy_pos), enemy_dst, enemy_id)
+            vector = enemy_vector
+            if self.item_timer > 1750 and self.helper.get_self_keep_item_id() == 0:
+                enemy_vector = item_vector
+            return self.to_live(vector, enemy_dst, enemy_id)
+        self.item_timer = self.item_timer + 1
+        if self.item_timer == 2000:
+            self.item_timer = 0
