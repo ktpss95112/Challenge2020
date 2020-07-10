@@ -142,7 +142,7 @@ class TeamAI(BaseAI):
         enemy_dst = self.helper.get_distance(my_pos, enemy_pos)
         voltages = self.helper.get_all_voltage()
         mean_voltage = sum(voltages) / len(voltages)
-        if(my_voltage > mean_voltage) and self.helper.get_live_player_num() > 2:
+        if(my_voltage > mean_voltage * 1.5) and self.helper.get_live_player_num() > 2:
             '''
             all_distance = self.helper.get_all_player_distance()
             all_vector = self.helper.get_all_player_vector()
