@@ -310,18 +310,20 @@ class Helper(object):
         highest_voltage_id = 0
         highest_voltage = 0
         for player in self.model.players:
-            if player.voltage > highest_voltage:
-                highest_voltage = player.voltage
-                highest_voltage_id = player.player_id
+            if player.player_id != self.player_id:
+                if player.voltage > highest_voltage:
+                    highest_voltage = player.voltage
+                    highest_voltage_id = player.player_id
         return highest_voltage_id
 
     def get_highest_score_player(self):   # when the highest_score_player not only one?
         highest_score_id = 0
         highest_score = 0
         for player in self.model.players:
-            if player.score > highest_score:
-                highest_score = player.score
-                highest_score_id = player.player_id
+            if player.player_id != self.player_id:
+                if player.score > highest_score:
+                    highest_score = player.score
+                    highest_score_id = player.player_id
         return highest_score_id
 
     def get_distance(self, p1, p2):
