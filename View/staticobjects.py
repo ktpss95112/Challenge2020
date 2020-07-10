@@ -95,6 +95,11 @@ class View_endgame(__Object_base):
             score_rect = score_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 430))
             screen.blit(score_surface, score_rect)
 
+            if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
+                medal_surface = self.images[self.model.players[player_id].rank - 1]
+                medal_rect = medal_surface.get_rect(center=(675 + (player_id - 1.5) * 200, 340))
+                screen.blit(medal_surface, medal_rect)
+
 
 class View_players(__Object_base):
     images = tuple(

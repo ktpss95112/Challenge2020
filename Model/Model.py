@@ -145,6 +145,7 @@ class GameEngine:
             for player in self.players:
                 scores.append(player.score)
             sorted_score = sorted(scores)
+            sorted_score.reverse()
             for player in self.players:
                 for i in range(len(sorted_score)):
                     if player.score == sorted_score[i]:
