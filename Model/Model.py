@@ -83,6 +83,9 @@ class GameEngine:
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
         self.item_amount = Const.ITEMS_INIT_AMOUNT
+        self.generate_item_probability = Const.GENERATE_ITEM_PROBABILITY
+        self.death_rain_emerge_time = random.randint(*Const.DEATH_RAIN_EMERGE_TIME_RANGE)
+        self.death_rain_last_time = 0
         self.init_players()
         # menu
         self.random_stage_timer = 0
@@ -223,7 +226,13 @@ class GameEngine:
             else:
                 self.random_stage_timer = Const.RANDOM_STAGE_TIME
                 self.stage = random.randrange(Const.STAGE_NUMBER)
-                
+
+        elif isinstance(event, EventDeathRainTrigger):
+            self.ev_manager.post(EventDeathRainStart())
+
+        elif isinstance(event, EventDeathRainStart):
+            self.death_rain()
+
     def item_amount_function(self, time):
         return Const.ITEMS_AMOUNT_PARAMETER * time ** 2 + Const.ITEMS_FINAL_AMOUNT
 
@@ -279,6 +288,8 @@ class GameEngine:
         Update the objects not controlled by user.
         For example: obstacles, items, special effects, platform
         '''
+        if self.timer == self.death_rain_emerge_time:
+            self.entities.append(DeathRain(self.platforms))
         self.generate_item()
 
         for item in self.items:
@@ -291,6 +302,8 @@ class GameEngine:
                 # tell view to draw explosion animation
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))
+                elif isinstance(entity, DeathRain):
+                    self.ev_manager.post(EventDeathRainTrigger())
                 self.entities.remove(entity)
 
     def update_stop(self):
@@ -382,22 +395,38 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick, if item is less than item_amount, it MAY generate one item
-        if len(self.items) < int(self.item_amount) and random.random() < Const.GENERATE_ITEM_PROBABILITY:
-            enabled_items, p = [], []
-            for item_id in Const.ITEM_ENABLED.keys():
-                if Const.ITEM_ENABLED[item_id]:
-                    enabled_items.append(item_id)
-                    p.append(Const.ITEM_PROBABILITY[item_id])
-            p = np.array(p)
-            new_item = np.random.choice(enabled_items, p = p / np.sum(p))
-            find_position = False
-            while not find_position:
+        if self.death_rain_last_time != 0:
+            self.death_rain_last_time -= 1
+            if random.random() < Const.DEATH_RAIN_GENERATE_ITEM_PROBABILITY:
+                self.generate_item_in_range(0, -100, Const.ARENA_SIZE[0], 100)
+
+        if len(self.items) < int(self.item_amount) and random.random() < self.generate_item_probability:
+            self.generate_item_in_range(0, 0, Const.ARENA_SIZE[0], Const.ARENA_SIZE[1])
+
+    def generate_item_in_range(self, left, upper, width, height):
+        enabled_items, p = [], []
+        for item_id in Const.ITEM_ENABLED.keys():
+            if Const.ITEM_ENABLED[item_id]:
+                enabled_items.append(item_id)
+                p.append(Const.ITEM_PROBABILITY[item_id])
+        p = np.array(p)
+        new_item = np.random.choice(enabled_items, p = p / np.sum(p))
+        find_position = False
+        find_limit = 60
+        while not find_position:
+            find_position = True
+            pos = pg.Vector2(random.randint(left, left + width), random.randint(upper, upper + height))
+            for item in self.items:
+                if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
+                    find_position = False
+            find_limit -= 1
+            if find_limit == 0:
                 find_position = True
-                pos = pg.Vector2(random.randint(50, Const.ARENA_SIZE[0]), random.randint(0, 600))
-                for item in self.items:
-                    if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
-                        find_position = False
-            self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
+        
+        self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
+
+    def death_rain(self):
+        self.death_rain_last_time = Const.DEATH_RAIN_LAST_TIME
 
     def run(self):
         '''
