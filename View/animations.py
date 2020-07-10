@@ -251,7 +251,7 @@ class Animation_Black_Hole:
             # rotate_radius = np.linspace(cls.radius_max, cls.radius_min, cls.phase1_time, dtype=np.int)
 
             # new theta for rotation
-            newt = t + (20 * ((_timer / Const.FPS * 2 + 1) / 6)**3) * (-np.abs((r / rotate_radius - 0.5)) + 0.5)**3
+            newt = t - (20 * ((_timer / Const.FPS * 2 + 1) / 6)**3) * (-np.abs((r / rotate_radius - 0.5)) + 0.5)**3
 
             # new radius for space compression
             newr = cls.radius_max * (r / cls.radius_max) ** (1 / (1 + _timer / Const.FPS / 4))
