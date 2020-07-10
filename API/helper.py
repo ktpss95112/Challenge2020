@@ -331,7 +331,7 @@ class Helper(object):
         # get vector from p1 to p2
         return ((p2[0] - p1[0]), (p2[1] - p1[1])) 
 
-    def get_will_drop(self, pos):
+    def get_position_will_drop(self, pos):
         # Doesn't consider radius
         platforms = self.get_platform_position()
         for platform in platforms:
