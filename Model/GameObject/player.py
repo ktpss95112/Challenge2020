@@ -69,7 +69,7 @@ class Player:
         self.move_every_tick()
 
         # Maintain horizontal and vertical velocity
-        self.maintain_velocity_every_tick()
+        self.maintain_velocity_every_tick(platforms)
 
         # Maintain three timers
         self.maintain_timer_every_tick()
@@ -77,25 +77,24 @@ class Player:
     def maintain_speed_every_tick(self, time):
         self.normal_speed = self.speed_function(time)
 
-    def maintain_velocity_every_tick(self):
-        # Modify the horizontal velocity (drag)
-        if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
-            self.velocity.x = 0
-        elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
-            self.velocity.x /= 2
-        elif self.velocity.x > 0 and self.is_controllable():
-            self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
-        elif self.velocity.x < 0 and self.is_controllable():
-            self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
-
-        # Modify the vertical velocity (drag and gravity)
+    def maintain_velocity_every_tick(self, platforms):
         self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
-        if self.velocity.y <= 2 * Const.VERTICAL_DRAG_EMERGE_SPEED:
-            self.velocity.y /= 2
-        elif self.velocity.y <= Const.VERTICAL_DRAG_EMERGE_SPEED:
-            self.velocity.y = Const.VERTICAL_DRAG_EMERGE_SPEED
+        unit = self.velocity.normalize()
+        if self.is_controllable():
+            # air drag (f = -kv => v = (1 - k/m) * v)
+            self.velocity *= (1 - Const.DRAG_COEFFICIENT)
+            # friction
+            touch_platform = False
+            for platform in platforms:
+                if (platform.upper_left.y - self.position.y) < self.player_radius and\
+                    platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
+                    touch_platform = True
+                    break
+            if touch_platform and self.velocity.x != 0:
+                prev_velocity_x_dir = 1 if self.velocity.x > 0 else -1
+                self.velocity.x -= prev_velocity_x_dir * Const.FRICTION_COEFFICIENT
+                if self.velocity.x * prev_velocity_x_dir < 0:
+                    self.velocity.x = 0
 
     def maintain_timer_every_tick(self):
         if self.invincible_time > 0:
@@ -176,7 +175,7 @@ class Player:
     def add_horizontal_velocity(self, direction: str):
         # EventPlayerMove
         # Add horizontal velocity to the player along the direction.
-        self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
+        self.velocity.x = self.normal_speed * Const.DIRECTION_TO_VEC2[direction].x
         if direction == 'left':
             self.direction = pg.Vector2(-1, 0)
         elif (direction == 'right'):

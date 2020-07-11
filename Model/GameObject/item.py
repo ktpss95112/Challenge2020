@@ -11,30 +11,28 @@ class Item:
 
     def update_every_tick(self, platforms: list):
         # Maintain velocity
-        self.maintain_velocity_every_tick()
+        self.maintain_velocity_every_tick(platforms)
 
         # Maintain position, make sure that the player do not pass through the platform
         self.move_every_tick(platforms)
 
-    def maintain_velocity_every_tick(self):
-        # Modify the horizontal velocity (drag)
-        if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
-            self.velocity.x = 0
-        elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
-            self.velocity.x /= 2
-        elif self.velocity.x > 0:
-            self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
-        elif self.velocity.x < 0:
-            self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
-
-        # Modify the vertical velocity (drag and gravity)
-        self.velocity.y += Const.GRAVITY_ACCELERATION_FOR_ITEM / Const.FPS
-        if self.velocity.y <= 2 * Const.VERTICAL_DRAG_EMERGE_SPEED:
-            self.velocity.y /= 2
-        elif self.velocity.y <= Const.VERTICAL_DRAG_EMERGE_SPEED:
-            self.velocity.y = Const.VERTICAL_DRAG_EMERGE_SPEED
+    def maintain_velocity_every_tick(self, platforms):
+        self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
+        unit = self.velocity.normalize()
+        # air drag (f = -kv => v = (1 - k/m) * v)
+        self.velocity *= (1 - Const.DRAG_COEFFICIENT)
+        # friction
+        touch_platform = False
+        for platform in platforms:
+            if (platform.upper_left.y - self.position.y) < self.item_radius and\
+                platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
+                touch_platform = True
+                break
+        if touch_platform and self.velocity.x != 0:
+            prev_velocity_x_dir = 1 if self.velocity.x > 0 else -1
+            self.velocity.x -= prev_velocity_x_dir * Const.FRICTION_COEFFICIENT
+            if self.velocity.x * prev_velocity_x_dir < 0:
+                self.velocity.x = 0
 
     def move_every_tick(self, platforms):
         prev_position = pg.Vector2(self.position)
