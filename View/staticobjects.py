@@ -31,10 +31,21 @@ class __Object_base():
     def __init__(self, model):
         self.model = model
 
+class View_stage(__Object_base):
+    stage = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'stage.png')), 1)
+
+    @classmethod
+    def init_convert(cls):
+        cls.stage = cls.stage.convert()
+
+    def draw(self, screen):
+        screen.fill(Const.BACKGROUND_COLOR)
+        screen.blit(self.stage, (34, 31))
+
 
 class View_platform(__Object_base):
     def draw(self, screen):
-        screen.fill(Const.BACKGROUND_COLOR)
+        # screen.fill(Const.BACKGROUND_COLOR)
         for platform in self.model.platforms:
             # TODO: refactor the below line to be cleaner
             pg.draw.rect(screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
@@ -312,6 +323,7 @@ class View_timer(__Object_base):
 
 
 def init_staticobjects():
+    View_stage.init_convert()
     View_platform.init_convert()
     View_endgame.init_convert()
     View_players.init_convert()

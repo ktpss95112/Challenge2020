@@ -62,6 +62,7 @@ class GraphicalView:
         self.menu = View.staticobjects.View_menu(self.model)
         self.endgame = View.staticobjects.View_endgame(self.model)
         self.stop = View.staticobjects.View_stop(self.model)
+        self.stage = View.staticobjects.View_stage(self.model)
 
     def notify(self, event):
         '''
@@ -120,6 +121,9 @@ class GraphicalView:
     def render_play(self, target=None, update=True):
         if target is None:
             target = self.screen
+
+        # draw stage
+        self.stage.draw(target)
 
         # draw platform
         self.platform.draw(target)
