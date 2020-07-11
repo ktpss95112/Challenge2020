@@ -206,6 +206,7 @@ class Player:
         self.voltage += (Const.ATTACK_VOLTAGE_INCREASE / magnitude)
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
+        self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def be_attacked_by_pistol_bullet(self, unit, attacker_id, time):
         voltage_acceleration = self.voltage_acceleration()
@@ -213,10 +214,12 @@ class Player:
         self.voltage += Const.BULLET_VOLTAGE_UP
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
+        self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def be_attacked_by_cancer_bomb(self, unit, magnitude, time):
         self.velocity += Const.BE_ATTACKED_ACCELERATION * self.voltage_acceleration() * unit / magnitude / Const.FPS
         self.voltage += Const.BOMB_ATK
+        self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def be_attacked_by_zap_zap_zap(self, unit, attacker_id, time):
         voltage_acceleration = self.voltage_acceleration()
@@ -226,6 +229,7 @@ class Player:
                                             * (1 if unit.x > 0 else -1)
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
+        self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def voltage_acceleration(self):
         return 1 + self.voltage * Const.VOLTAGE_ACCELERATION_COEFFICIENT
