@@ -71,7 +71,7 @@ class Player:
         self.move_every_tick()
 
         # Maintain horizontal and vertical velocity
-        self.maintain_velocity_every_tick()
+        self.maintain_velocity_every_tick(platforms)
 
         # Maintain three timers
         self.maintain_timer_every_tick()
@@ -79,25 +79,24 @@ class Player:
     def maintain_speed_every_tick(self, time):
         self.normal_speed = self.speed_function(time)
 
-    def maintain_velocity_every_tick(self):
-        # Modify the horizontal velocity (drag)
-        if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
-            self.velocity.x = 0
-        elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
-            self.velocity.x /= 2
-        elif self.velocity.x > 0 and self.is_controllable():
-            self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
-        elif self.velocity.x < 0 and self.is_controllable():
-            self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
-
-        # Modify the vertical velocity (drag and gravity)
+    def maintain_velocity_every_tick(self, platforms):
         self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
-        if self.velocity.y <= 2 * Const.VERTICAL_DRAG_EMERGE_SPEED:
-            self.velocity.y /= 2
-        elif self.velocity.y <= Const.VERTICAL_DRAG_EMERGE_SPEED:
-            self.velocity.y = Const.VERTICAL_DRAG_EMERGE_SPEED
+        unit = self.velocity.normalize()
+        if self.is_controllable():
+            # air drag (f = -kv => v = (1 - k/m) * v)
+            self.velocity *= (1 - Const.DRAG_COEFFICIENT)
+            # friction
+            touch_platform = False
+            for platform in platforms:
+                if (platform.upper_left.y - self.position.y) < self.player_radius * 1.1 and\
+                    platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
+                    touch_platform = True
+                    break
+            if touch_platform and self.velocity.x != 0:
+                prev_velocity_x_dir = 1 if self.velocity.x > 0 else -1
+                self.velocity.x -= prev_velocity_x_dir * Const.FRICTION_COEFFICIENT
+                if self.velocity.x * prev_velocity_x_dir < 0:
+                    self.velocity.x = 0
 
     def maintain_timer_every_tick(self):
         if self.invincible_time > 0:
@@ -178,7 +177,7 @@ class Player:
     def add_horizontal_velocity(self, direction: str):
         # EventPlayerMove
         # Add horizontal velocity to the player along the direction.
-        self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
+        self.velocity.x = self.normal_speed * Const.DIRECTION_TO_VEC2[direction].x
         if direction == 'left':
             self.direction = pg.Vector2(-1, 0)
         elif (direction == 'right'):
@@ -186,12 +185,8 @@ class Player:
 
     def jump(self):
         # EventPlayerJump
-        # Add vertical velocity to the player.
-        if self.jump_quota != 0:
-            if self.velocity.y > 0:
-                self.velocity.y = -self.jump_speed
-            else:
-                self.velocity.y -= self.jump_speed
+        if self.jump_quota > 0:
+            self.velocity.y = -self.jump_speed
             self.jump_quota -= 1
 
     def attack(self, players, time):
@@ -209,8 +204,6 @@ class Player:
 
     def be_attacked(self, unit, magnitude, attacker_id, time):
         self.velocity += Const.BE_ATTACKED_ACCELERATION * self.voltage_acceleration() * unit / magnitude / Const.FPS
-        if self.voltage >= 100:
-            self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
         self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
@@ -218,7 +211,7 @@ class Player:
     def voltage_acceleration(self):
         # return self.voltage ** 1.35 + 10
         # return 30 * (math.log2(self.voltage + 2) + 1.5) ** 1.8
-        return 30 * (5 * self.voltage / 3 + 5)
+        return 1 + self.voltage * 0.02
 
     def die(self, players, time):
         # EventPlayerDied
@@ -270,11 +263,12 @@ class Player:
             for other in players :
                 if abs(self.position.x - other.position.x) < Const.ZAP_ZAP_ZAP_RANGE and self != other\
                         and other.is_alive() and not other.is_invincible():
-                    voltage_acceleration = other.voltage ** 1.35 + 100
+                    voltage_acceleration = other.voltage * 0.02 + 1
                     other.voltage += Const.ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP
                     other.velocity.y = -Const.ZAP_ZAP_ZAP_VERTICAL_ACCELERATION * voltage_acceleration / Const.FPS
                     other.velocity.x = random.uniform(0, Const.ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION) * voltage_acceleration / Const.FPS \
                                        * (1 if self.position.x < other.position.x else -1)
+                    other.be_attacked((self.position - other.position).normalize(), 10000000000, self.player_id, time)
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
             for angle, speed in zip(Const.BANANA_PEEL_DROP_ANGLE, Const.BANANA_PEEL_DROP_SPEED):
