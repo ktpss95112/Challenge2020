@@ -206,13 +206,17 @@ class Player:
                 player.be_attacked(unit, magnitude, self.player_id, time)
 
     def be_attacked(self, unit, magnitude, attacker_id, time):
-        voltage_acceleration = self.voltage ** 1.35 + 100
-        self.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * unit / magnitude / Const.FPS
+        self.velocity += Const.BE_ATTACKED_ACCELERATION * self.voltage_acceleration() * unit / magnitude / Const.FPS
         if self.voltage >= 100:
             self.velocity += Const.BE_ATTACKED_ACCELERATION * 10000 * unit / magnitude / Const.FPS
         self.voltage += (Const.VOLTAGE_INCREASE_CONST / magnitude)
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
+
+    def voltage_acceleration(self):
+        # return self.voltage ** 1.35 + 10
+        # return 30 * (math.log2(self.voltage + 2) + 1.5) ** 1.8
+        return 30 * (5 * self.voltage // 3 + 5)
 
     def die(self, players, time):
         # EventPlayerDied
