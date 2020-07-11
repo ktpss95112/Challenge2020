@@ -143,23 +143,15 @@ class BananaPeel(Entity):
 class DeathRain(Entity):
     # A box that would produce lots of item when be touched
     def __init__(self, platforms):
-        self.velocity = Const.DEATH_RAIN_VELOCITY
-        self.position = self.find_position(platforms)
+        super().__init__(None, self.find_position(platforms), Const.DEATH_RAIN_VELOCITY, None)
 
     def update_every_tick(self, players, items, platforms, time):
        # gravity effect
-        prev_position_y = self.position.y
-        self.position += self.velocity / Const.FPS
-        for platform in platforms:
-            if platform.upper_left.x <= self.position.x <= platform.bottom_right.x and\
-                prev_position_y <= platform.upper_left.y - Const.BANANA_PEEL_RADIUS <= self.position.y:
-                self.position.y = platform.upper_left.y - Const.BANANA_PEEL_RADIUS
-                self.velocity.y = -self.velocity.y * Const.ATTENUATION_COEFFICIENT if abs(self.velocity.y) > Const.VERTICAL_SPEED_MINIMUM else 0
-                break
+        self.move_every_tick(platforms, Const.DEATH_RAIN_RADIUS)
 
         for player in players:
             if player.is_alive() and not player.is_invincible() and\
-                (player.position - self.position).magnitude() < player.player_radius + Const.BANANA_PEEL_RADIUS:
+                (player.position - self.position).magnitude() < player.player_radius + Const.DEATH_RAIN_RADIUS:
                 return False
         if not Const.LIFE_BOUNDARY.collidepoint(self.position):
             return False
