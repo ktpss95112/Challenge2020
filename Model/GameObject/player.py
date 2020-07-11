@@ -216,7 +216,7 @@ class Player:
     def voltage_acceleration(self):
         # return self.voltage ** 1.35 + 10
         # return 30 * (math.log2(self.voltage + 2) + 1.5) ** 1.8
-        return 30 * (5 * self.voltage // 3 + 5)
+        return 30 * (5 * self.voltage / 3 + 5)
 
     def die(self, players, time):
         # EventPlayerDied
