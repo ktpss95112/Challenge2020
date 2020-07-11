@@ -14,7 +14,7 @@ AI_DIR_STAY        = 7
 class TeamAI(BaseAI):
     def __init__(self, helper):
         self.helper = helper
-        self.enhancement = [0, 0, 0]
+        self.enhancement = [0, 0, 0, 0]
         self.last_position = (0, 0)
         self.stack = [random.randint(0, 4), random.randint(0, 4)]
 

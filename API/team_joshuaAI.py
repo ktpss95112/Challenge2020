@@ -12,7 +12,7 @@ AI_DIR_USE_ITEM    = 6
 class TeamAI(BaseAI):
     def __init__(self, helper):
         self.helper = helper
-        self.enhancement = [0, 0, 0]
+        self.enhancement = [0, 0, 0, 0]
         self.item_timer = 0
     
     def jump_distance(self,t):

@@ -31,7 +31,7 @@ BLACK_HOLE_EFFECT_RADIUS = 10 * PLAYER_RADIUS
 class TeamAI(BaseAI):
     def __init__(self, helper):
         self.helper = helper
-        self.enhancement = [0, 0, 0]
+        self.enhancement = [0, 0, 0, 0]
         self.jump = False
 
     def decide(self):
