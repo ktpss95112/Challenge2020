@@ -24,7 +24,7 @@ class Item:
         # friction
         touch_platform = False
         for platform in platforms:
-            if (platform.upper_left.y - self.position.y) < self.item_radius and\
+            if (platform.upper_left.y - self.position.y) < self.item_radius * 1.1 and\
                 platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
                 touch_platform = True
                 break
