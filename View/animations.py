@@ -100,10 +100,10 @@ class Animation_raster(Animation_base):
 class Animation_Bomb_Explode(Animation_raster):
     frames = tuple(
         scaled_surface(
-            pg.transform.rotate(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 2*_i),
-                0.01*_i
-            )
-            for _i in range(1, 36)
+            load_image(os.path.join(Const.IMAGE_PATH, f'explosion_{_i//2}.png')),
+            0.8
+        )
+            for _i in range(2, 35)
     )
 
     def __init__(self, **pos):
@@ -199,10 +199,10 @@ class Animation_player_attack_big(Animation_raster):
 class Animation_Bomb_Explode(Animation_raster):
     frames = tuple(
         scaled_surface(
-            pg.transform.rotate(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 2*_i),
-                0.01*_i
-            )
-            for _i in range(1, 36)
+            load_image(os.path.join(Const.IMAGE_PATH, f'explosion_{_i//2}.png')),
+            0.8
+        )
+            for _i in range(2, 35)
     )
 
     def __init__(self, **pos):
