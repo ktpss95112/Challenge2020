@@ -17,7 +17,7 @@ class PistolBullet(Entity):
         super().__init__(user_id, position)
         self.timer = Const.BULLET_TIME
         self.velocity = Const.BULLET_VELOCITY * direction
-    
+
     def update_every_tick(self, players, items, platforms, time):
         self.timer -= 1
         self.position += self.velocity / Const.FPS
