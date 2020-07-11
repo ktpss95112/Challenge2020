@@ -183,12 +183,8 @@ class Player:
 
     def jump(self):
         # EventPlayerJump
-        # Add vertical velocity to the player.
-        if self.jump_quota != 0:
-            if self.velocity.y > 0:
-                self.velocity.y = -self.jump_speed
-            else:
-                self.velocity.y -= self.jump_speed
+        if self.jump_quota > 0:
+            self.velocity.y = -self.jump_speed
             self.jump_quota -= 1
 
     def attack(self, players, time):
