@@ -170,8 +170,9 @@ class GameEngine:
                 player.add_horizontal_velocity(event.direction)
 
         elif isinstance(event, EventPlayerJump):
-            if self.players[event.player_id].is_alive():
-                self.players[event.player_id].jump()
+            player = self.players[event.player_id]
+            if player.is_alive() and player.is_controllable():
+                player.jump()
 
         elif isinstance(event, EventPlayerAttack):
             attacker = self.players[event.player_id]

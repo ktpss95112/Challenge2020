@@ -13,25 +13,23 @@ class Entity:
     def update_every_tick(self, players, items, platforms, time):
         return False
 
-    def maintain_velocity_every_tick(self, gravity_effect = True):
-        # Modify the horizontal velocity (drag)
-        if abs(self.velocity.x) < Const.HORIZONTAL_SPEED_MINIMUM:
-            self.velocity.x = 0
-        elif abs(self.velocity.x) > Const.DRAG_CRITICAL_SPEED:
-            self.velocity.x /= 2
-        elif self.velocity.x > 0:
-            self.velocity.x -= self.velocity.x ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x > 0 else 0
-        elif self.velocity.x < 0:
-            self.velocity.x += (-self.velocity.x) ** 2.5 * Const.DRAG_COEFFICIENT
-            self.velocity.x = self.velocity.x if self.velocity.x < 0 else 0
-
-        # Modify the vertical velocity (drag and gravity)
-        self.velocity.y += Const.GRAVITY_ACCELERATION_FOR_ENTITY / Const.FPS
-        if self.velocity.y <= 2 * Const.VERTICAL_DRAG_EMERGE_SPEED:
-            self.velocity.y /= 2
-        elif self.velocity.y <= Const.VERTICAL_DRAG_EMERGE_SPEED:
-            self.velocity.y = Const.VERTICAL_DRAG_EMERGE_SPEED
+    def maintain_velocity_every_tick(self, platforms):
+        self.velocity.y += Const.GRAVITY_ACCELERATION / Const.FPS
+        unit = self.velocity.normalize()
+        # air drag (f = -kv => v = (1 - k/m) * v)
+        self.velocity *= (1 - Const.DRAG_COEFFICIENT)
+        # friction
+        touch_platform = False
+        for platform in platforms:
+            if (platform.upper_left.y - self.position.y) < 25 and\
+                platform.upper_left.x <= self.position.x <= platform.bottom_right.x:
+                touch_platform = True
+                break
+        if touch_platform and self.velocity.x != 0:
+            prev_velocity_x_dir = 1 if self.velocity.x > 0 else -1
+            self.velocity.x -= prev_velocity_x_dir * Const.FRICTION_COEFFICIENT
+            if self.velocity.x * prev_velocity_x_dir < 0:
+                self.velocity.x = 0 
 
     def move_every_tick(self, platforms, radius):
         prev_position = pg.Vector2(self.position)
@@ -57,14 +55,8 @@ class PistolBullet(Entity):
         
         for player in players:
             if player.is_alive() and not player.is_invincible():
-                vec = player.position - self.position
-                magnitude = vec.magnitude() * 5
-                if vec.magnitude() < player.player_radius + Const.BULLET_RADIUS:
-                    # print("someone got shoot")
-                    player.be_attacked(self.velocity.normalize(), magnitude, self.user_id, time)
-                    # prevent remove failure
-                    self.position = pg.Vector2(-1000, -2000)
-                    self.velocity = pg.Vector2(0, 0)
+                if (player.position - self.position).magnitude() < player.player_radius + Const.BULLET_RADIUS:
+                    player.be_attacked_by_pistol_bullet(self.velocity.normalize(), self.user_id, time)
                     return False
         return True if self.timer > 0 else False
 
@@ -103,21 +95,19 @@ class CancerBomb(Entity):
         super().__init__(user_id, position, pg.Vector2(0, 0), Const.BOMB_TIME)
 
     def update_every_tick(self, players, items, platforms, time):
-        self.maintain_velocity_every_tick()
+        self.maintain_velocity_every_tick(platforms)
         self.move_every_tick(platforms, Const.BOMB_RADIUS)
         self.maintain_timer_every_tick()
 
         if self.timer == 0:
             for player in players:
                 if player.is_alive() and not player.is_invincible():
-                    distance = player.position - self.position
-                    if distance.magnitude() < Const.BOMB_MINIMUM_DISTANCE:
-                        distance = pg.Vector2(0, Const.BOMB_MINIMUM_DISTANCE)
-                    if distance.magnitude() <= Const.BOMB_EXPLODE_RADIUS:
+                    distance = (player.position - self.position).magnitude()
+                    if distance < Const.BOMB_MINIMUM_DISTANCE:
+                        distance = Const.BOMB_MINIMUM_DISTANCE
+                    if distance <= Const.BOMB_EXPLODE_RADIUS:
                         # Attack power == normal player's attack power
-                        voltage_acceleration = player.voltage ** 1.35 + 10
-                        player.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * distance.normalize() / distance.magnitude() / Const.FPS
-                        player.voltage += Const.BOMB_ATK
+                        player.be_attacked_by_cancer_bomb((player.position - self.position).normalize(), distance, time)
             return False
         return True
 
@@ -128,7 +118,7 @@ class BananaPeel(Entity):
         super().__init__(user_id, position, velocity, Const.BANANA_PEEL_TIME)
 
     def update_every_tick(self, players, items, platforms, time):
-        self.maintain_velocity_every_tick()
+        self.maintain_velocity_every_tick(platforms)
         self.move_every_tick(platforms, Const.BANANA_PEEL_RADIUS)
         self.maintain_timer_every_tick()
 
@@ -140,6 +130,7 @@ class BananaPeel(Entity):
         if not Const.LIFE_BOUNDARY.collidepoint(self.position):
             return False
         return True if self.timer > 0 else False
+
 
 class DeathRain(Entity):
     # A box that would produce lots of item when be touched
