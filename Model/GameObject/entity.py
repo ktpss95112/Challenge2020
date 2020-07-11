@@ -56,7 +56,7 @@ class PistolBullet(Entity):
         for player in players:
             if player.is_alive() and not player.is_invincible():
                 vec = player.position - self.position
-                magnitude = vec.magnitude() * 5
+                magnitude = vec.magnitude() * 10
                 if vec.magnitude() < player.player_radius + Const.BULLET_RADIUS:
                     # print("someone got shoot")
                     player.be_attacked(self.velocity.normalize(), magnitude, self.user_id, time)
@@ -113,7 +113,7 @@ class CancerBomb(Entity):
                         distance = pg.Vector2(0, Const.BOMB_MINIMUM_DISTANCE)
                     if distance.magnitude() <= Const.BOMB_EXPLODE_RADIUS:
                         # Attack power == normal player's attack power
-                        voltage_acceleration = player.voltage ** 1.35 + 10
+                        voltage_acceleration = 1 + player.voltage * 0.02
                         player.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * distance.normalize() / distance.magnitude() / Const.FPS
                         player.voltage += Const.BOMB_ATK
             return False
