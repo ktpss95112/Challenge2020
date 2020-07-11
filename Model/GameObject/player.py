@@ -265,11 +265,12 @@ class Player:
             for other in players :
                 if abs(self.position.x - other.position.x) < Const.ZAP_ZAP_ZAP_RANGE and self != other\
                         and other.is_alive() and not other.is_invincible():
-                    voltage_acceleration = other.voltage ** 1.35 + 100
+                    voltage_acceleration = other.voltage * 0.02 + 1
                     other.voltage += Const.ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP
                     other.velocity.y = -Const.ZAP_ZAP_ZAP_VERTICAL_ACCELERATION * voltage_acceleration / Const.FPS
                     other.velocity.x = random.uniform(0, Const.ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION) * voltage_acceleration / Const.FPS \
                                        * (1 if self.position.x < other.position.x else -1)
+                    other.be_attacked((self.position - other.position).normalize(), 10000000000, self.player_id, time)
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
             for angle, speed in zip(Const.BANANA_PEEL_DROP_ANGLE, Const.BANANA_PEEL_DROP_SPEED):
