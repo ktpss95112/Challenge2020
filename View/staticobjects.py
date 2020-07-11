@@ -7,7 +7,7 @@ import os.path
 import math
 
 import Model.GameObject.item as model_item
-from Model.GameObject.entity import CancerBomb , PistolBullet
+from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel
 from View.utils import scaled_surface, load_image
 import Const
 
@@ -31,10 +31,21 @@ class __Object_base():
     def __init__(self, model):
         self.model = model
 
+class View_stage(__Object_base):
+    stage = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'stage.png')), 1)
+
+    @classmethod
+    def init_convert(cls):
+        cls.stage = cls.stage.convert()
+
+    def draw(self, screen):
+        screen.fill(Const.BACKGROUND_COLOR)
+        screen.blit(self.stage, (34, 31))
+
 
 class View_platform(__Object_base):
     def draw(self, screen):
-        screen.fill(Const.BACKGROUND_COLOR)
+        # screen.fill(Const.BACKGROUND_COLOR)
         for platform in self.model.platforms:
             # TODO: refactor the below line to be cleaner
             pg.draw.rect(screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
@@ -138,10 +149,10 @@ class View_players(__Object_base):
 
 class View_entities(__Object_base):
     images = {
-        'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber_normal.png')), 0.15),
-        'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber_red.png')), 0.15),
-        'bananabullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
-        'lightning'   : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2)
+        'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber.png')), 0.15),
+        'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber_red.png')), 0.15),
+        'banana_bullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_pulp.png')), 0.15),
+        'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7)
     }
 
     @classmethod
@@ -156,7 +167,10 @@ class View_entities(__Object_base):
                 screen.blit(self.images[img_bomb], self.images[img_bomb].get_rect(center=entity.position))
 
             elif isinstance(entity, PistolBullet):
-                screen.blit(self.images['bananabullet'], self.images['bananabullet'].get_rect(center=entity.position))
+                screen.blit(self.images['banana_bullet'], self.images['banana_bullet'].get_rect(center=entity.position))
+
+            elif isinstance(entity, BananaPeel):
+                screen.blit(self.images['banana_peel'], self.images['banana_peel'].get_rect(center=entity.position))
 
             else:
                 center = (int(entity.position.x),int(entity.position.y))
@@ -192,7 +206,7 @@ class View_scoreboard(__Object_base):
         for player_id in range(4):
             name_surface = self.namefont.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
             screen.blit(name_surface, (name_posx[player_id], 683))
-            
+
             voltage_surface = self.numfont.render(f"{self.model.players[player_id].voltage:.1f}", 1, pg.Color('white'))
             voltage_rect = voltage_surface.get_rect()
             voltage_rect.topright = (voltage_posx[player_id] + 136, 713)
@@ -212,7 +226,7 @@ class View_scoreboard(__Object_base):
             lives = self.model.players[player_id].life
             pg.draw.rect(screen, Const.BACKGROUND_COLOR, (live_posx[player_id] + 118, 686, 18 * (5 - lives), 15))
 
-            
+
 
         # fontsize = 24
         # posX = (Const.WINDOW_SIZE[0] * 7 / 8)
@@ -266,7 +280,7 @@ class View_items(__Object_base):
         # for market in self.model.priced_market_list:
         #     if market.item:
         #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
-        floating = (0, Const.FLOATING_RADIUS*math.sin(Const.FLOATING_THETA*self.model.timer))
+        floating = (0, Const.FLOATING_RADIUS * math.sin(Const.FLOATING_THETA*self.model.timer))
         for item in self.model.items:
             screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position + floating))
             #pg.draw.circle(screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
@@ -274,6 +288,20 @@ class View_items(__Object_base):
             #item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))
             #item_pos = item.position
             #screen.blit(item_surface, item_surface.get_rect(center = item_pos))
+
+class View_stop(__Object_base):
+    images = {
+        'Background0': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'pause', 'paused0.png')), 0.24),
+        'Background1': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'pause', 'paused1.png')), 0.24),
+        'Background2': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'pause', 'paused2.png')), 0.24)
+    }
+
+    @classmethod
+    def init_convert(cls):
+        cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
+
+    def draw(self, screen):
+        screen.blit(self.images[f'Background{self.model.stop_screen_index}'], (0, 0))
 
 
 class View_timer(__Object_base):
@@ -295,6 +323,7 @@ class View_timer(__Object_base):
 
 
 def init_staticobjects():
+    View_stage.init_convert()
     View_platform.init_convert()
     View_endgame.init_convert()
     View_players.init_convert()
@@ -303,3 +332,4 @@ def init_staticobjects():
     View_scoreboard.init_convert()
     View_menu.init_convert()
     View_timer.init_convert()
+    View_stop.init_convert()
