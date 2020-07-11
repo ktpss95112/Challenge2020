@@ -428,6 +428,13 @@ class GameEngine:
     def death_rain(self):
         self.death_rain_last_time = Const.DEATH_RAIN_LAST_TIME
 
+    def banana_bomb(self):
+        pos = pg.Vector2(random.randint(Const.ARENA_SIZE[0] // 4, 3 * Const.ARENA_SIZE[0] // 4), random.randint(Const.ARENA_SIZE[1] // 4, 3 * Const.ARENA_SIZE[1] // 4))
+        for direction in Const.BANANA_BOMB_DIRECTION:
+            unit = direction.normalize()
+            self.entities.append(PistolBullet(-1, pg.Vector2(pos), unit * Const.BULLET_SPEED))
+        
+
     def run(self):
         '''
         The main loop of the game is in this function.

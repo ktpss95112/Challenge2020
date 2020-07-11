@@ -20,6 +20,7 @@ class Player:
         self.invincible_time = 0
         self.uncontrollable_time = 0
         self.attack_cool_down_time = 0
+        self.attack_cool_down = Const.ATTACK_COOL_DOWN_TIME
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         # move
         self.direction = pg.Vector2(1,0)
@@ -54,6 +55,7 @@ class Player:
         self.attack_radius *= (1 + enhancement[Const.ATTACK_RADIUS_ENHANCEMENT_INDEX] * Const.ATTACK_RADIUS_ENHANCEMENT)
         self.normal_speed *= (1 + enhancement[Const.SPEED_ENHANCEMENT_INDEX] * Const.SPEED_ENHANCEMENT)
         self.jump_speed *= (1 + enhancement[Const.JUMP_ENHANCEMENT_INDEX] * Const.JUMP_ENHANCEMENT)
+        self.attack_cool_down *= (1 - enhancement[Const.ATTACK_COOL_DOWN_ENHANCEMENT_INDEX] * Const.ATTACK_COOL_DOWN_ENHANCEMENT)
 
     def set_position(self, position: pg.Vector2):
         self.position = pg.Vector2(position)
@@ -189,7 +191,7 @@ class Player:
 
     def attack(self, players, time):
         # EventPlayerAttack
-        self.attack_cool_down_time = Const.ATTACK_COOL_DOWN_TIME
+        self.attack_cool_down_time = self.attack_cool_down
         for player in players:
             magnitude = (player.position - self.position).magnitude()
             # make sure that player is not self and player is alive and not invincible
