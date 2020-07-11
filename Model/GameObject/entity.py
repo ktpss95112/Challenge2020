@@ -52,7 +52,7 @@ class PistolBullet(Entity):
         super().__init__(user_id, position, velocity, Const.BULLET_TIME)
     
     def update_every_tick(self, players, items, platforms, time):
-        self.move_every_tick(platforms, Const.BULLET_RADIUS)
+        self.move_every_tick([], Const.BULLET_RADIUS)
         self.maintain_timer_every_tick()
         
         for player in players:
