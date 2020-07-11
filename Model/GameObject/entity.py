@@ -55,14 +55,8 @@ class PistolBullet(Entity):
         
         for player in players:
             if player.is_alive() and not player.is_invincible():
-                vec = player.position - self.position
-                magnitude = vec.magnitude() * 10
-                if vec.magnitude() < player.player_radius + Const.BULLET_RADIUS:
-                    # print("someone got shoot")
-                    player.be_attacked(self.velocity.normalize(), magnitude, self.user_id, time)
-                    # prevent remove failure
-                    self.position = pg.Vector2(-1000, -2000)
-                    self.velocity = pg.Vector2(0, 0)
+                if (player.position - self.position).magnitude() < player.player_radius + Const.BULLET_RADIUS:
+                    player.be_attacked_by_pistol_bullet(self.velocity.normalize(), self.user_id, time)
                     return False
         return True if self.timer > 0 else False
 
@@ -108,14 +102,12 @@ class CancerBomb(Entity):
         if self.timer == 0:
             for player in players:
                 if player.is_alive() and not player.is_invincible():
-                    distance = player.position - self.position
-                    if distance.magnitude() < Const.BOMB_MINIMUM_DISTANCE:
-                        distance = pg.Vector2(0, Const.BOMB_MINIMUM_DISTANCE)
-                    if distance.magnitude() <= Const.BOMB_EXPLODE_RADIUS:
+                    distance = (player.position - self.position).magnitude()
+                    if distance < Const.BOMB_MINIMUM_DISTANCE:
+                        distance = Const.BOMB_MINIMUM_DISTANCE
+                    if distance <= Const.BOMB_EXPLODE_RADIUS:
                         # Attack power == normal player's attack power
-                        voltage_acceleration = 1 + player.voltage * 0.02
-                        player.velocity += Const.BE_ATTACKED_ACCELERATION * voltage_acceleration * distance.normalize() / distance.magnitude() / Const.FPS
-                        player.voltage += Const.BOMB_ATK
+                        player.be_attacked_by_cancer_bomb((player.position - self.position).normalize(), distance, time)
             return False
         return True
 
