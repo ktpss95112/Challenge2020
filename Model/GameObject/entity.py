@@ -147,7 +147,6 @@ class DeathRain(Entity):
         super().__init__(None, self.find_position(platforms), Const.DEATH_RAIN_VELOCITY, None)
 
     def update_every_tick(self, players, items, platforms, time):
-       # gravity effect
         self.move_every_tick(platforms, Const.DEATH_RAIN_RADIUS)
 
         for player in players:
@@ -162,3 +161,60 @@ class DeathRain(Entity):
         platform_amount = len(platforms)
         platform = platforms[random.randint(0, platform_amount - 1)]
         return pg.Vector2((platform.upper_left[0] + platform.bottom_right[0]) // 2, -100)
+
+
+class BananaBomb(Entity):
+    def __init__(self, position, entities):
+        super().__init__(None, position, pg.Vector2(0, 0), Const.BANANA_BOMB_TIME)
+        self.entities = entities
+    
+    def update_every_tick(self, players, items, platforms, time):
+        self.maintain_timer_every_tick()
+        if self.timer == 0:
+            for direction in Const.BANANA_BOMB_DIRECTION:
+                unit = direction.normalize()
+                self.entities.append(PistolBullet(-1, pg.Vector2(self.position), unit * Const.BULLET_SPEED))   
+            return False
+        return True
+
+
+class BananaBombMachine(Entity):
+    def __init__(self, entities):
+        super().__init__(None, self.init_position(), Const.BANANA_BOMB_MACHINE_VELOCITY['right'], None)
+        self.entities = entities
+        self.turn_timer = Const.FPS
+        self.bomb_timer = random.randint(*Const.BANANA_BOMB_EMERGE_TIME_RANGE)
+
+    def update_every_tick(self, players, items, platforms, time):
+        self.move_every_tick([], Const.BANANA_BOMB_MACHINE_RADIUS)
+        self.maintain_velocity_every_tick()
+        self.bomb()
+        if not Const.LIFE_BOUNDARY.collidepoint(self.position):
+            return False
+        return True
+
+    def init_position(self):
+        return pg.Vector2(0, 200)
+    
+    def maintain_velocity_every_tick(self):
+        self.turn_timer -= 1
+        if self.turn_timer == 0:
+            self.turn_timer = Const.FPS
+            if self.velocity == Const.BANANA_BOMB_MACHINE_VELOCITY['right']:
+                self.velocity = random.choice(list(Const.BANANA_BOMB_MACHINE_VELOCITY.values()))
+            else:
+                self.velocity = Const.BANANA_BOMB_MACHINE_VELOCITY['right']
+            
+        if self.velocity == Const.BANANA_BOMB_MACHINE_VELOCITY['up'] and self.position[1] < 100:
+            self.velocity = Const.BANANA_BOMB_MACHINE_VELOCITY['right']
+        elif self.velocity == Const.BANANA_BOMB_MACHINE_VELOCITY['down'] and self.position[1] > 600:
+            self.velocity = Const.BANANA_BOMB_MACHINE_VELOCITY['right']
+
+    def bomb(self):
+        if not (0 < self.position.x < Const.ARENA_SIZE[0] and 0 < self.position.y < Const.ARENA_SIZE[1]):
+            return
+        self.bomb_timer -= 1
+        if self.bomb_timer == 0:
+            self.entities.append(BananaBomb(pg.Vector2(self.position), self.entities))
+            self.bomb_timer = random.randint(*Const.BANANA_BOMB_EMERGE_TIME_RANGE)
+
