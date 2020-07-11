@@ -234,9 +234,9 @@ class SelfState(object):
         if next_uncontrollable_time < 0:
             next_uncontrollable_time = 0
         
-        # detect boundary
-        if not ((self.env.life_boundary[0][0] <= next_pos.x <= self.env.life_boundary[1][0]) and\
-                (self.env.life_boundary[0][1] <= next_pos.y <= self.env.life_boundary[1][1])):
+        # detect boundary (use arena_boundary to be safer)
+        if not ((self.env.arena_boundary[0][0] <= next_pos.x <= self.env.arena_boundary[1][0]) and\
+                (self.env.life_boundary[0][1] <= next_pos.y <= self.env.arena_boundary[1][1])):
             next_life -= 1
             next_vel = pg.Vector2(0, 0)
             next_pos = pg.Vector2(self.env.self_respawn_position)
