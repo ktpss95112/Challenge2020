@@ -191,6 +191,8 @@ class GameEngine:
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
                 item_id = self.players[event.player_id].keep_item_id
+                if Const.HAS_CUT_IN[item_id]:
+                    self.ev_manager.post(EventCutInStart(event.player_id, item_id))
                 entities = self.players[event.player_id].use_item(self.players, self.timer)
                 peel_position, bullet_position, black_hole_position, bomb_position = [], None, None, None
                 for entity in entities:

@@ -108,7 +108,7 @@ class GraphicalView:
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
         elif isinstance(event, EventCutInStart):
-            self.render_play(target=self.stop_screen, update=False)
+            self.render_play(update=False)
 
             if event.item_id == Const.ZAP_ZAP_ZAP:
                 self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id))
@@ -178,7 +178,7 @@ class GraphicalView:
         pg.display.flip()
 
     def render_cutin(self):
-        self.screen.blit(self.stop_screen, (0, 0))
+        self.screen.blit(self.screen, (0, 0))
 
         if not self.cutin_list:
             self.ev_manager.post(EventCutInEnd())
