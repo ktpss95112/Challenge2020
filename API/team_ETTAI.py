@@ -286,14 +286,14 @@ class TeamAI(BaseAI):
         right_most = (right_most[0], right_most[1])
         return right_most
 
-    def exist_left_platform(self):
+    def exist_right_platform(self):
         platforms = self.helper.get_platform_position()
         for upper_left, bottom_right in platforms:
             if upper_left[0] > self.helper.get_self_position()[0]:
                 return True
         return False
 
-    def exist_right_platform(self):
+    def exist_left_platform(self):
         platforms = self.helper.get_platform_position()
         for upper_left, bottom_right in platforms:
             if bottom_right[0] < self.helper.get_self_position()[0]:
@@ -303,17 +303,16 @@ class TeamAI(BaseAI):
     def not_drop(self):
         if not self.helper.get_self_will_drop():
             return None
-
         if self.helper.get_self_direction() == LEFT:
             if self.exist_left_platform() and self.helper.get_self_can_jump():
-                return AI_DIR_JUMP
-            else:
-                return AI_DIR_LEFT
-        else:
-            if self.exist_right_platform() and self.helper.get_self_can_jump():
-                return AI_DIR_JUMP
+                return AI_DIR_LEFT_JUMP
             else:
                 return AI_DIR_RIGHT
+        else:
+            if self.exist_right_platform():
+                return AI_DIR_RIGHT_JUMP
+            else:
+                return AI_DIR_LEFT
 
         self_position = self.helper.get_self_position()
         platforms = self.helper.get_platform_position()
