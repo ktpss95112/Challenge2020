@@ -42,6 +42,7 @@ class TeamAI(BaseAI):
             self.searching_item = True
             return AI_DIR_ATTACK
         elif self.helper.get_self_keep_item_id() != NO_ITEM:
+            self.searching_item = False
             return AI_DIR_USE_ITEM
         elif self.in_the_map(target_player_position) and self.helper.get_self_can_attack_time() <= 0.5 and self.searching_item:
             return self.helper.walk_to_position(target_player_position)
