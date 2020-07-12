@@ -229,19 +229,27 @@ class Animation_Bomb_Explode(Animation_raster):
 class Animation_Rainbow(Animation_raster):
     frames = tuple(
         scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, f'rainbow_{min(_i, 11)}.png')),
+            load_image(os.path.join(Const.IMAGE_PATH, f'rainbow_{_i}.png')),
             1
         )
-            for _i in range(1, 22)
+            for _i in range(1, 12)
     )
 
     def __init__(self, **pos):
-        super().__init__(4, 4*len(self.frames), **pos)
+        super().__init__(4, 4*(len(self.frames) + 10), **pos)
+
+    def update(self):
+        self._timer += 1
+
+        if self._timer == self.expire_time:
+            self.expired = True
+        elif self._timer % self.delay_of_frames == 0:
+            self.frame_index_to_draw = (self.frame_index_to_draw + 1) % (len(self.frames) + 10)
 
     def draw(self, screen, update=True):
         screen.blit(
-            self.frames[self.frame_index_to_draw],
-            self.frames[self.frame_index_to_draw].get_rect(**self.pos),
+            self.frames[min(self.frame_index_to_draw, 10)],
+            self.frames[min(self.frame_index_to_draw, 10)].get_rect(**self.pos),
         )
         if update: self.update()
 
