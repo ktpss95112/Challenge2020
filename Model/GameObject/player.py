@@ -241,7 +241,10 @@ class Player:
         #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def voltage_acceleration(self):
-        return 1 + self.voltage * Const.VOLTAGE_ACCELERATION_COEFFICIENT
+        if self.voltage < 125:
+            return 1 + self.voltage * Const.VOLTAGE_ACCELERATION_COEFFICIENT
+        else:
+            return 10
 
     def die(self, players, time):
         # EventPlayerDied
