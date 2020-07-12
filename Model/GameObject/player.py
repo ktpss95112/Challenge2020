@@ -176,9 +176,12 @@ class Player:
     
     def add_horizontal_velocity(self, direction: str):
         # EventPlayerMove
-        if abs(self.velocity.x) <= self.normal_speed:
-            self.velocity.x = self.normal_speed * Const.DIRECTION_TO_VEC2[direction].x
-        else:
+        if self.velocity.dot(Const.DIRECTION_TO_VEC2[direction]) > 0: # same direction
+            if abs(self.velocity.x) <= self.normal_speed:
+                self.velocity.x = self.normal_speed * Const.DIRECTION_TO_VEC2[direction].x
+            else:
+                pass
+        else: # reverse direction
             self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
         if direction == 'left':
             self.direction = pg.Vector2(-1, 0)
