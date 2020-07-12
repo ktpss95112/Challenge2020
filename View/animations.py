@@ -18,6 +18,7 @@ while True:
 import os
 import pygame as pg
 import numpy as np
+import random
 
 from Events.EventManager import *
 from Model.Model import GameEngine
@@ -124,6 +125,7 @@ class Animation_Lightning(Animation_raster):
         self.expire_time = 65
         self.expired = False # turn tuple into vec2
         self.pos = pos - Const.ZAP_ZAP_ZAP_RANGE
+        self.lightning_alpha = random.randint(100, 255)
 
     def update(self):
         self._timer += 1
@@ -131,7 +133,11 @@ class Animation_Lightning(Animation_raster):
             self.expired = True
 
     def draw(self, screen, update=True):
-        self.image = self.lightning.subsurface(pg.Rect(0, 0, 2 * Const.ZAP_ZAP_ZAP_RANGE, (Const.ARENA_SIZE[0] / self.expire_time ) * self._timer))
+        if self._timer % 5 == 0:
+            self.pos += random.randint(-5,5)
+            self.lightning_alpha = random.randint(100, 255)
+        self.image = self.lightning.subsurface(pg.Rect(0, 0, 2 * Const.ZAP_ZAP_ZAP_RANGE, (Const.ARENA_SIZE[1] / self.expire_time ) * self._timer))
+        self.image.set_alpha(self.lightning_alpha)
         screen.blit(
             self.image,
             (self.pos,0),
