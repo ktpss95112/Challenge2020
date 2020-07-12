@@ -2,6 +2,7 @@ import pygame as pg
 import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
+from View.utils import scaled_surface, load_image
 import View.staticobjects
 import View.animations
 import View.cutins
@@ -28,9 +29,10 @@ class GraphicalView:
         self.model = model
         self.is_initialized = False
         self.screen = None
-        self.stop_screen = None
+        self.stop_background = None
         self.clock = None
         self.last_update = 0
+        self.current_stop_index = None
 
     def initialize(self):
         '''
@@ -40,7 +42,7 @@ class GraphicalView:
         pg.font.init()
         pg.display.set_caption(Const.WINDOW_CAPTION)
         self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
-        self.stop_screen = pg.Surface(Const.WINDOW_SIZE)
+        self.stop_background = pg.Surface(Const.WINDOW_SIZE)
         self.clock = pg.time.Clock()
         self.is_initialized = True
 
@@ -64,6 +66,8 @@ class GraphicalView:
         self.entities = View.staticobjects.View_entities(self.model)
         self.menu = View.staticobjects.View_menu(self.model)
         self.endgame = View.staticobjects.View_endgame(self.model)
+        self.stop = View.staticobjects.View_stop(self.model)
+        self.stage = View.staticobjects.View_stage(self.model)
 
     def notify(self, event):
         '''
@@ -85,6 +89,9 @@ class GraphicalView:
         elif isinstance(event, EventToggleFullScreen):
             self.toggle_fullscreen()
 
+        elif isinstance(event, EventContinue):
+            self.current_stop_index = None
+
         elif isinstance(event, EventPlayerAttack):
             if self.model.players[event.player_id].player_radius / Const.PLAYER_RADIUS == 1:
                 self.animation_list.append(View.animations.Animation_player_attack(self.model.players[event.player_id]))
@@ -93,17 +100,13 @@ class GraphicalView:
 
         elif isinstance(event, EventStop):
             cur_state = self.model.state_machine.peek()
-            if cur_state == Const.STATE_MENU: self.render_menu(target=self.stop_screen, update=False)
-            elif cur_state == Const.STATE_PLAY: self.render_play(target=self.stop_screen, update=False)
-            elif cur_state == Const.STATE_ENDGAME: self.render_endgame(target=self.stop_screen, update=False)
+            if cur_state == Const.STATE_MENU: self.render_menu(target=self.stop_background, update=False)
+            elif cur_state == Const.STATE_PLAY: self.render_play(target=self.stop_background, update=False)
+            elif cur_state == Const.STATE_ENDGAME: self.render_endgame(target=self.stop_background, update=False)
 
         elif isinstance(event, EventBombExplode):
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
-        elif isinstance(event, EventPlayerUseItem):
-            if event.item_id == 4:
-                self.animation_list.append(View.animations.Animation_Lightning(self.model.players[event.player_id].position.x))
-        
         elif isinstance(event, EventCutInStart):
             self.render_play(target=self.stop_screen, update=False)
 
@@ -111,6 +114,8 @@ class GraphicalView:
                 self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id))
             elif event.item_id == Const.BIG_BLACK_HOLE:
                 self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id))
+        elif isinstance(event, EventUseZapZapZap):
+            self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
     def display_fps(self):
         '''
@@ -130,6 +135,9 @@ class GraphicalView:
         if target is None:
             target = self.screen
 
+        # draw stage
+        self.stage.draw(target)
+
         # draw platform
         self.platform.draw(target)
 
@@ -142,26 +150,30 @@ class GraphicalView:
         # draw entities
         self.entities.draw(target)
 
-        # draw timer
-        self.timer.draw(target)
-
-        # draw scoreboard
-        self.scoreboard.draw(target)
-
         # draw animation
         for ani in self.animation_list:
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(target, update)
 
+        # draw scoreboard
+        self.scoreboard.draw(target)
+
+        # draw timer
+        self.timer.draw(target)
+
+
         pg.display.flip()
 
-    def render_stop(self):
-        self.screen.blit(self.stop_screen, (0, 0))
+    def render_stop(self, target=None, update=True):
+        if target is None:
+            target = self.screen
 
-        font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
-        text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
-        text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
-        self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        if self.current_stop_index == self.model.stop_screen_index:
+            return
+        
+        self.current_stop_index = self.model.stop_screen_index
+
+        self.stop.draw(target)
 
         pg.display.flip()
 

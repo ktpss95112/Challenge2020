@@ -7,14 +7,15 @@ FPS = 60 # frame per second
 GAME_LENGTH = 180 * FPS
 
 # model-player
+PLAYER_NUM = 4
 PLAYER_RADIUS = 25
 VALID_KO_TIME = 3 * FPS
 PLAYER_LIFE = 5
 PLAYER_INIT_VELOCITY = pg.Vector2(0, 0)
-PLAYER_INIT_SPEED = 150
-PLAYER_FINAL_SPEED = 300
+PLAYER_INIT_SPEED = 300
+PLAYER_FINAL_SPEED = 600
 PLAYER_SPEED_PARAMETER = (PLAYER_INIT_SPEED - PLAYER_FINAL_SPEED) / GAME_LENGTH ** 2
-PLAYER_JUMP_SPEED = 900
+PLAYER_JUMP_SPEED = 1200
 DIRECTION_TO_VEC2 = {
     'left': pg.Vector2(-1, 0),
     'right': pg.Vector2(1, 0),
@@ -23,90 +24,96 @@ PLAYER_JUMP_QUOTA = 3
 
 ATTACK_RADIUS = 12 * PLAYER_RADIUS
 ATTACK_COOL_DOWN_TIME = 1.5 * FPS
-VOLTAGE_INCREASE_CONST = 300
+ATTACK_VOLTAGE_INCREASE = 1000
+VOLTAGE_ACCELERATION_COEFFICIENT = 0.02
 
 # model-stage setting
 NO_STAGE = -2
 RANDOM_STAGE = -1
-RANDOM_STAGE_TIME = 1 * FPS
+RANDOM_STAGE_TIME = 2 * FPS
 STAGE_NUMBER = 3
 STAGE_1 = 0
 STAGE_2 = 1
 STAGE_3 = 2
 
 LIFE_BOUNDARY = pg.Rect(-700, -2000, 2200, 3500)
+
+X_OFFSET = 34.5
+Y_OFFSET = 31.85
 PLATFORM_INIT_POSITION = [
     [ # stage 1
-        [pg.Vector2(100, 700), pg.Vector2(700, 710)],
-        [pg.Vector2(100, 550), pg.Vector2(300, 560)],
-        [pg.Vector2(300, 450), pg.Vector2(500, 460)],
-        [pg.Vector2(500, 550), pg.Vector2(700, 560)]
+        [pg.Vector2(150 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(982 + X_OFFSET, 580 + Y_OFFSET)],
+        [pg.Vector2(100 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(400 + X_OFFSET, 450 + Y_OFFSET)],
+        [pg.Vector2(350 + X_OFFSET, 270 + Y_OFFSET), pg.Vector2(782 + X_OFFSET, 280 + Y_OFFSET)],
+        [pg.Vector2(732 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(1032 + X_OFFSET, 450 + Y_OFFSET)]
     ],
     [ # stage 2
-        [pg.Vector2(0, 150), pg.Vector2(100, 160)],
-        [pg.Vector2(0, 350), pg.Vector2(130, 360)],
-        [pg.Vector2(0, 550), pg.Vector2(190, 560)],
-        [pg.Vector2(0, 750), pg.Vector2(280, 760)],
-        [pg.Vector2(700, 150), pg.Vector2(800, 160)],
-        [pg.Vector2(670, 350), pg.Vector2(800, 360)],
-        [pg.Vector2(610, 550), pg.Vector2(800, 560)],
-        [pg.Vector2(520, 750), pg.Vector2(800, 760)]
+        [pg.Vector2(0 + X_OFFSET, 100 + Y_OFFSET), pg.Vector2(180 + X_OFFSET, 110 + Y_OFFSET)],
+        [pg.Vector2(0 + X_OFFSET, 250 + Y_OFFSET), pg.Vector2(210 + X_OFFSET, 260 + Y_OFFSET)],
+        [pg.Vector2(0 + X_OFFSET, 400 + Y_OFFSET), pg.Vector2(300 + X_OFFSET, 410 + Y_OFFSET)],
+        [pg.Vector2(0 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(420 + X_OFFSET, 580 + Y_OFFSET)],
+        [pg.Vector2(952 + X_OFFSET, 100 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 110 + Y_OFFSET)],
+        [pg.Vector2(922 + X_OFFSET, 250 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 260 + Y_OFFSET)],
+        [pg.Vector2(832 + X_OFFSET, 400 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 410 + Y_OFFSET)],
+        [pg.Vector2(712 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 580 + Y_OFFSET)]
     ],
     [ # stage 3
-        [pg.Vector2(100, 700), pg.Vector2(700, 710)],
+        [pg.Vector2(0 + X_OFFSET, 532 + Y_OFFSET), pg.Vector2(230 + X_OFFSET, 542 + Y_OFFSET)],
+        [pg.Vector2(892 + X_OFFSET, 532 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 542 + Y_OFFSET)],
+        [pg.Vector2(380 + X_OFFSET, 602 + Y_OFFSET), pg.Vector2(752 + X_OFFSET, 612 + Y_OFFSET)],
+        [pg.Vector2(330 + X_OFFSET, 342 + Y_OFFSET), pg.Vector2(802 + X_OFFSET, 352 + Y_OFFSET)],
+        [pg.Vector2(0 + X_OFFSET, 232 + Y_OFFSET), pg.Vector2(200 + X_OFFSET, 242 + Y_OFFSET)],
+        [pg.Vector2(932 + X_OFFSET, 232 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 242 + Y_OFFSET)],
+
     ],
 ]
 PLAYER_INIT_POSITION = [
     [ # stage 1
-        pg.Vector2(100, 650),
-        pg.Vector2(300, 650),
-        pg.Vector2(500, 650),
-        pg.Vector2(700, 650)
+        pg.Vector2(150 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(420 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(690 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 2
-        pg.Vector2(100, 300),
-        pg.Vector2(100, 700),
-        pg.Vector2(700, 300),
-        pg.Vector2(700, 700)
+        pg.Vector2(100 + X_OFFSET, 75 + Y_OFFSET),
+        pg.Vector2(100 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(1042 + X_OFFSET, 75 + Y_OFFSET),
+        pg.Vector2(1042 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 3
-        pg.Vector2(100, 650),
-        pg.Vector2(300, 650),
-        pg.Vector2(500, 650),
-        pg.Vector2(700, 650)
+        pg.Vector2(100 + X_OFFSET, 507 + Y_OFFSET),
+        pg.Vector2(405 + X_OFFSET, 577 + Y_OFFSET),
+        pg.Vector2(732 + X_OFFSET, 577 + Y_OFFSET),
+        pg.Vector2(1032 + X_OFFSET, 507 + Y_OFFSET)
     ],
 ]
 PLAYER_RESPAWN_POSITION = [
     [ # stage 1
-        pg.Vector2(100, 650),
-        pg.Vector2(300, 650),
-        pg.Vector2(500, 650),
-        pg.Vector2(700, 650)
+        pg.Vector2(150 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(420 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(690 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 2
-        pg.Vector2(100, 300),
-        pg.Vector2(100, 700),
-        pg.Vector2(700, 300),
-        pg.Vector2(700, 700)
+        pg.Vector2(100 + X_OFFSET, 75 + Y_OFFSET),
+        pg.Vector2(100 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(1042 + X_OFFSET, 75 + Y_OFFSET),
+        pg.Vector2(1042 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 3
-        pg.Vector2(100, 300),
-        pg.Vector2(100, 700),
-        pg.Vector2(700, 300),
-        pg.Vector2(700, 700)
+        pg.Vector2(100 + X_OFFSET, 507 + Y_OFFSET),
+        pg.Vector2(405 + X_OFFSET, 577 + Y_OFFSET),
+        pg.Vector2(732 + X_OFFSET, 577 + Y_OFFSET),
+        pg.Vector2(1032 + X_OFFSET, 507 + Y_OFFSET)
     ]
 ]
 
 # model-physics
 GRAVITY_ACCELERATION = 70 * FPS
-GRAVITY_ACCELERATION_FOR_ITEM = 40 * FPS
-DRAG_CRITICAL_SPEED = 464
-DRAG_COEFFICIENT = 0.00005
-VERTICAL_DRAG_EMERGE_SPEED = -1500
+DRAG_COEFFICIENT = 0.05
+FRICTION_COEFFICIENT = 100
 ATTENUATION_COEFFICIENT = 0.5
-VERTICAL_SPEED_MINIMUM = 500
-HORIZONTAL_SPEED_MINIMUM = 100
-BE_ATTACKED_ACCELERATION = 1200 * FPS
+BE_ATTACKED_ACCELERATION = 100000 * FPS
 BE_ATTACKED_MAX_ACCELERATION_DISTANCE = 20
 
 # model-state machine constants
@@ -132,8 +139,8 @@ HAS_CUT_IN = [False, False, True, False, False, False, False, False]
 ZAP_ZAP_ZAP_RANGE = 5 * PLAYER_RADIUS
 ZAP_ZAP_ZAP_SELF_VOLTAGE_UP = 10
 ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP = 50
-ZAP_ZAP_ZAP_VERTICAL_ACCELERATION = 800
-ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION = 1000
+ZAP_ZAP_ZAP_VERTICAL_ACCELERATION = 800 * FPS
+ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION = 1000 * FPS
 RAINBOW_GROUNDER_VOLTAGE_DOWN = 10
 INVINCIBLE_BATTERY_PLAYER_RADIUS = 2 * PLAYER_RADIUS
 INVINCIBLE_BATTERY_ATTACK_RADIUS = 2 * ATTACK_RADIUS
@@ -146,20 +153,47 @@ ITEMS_AMOUNT_PARAMETER = (ITEMS_INIT_AMOUNT - ITEMS_FINAL_AMOUNT) / GAME_LENGTH 
 ITEM_RADIUS = [7, 7, 7, 7, 7, 7, 7]
 ITEM_DRAG = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 ITEM_INIT_HEIGHT = 10
-ITEM_PROBABILITY = [0.2, 0.05, 0.2, 0.05, 0.2, 0.2, 0.1] # make sure sum = 1
-GENERATE_ITEM_PROBABILITY = 985 # GENERATE_ITEM_PROBABILITY / 1000
+'''
+if item is enabled, then its probability is (its item_probability / sum of item_probability of all enabled items)
+if item is disabled, then its probability is 0
+'''
+ITEM_ENABLED = {
+    BANANA_PISTOL: 1,
+    BIG_BLACK_HOLE: 1,
+    CANCER_BOMB: 1,
+    ZAP_ZAP_ZAP: 1,
+    BANANA_PEEL: 1,
+    RAINBOW_GROUNDER: 1,
+    INVINCIBLE_BATTERY: 1,
+}
+ITEM_PROBABILITY = {
+    BANANA_PISTOL: 0.2,
+    BIG_BLACK_HOLE: 0.05,
+    CANCER_BOMB: 0.2,
+    ZAP_ZAP_ZAP: 0.05,
+    BANANA_PEEL: 0.2,
+    RAINBOW_GROUNDER: 0.2,
+    INVINCIBLE_BATTERY: 0.1,
+}
+GENERATE_ITEM_PROBABILITY = 0.015
 
 # model-entities
 BULLET_TIME = 5 * FPS
-BULLET_VELOCITY = 30 * FPS
+BULLET_SPEED = 30 * FPS
 BULLET_RADIUS = 5
+BULLET_ANGLE = [-10, 0, 10]
+BULLET_ACCELERATION = 500 * FPS
+BULLET_VOLTAGE_UP = 10
 
 BANANA_PEEL_TIME = 15 * FPS
 BANANA_PEEL_RADIUS = 8
-BANANA_PEEL_AFFECT_TIME = 1 * FPS
+BANANA_PEEL_AFFECT_TIME = 0.5 * FPS
+BANANA_PEEL_DROP_ANGLE = [0, 10, 20]
+BANANA_PEEL_DROP_SPEED = [15 * FPS, 20 * FPS, 25 * FPS]
 
 BOMB_TIME = 3 * FPS
-BOMB_EXPLODE_RADIUS = 16 * PLAYER_RADIUS
+BOMB_EXPLODE_RADIUS = 8 * PLAYER_RADIUS
+BOMB_RADIUS = 5
 BOMB_ATK = 50
 BOMB_MINIMUM_DISTANCE = 30
 BOMB_SCREEN_VIBRATION_RADIUS = 15
@@ -169,7 +203,24 @@ BLACK_HOLE_TIME = 5 * FPS
 BLACK_HOLE_RADIUS = 10
 BLACK_HOLE_EFFECT_RADIUS = 10 * PLAYER_RADIUS
 BLACK_HOLE_FLOATING_VELOCITY = 5
-BLACK_HOLE_GRAVITY_ACCELERATION = 500 * FPS
+BLACK_HOLE_GRAVITY_ACCELERATION = 750 * FPS
+
+BANANA_BOMB_DIRECTION = [
+    pg.Vector2(-1, -1),
+    pg.Vector2(-1, 0),
+    pg.Vector2(-1, 1),
+    pg.Vector2(0, -1),
+    pg.Vector2(0, 1),
+    pg.Vector2(1, -1),
+    pg.Vector2(1, 0),
+    pg.Vector2(1, 1),
+]
+
+DEATH_RAIN_EMERGE_TIME_RANGE = [ GAME_LENGTH // 4, GAME_LENGTH // 3 ]
+DEATH_RAIN_GENERATE_ITEM_PROBABILITY = 0.3
+DEATH_RAIN_LAST_TIME = 2 * FPS
+DEATH_RAIN_RADIUS = 8
+DEATH_RAIN_VELOCITY = pg.Vector2(0, 100)
 
 # view
 WINDOW_CAPTION = 'Challenge 2020'
@@ -188,6 +239,8 @@ PLAYER_PIC = ['player1_0.png', 'player1_1.png', 'player1_2.png', 'player1_3.png'
              ]
 ATTACK_ERROR = 2.8
 ITEM_COLOR = [pg.Color('white'), pg.Color('yellow'), pg.Color('deepskyblue'), pg.Color('gray'), pg.Color('mediumpurple'), pg.Color('darkgreen'), pg.Color('tan'), pg.Color('olivedrab')]
+FLOATING_RADIUS = 4
+FLOATING_THETA = 0.06
 
 # controller
 PLAYER_MOVE_KEYS = {
@@ -238,6 +291,7 @@ FONT_PATH = os.path.join('View', 'fonts')
 ATTACK_RADIUS_ENHANCEMENT_INDEX = 0
 SPEED_ENHANCEMENT_INDEX = 1
 JUMP_ENHANCEMENT_INDEX = 2
+ATTACK_COOL_DOWN_ENHANCEMENT_INDEX = 3
 
 ATTACK_RADIUS_ENHANCEMENT = 0.01
 SPEED_ENHANCEMENT = 0.01
@@ -254,3 +308,4 @@ CUTIN_PLAYER_POSITION = (3 * CUTIN_BOARD_SIZE[0] // 4, 2 * CUTIN_BOARD_SIZE[1] /
 CUTIN_TEXT_POSITION = (CUTIN_BOARD_SIZE[0] // 4, CUTIN_BOARD_SIZE[1] // 4)
 CUTIN_CURSOR_PERIOD = int(0.6 * FPS)
 CUTIN_STAY_TIME = int(1.5 * FPS) # The time cut-in would stay after every thing finish
+ATTACK_COOL_DOWN_ENHANCEMENT = 0.01

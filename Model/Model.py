@@ -74,8 +74,7 @@ class GameEngine:
         self.AI_names = AI_names
         while len(self.AI_names) < 4:
             self.AI_names.append("m")
-
-        self.item_amount = Const.ITEMS_INIT_AMOUNT
+        check_probability()
 
     def initialize(self):
         '''
@@ -83,9 +82,17 @@ class GameEngine:
         '''
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
+        self.item_amount = Const.ITEMS_INIT_AMOUNT
+        self.generate_item_probability = Const.GENERATE_ITEM_PROBABILITY
+        self.death_rain_emerge_time = random.randint(*Const.DEATH_RAIN_EMERGE_TIME_RANGE)
+        self.death_rain_last_time = 0
+        self.init_players()
+        # menu
         self.random_stage_timer = 0
         self.stage = Const.NO_STAGE
-        self.init_players()
+        # stop
+        self.stop_screen_timer = 1.5 * Const.FPS # set to 2 seconds
+        self.stop_screen_index = 0
         self.state_machine.push(Const.STATE_MENU)
 
     def init_players(self):
@@ -118,6 +125,8 @@ class GameEngine:
                 cnt = sum(player.is_alive() for player in self.players)
                 if self.timer == 0 or cnt <= 1:
                     self.ev_manager.post(EventTimesUp())
+            elif cur_state == Const.STATE_STOP:
+                self.update_stop()
             elif cur_state == Const.STATE_ENDGAME:
                 self.update_endgame()
 
@@ -126,6 +135,8 @@ class GameEngine:
             self.state_machine.push(Const.STATE_PLAY)
 
         elif isinstance(event, EventStop):
+            self.stop_screen_timer = 1.5 * Const.FPS
+            self.stop_screen_index = 0
             self.state_machine.push(Const.STATE_STOP)
 
         elif isinstance(event, EventContinue):
@@ -133,6 +144,17 @@ class GameEngine:
                 self.state_machine.pop()
 
         elif isinstance(event, EventTimesUp):
+            scores = []
+            for player in self.players:
+                scores.append(player.score)
+            sorted_score = sorted(scores)
+            sorted_score.reverse()
+            for player in self.players:
+                for i in range(len(sorted_score)):
+                    if player.score == sorted_score[i]:
+                        player.rank = i + 1
+                        break
+                
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventRestart):
@@ -148,8 +170,9 @@ class GameEngine:
                 player.add_horizontal_velocity(event.direction)
 
         elif isinstance(event, EventPlayerJump):
-            if self.players[event.player_id].is_alive():
-                self.players[event.player_id].jump()
+            player = self.players[event.player_id]
+            if player.is_alive() and player.is_controllable():
+                player.jump()
 
         elif isinstance(event, EventPlayerAttack):
             attacker = self.players[event.player_id]
@@ -167,19 +190,34 @@ class GameEngine:
         elif isinstance(event, EventPlayerItem):
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
-                self.ev_manager.post(EventPlayerUseItem(player.player_id, player.keep_item_id))
-
-        elif isinstance(event, EventPlayerPickItem):
-            self.players[event.player_id].pick_item(event.item)
-            self.items.remove(event.item)
-
-        elif isinstance(event, EventPlayerUseItem):
-            item_id = self.players[event.player_id].keep_item_id
-            if Const.HAS_CUT_IN[item_id]:
-                self.ev_manager.post(EventCutInStart(event.player_id, item_id))
-            entities = self.players[event.player_id].use_item(self.players, self.timer)
-            for entity in entities:
-                self.entities.append(entity)
+                item_id = self.players[event.player_id].keep_item_id
+                entities = self.players[event.player_id].use_item(self.players, self.timer)
+                peel_position, bullet_position, black_hole_position, bomb_position = [], None, None, None
+                for entity in entities:
+                    if isinstance(entity, PistolBullet):
+                        bullet_position = entity.position
+                    elif isinstance(entity, BigBlackHole):
+                        black_hole_position = entity.position
+                    elif isinstance(entity, CancerBomb):
+                        bomb_position = entity.position
+                    elif isinstance(entity, BananaPeel):
+                        peel_position.append(entity.position)
+                    self.entities.append(entity)
+                if item_id == Const.BANANA_PISTOL:
+                    self.ev_manager.post(EventUseBananaPistol(peel_position[0], bullet_position, self.timer))
+                elif item_id == Const.BIG_BLACK_HOLE:
+                    self.ev_manager.post(EventUseBigBlackHole(black_hole_position, self.timer))
+                elif item_id == Const.CANCER_BOMB:
+                    self.ev_manager.post(EventUseCancerBomb(bomb_position, self.timer))
+                elif item_id == Const.ZAP_ZAP_ZAP:
+                    self.ev_manager.post(EventUseZapZapZap(player.position, self.timer))
+                elif item_id == Const.BANANA_PEEL:
+                    for i in range(3):
+                        self.ev_manager.post(EventUseBananaPeel(peel_position[i], self.timer))
+                elif item_id == Const.RAINBOW_GROUNDER:
+                    self.ev_manager.post(EventUseRainbowGrounder(player.position, self.timer))
+                elif item_id == Const.INVINCIBLE_BATTERY:
+                    self.ev_manager.post(EventUseInvincibleBattery(player.position, self.timer))
 
         elif isinstance(event, EventCutInStart):
             if self.state_machine.peek() != Const.STATE_CUTIN:
@@ -197,7 +235,13 @@ class GameEngine:
             else:
                 self.random_stage_timer = Const.RANDOM_STAGE_TIME
                 self.stage = random.randrange(Const.STAGE_NUMBER)
-                
+
+        elif isinstance(event, EventDeathRainTrigger):
+            self.ev_manager.post(EventDeathRainStart())
+
+        elif isinstance(event, EventDeathRainStart):
+            self.death_rain()
+
     def item_amount_function(self, time):
         return Const.ITEMS_AMOUNT_PARAMETER * time ** 2 + Const.ITEMS_FINAL_AMOUNT
 
@@ -207,13 +251,14 @@ class GameEngine:
         '''
         if self.random_stage_timer > 0:
             self.random_stage_timer -= 1
-            if self.random_stage_timer > 0.5 * Const.FPS:
-                self.stage = (self.stage + 1) % Const.STAGE_NUMBER
-            elif self.random_stage_timer > 0.25 * Const.FPS:
+            if self.random_stage_timer > 1.5 * Const.FPS:
                 if self.random_stage_timer % 2 == 0:
                     self.stage = (self.stage + 1) % Const.STAGE_NUMBER
-            else:
+            elif self.random_stage_timer > 1 * Const.FPS:
                 if self.random_stage_timer % 4 == 0:
+                    self.stage = (self.stage + 1) % Const.STAGE_NUMBER
+            else:
+                if self.random_stage_timer % 8 == 0:
                     self.stage = (self.stage + 1) % Const.STAGE_NUMBER
 
     def update_variable(self):
@@ -226,7 +271,6 @@ class GameEngine:
         '''
         self.overlap_detect()
         self.players_collision_detect()
-        highest_KO_amount = max(player.KO_amount for player in self.players)
         for player in self.players:
             if player.is_alive():
                 # maintain position, velocity and timer
@@ -234,22 +278,27 @@ class GameEngine:
 
                 # maintain items
                 if not player.has_item():
-                    item = player.find_item_every_tick(self.items)
+                    item = player.find_item_every_tick(self.items) # item is ref to an item in self.items
                     if not item is None:
-                        self.ev_manager.post(EventPlayerPickItem(player.player_id, item))
-
-                # maintain scores
-                player.maintain_score_every_tick(highest_KO_amount)
+                        player.pick_item(item.item_id)
+                        self.ev_manager.post(EventPlayerPickItem(player.player_id, item.item_id))
+                        self.items.remove(item)
 
                 # maintain lifes
                 if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                     self.ev_manager.post(EventPlayerDied(player.player_id))
+        # maintain scores
+        highest_KO_amount = max(player.KO_amount for player in self.players)
+        for player in self.players:
+            player.maintain_score_every_tick(highest_KO_amount)
 
     def update_objects(self):
         '''
         Update the objects not controlled by user.
         For example: obstacles, items, special effects, platform
         '''
+        if self.timer == self.death_rain_emerge_time:
+            self.entities.append(DeathRain(self.platforms))
         self.generate_item()
 
         for item in self.items:
@@ -262,7 +311,16 @@ class GameEngine:
                 # tell view to draw explosion animation
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))
+                elif isinstance(entity, DeathRain):
+                    self.ev_manager.post(EventDeathRainTrigger())
                 self.entities.remove(entity)
+
+    def update_stop(self):
+        if self.stop_screen_timer == 0:
+            self.stop_screen_index = (self.stop_screen_index + 1) % 3
+            self.stop_screen_timer = 1 * Const.FPS
+        else:
+            self.stop_screen_timer -= 1
 
     def update_endgame(self):
         '''
@@ -346,16 +404,45 @@ class GameEngine:
 
     def generate_item(self):
         # In every tick, if item is less than item_amount, it MAY generate one item
-        if len(self.items) < int(self.item_amount) and random.randint(1, 1000) > Const.GENERATE_ITEM_PROBABILITY:
-            new_item = np.random.choice(np.arange(1, Const.ITEM_SPECIES + 1), p = Const.ITEM_PROBABILITY)
-            find_position = False
-            while not find_position:
+        if self.death_rain_last_time != 0:
+            self.death_rain_last_time -= 1
+            if random.random() < Const.DEATH_RAIN_GENERATE_ITEM_PROBABILITY:
+                self.generate_item_in_range(0, -100, Const.ARENA_SIZE[0], 100)
+
+        if len(self.items) < int(self.item_amount) and random.random() < self.generate_item_probability:
+            self.generate_item_in_range(0, 0, Const.ARENA_SIZE[0], Const.ARENA_SIZE[1])
+
+    def generate_item_in_range(self, left, upper, width, height):
+        enabled_items, p = [], []
+        for item_id in Const.ITEM_ENABLED.keys():
+            if Const.ITEM_ENABLED[item_id]:
+                enabled_items.append(item_id)
+                p.append(Const.ITEM_PROBABILITY[item_id])
+        p = np.array(p)
+        new_item = np.random.choice(enabled_items, p = p / np.sum(p))
+        find_position = False
+        find_limit = 60
+        while not find_position:
+            find_position = True
+            pos = pg.Vector2(random.randint(left, left + width), random.randint(upper, upper + height))
+            for item in self.items:
+                if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
+                    find_position = False
+            find_limit -= 1
+            if find_limit == 0:
                 find_position = True
-                pos = pg.Vector2(random.randint(50, Const.ARENA_SIZE[0]), random.randint(0, 600))
-                for item in self.items:
-                    if abs(item.position.x - pos.x) < Const.PLAYER_RADIUS * 2 + Const.ITEM_RADIUS[new_item - 1] + item.item_radius:
-                        find_position = False
-            self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
+        
+        self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
+
+    def death_rain(self):
+        self.death_rain_last_time = Const.DEATH_RAIN_LAST_TIME
+
+    def banana_bomb(self):
+        pos = pg.Vector2(random.randint(Const.ARENA_SIZE[0] // 4, 3 * Const.ARENA_SIZE[0] // 4), random.randint(Const.ARENA_SIZE[1] // 4, 3 * Const.ARENA_SIZE[1] // 4))
+        for direction in Const.BANANA_BOMB_DIRECTION:
+            unit = direction.normalize()
+            self.entities.append(PistolBullet(-1, pg.Vector2(pos), unit * Const.BULLET_SPEED))
+        
 
     def run(self):
         '''
@@ -367,6 +454,10 @@ class GameEngine:
         while self.running:
             self.ev_manager.post(EventEveryTick())
             self.clock.tick(Const.FPS)
+
+def check_probability():
+    if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
+        print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
 
 
 """ Events that model.py should handle.
