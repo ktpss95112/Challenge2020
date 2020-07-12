@@ -34,39 +34,56 @@ class TeamAI(BaseAI):
         my_radius = self.helper.get_self_radius()
         my_speed = self.helper.get_self_velocity()
         other_id = self.helper.get_nearest_player()
-        if self.helper.get_other_is_invincible(other_id):
+        if self.helper.get_other_is_invincible(other_id) or self.helper.get_other_life(other_id) == 0:
             other_id = self.helper.get_highest_voltage_player()
-        elif self.helper.get_other_is_invincible(other_id):
+        if self.helper.get_other_is_invincible(other_id) or self.helper.get_other_life(other_id) == 0:
             other_id = self.helper.get_highest_score_player()
+        if self.helper.get_other_is_invincible(other_id) or self.helper.get_other_life(other_id) == 0:
+            for i in range(4):
+                if i != self.helper.get_self_id() and not self.helper.get_other_is_invincible(other_id) and self.helper.get_other_life(i) != 0:
+                    other_id = i
+                    break
+                    
         other_pos = self.helper.get_other_position(other_id)
-        bound = self.helper.get_game_arena_boundary()
+        bound = self.helper.get_game_life_boundary()
         lands = self.helper.get_platform_position()
 
-        if my_speed[1] >= 0:
-            if my_pos[0] < bound[0][0] + self.helper.get_self_radius():
+        if my_pos[0] < bound[0][0] + self.helper.get_self_radius() * 4.5:
+            if my_speed[1] >= 0:
                 return AI_DIR_RIGHT_JUMP
-            elif my_pos[0] > bound[1][0] - self.helper.get_self_radius():
+            else:
+                return AI_DIR_RIGHT
+        elif my_pos[0] > bound[1][0] - self.helper.get_self_radius() * 4.5:
+            if my_speed[1] >= 0:
                 return AI_DIR_LEFT_JUMP
+            else:
+                return AI_DIR_LEFT
 
-        if self.helper.get_distance(my_pos, other_pos) < self.helper.get_self_attack_radius() / 8 and self.helper.get_self_can_attack_time() == 0:
+        if self.helper.get_distance(my_pos, other_pos) < self.helper.get_self_attack_radius() / 6 and self.helper.get_self_can_attack_time() == 0:
             return AI_DIR_ATTACK
 
         # the area below is empty
         flag = 1
         for platform in lands:
-            if platform[0][1] > my_pos[1]:
-                h = platform[0][1] - my_pos[1]
+            if platform[0][1] > my_pos[1] + self.helper.get_self_radius():
+                h = platform[0][1] - my_pos[1] - self.helper.get_self_radius()
                 t = (-my_speed[1] + math.sqrt(my_speed[1] ** 2 + 2 * h * self.helper.get_game_player_gravity_acceleration()))/ self.helper.get_game_player_gravity_acceleration()
-                if platform[0][0] + self.helper.get_self_radius() * 1.5  < my_pos[0] + my_speed[0] * t < platform[1][0] - self.helper.get_self_radius() * 1.5:
+                #print(my_pos,platform,t)
+                if t >= 2 or platform[0][0] + self.helper.get_self_radius() * 1.5  < my_pos[0] + my_speed[0] * t < platform[1][0] - self.helper.get_self_radius() * 1.5:
                     flag = 0
-        
-        if my_speed[1] >= 0:
-            if flag == 1:
-                land_vec = self.get_position_vector_to_closest_land(my_pos, lands)
-                if land_vec[0] > 0:
+
+        if flag == 1:
+            land_vec = self.get_position_vector_to_closest_land(my_pos, lands)
+            if land_vec[0] > 0:
+                if my_speed[1] >= 0:
                     return AI_DIR_RIGHT_JUMP
                 else:
+                    return AI_DIR_RIGHT
+            else:
+                if my_speed[1] >= 0:
                     return AI_DIR_LEFT_JUMP
+                else:
+                    return AI_DIR_LEFT
 
         if len(self.stack) > 0:
             rt = self.stack[-1]
@@ -110,25 +127,23 @@ class TeamAI(BaseAI):
             return AI_DIR_JUMP
 
         self.last_position = my_pos
-
         if self.helper.get_distance(my_pos, other_pos) > self.helper.get_self_attack_radius() / 3:
-            far = 0
-            if abs(my_pos[0] - other_pos[0]) > abs(bound[0][0] - bound[1][0]) / 4:
-                far = 1
-            if other_pos[1] < my_pos[1]:
+            if other_pos[1] + self.helper.get_self_radius() < my_pos[1]:
                 if other_pos[0] > my_pos[0]:
-                    if far == 1:
-                        self.stack.append(AI_DIR_RIGHT_JUMP)
                     return AI_DIR_RIGHT_JUMP
                 else:
-                    if far == 1:
-                        self.stack.append(AI_DIR_LEFT_JUMP)
                     return AI_DIR_LEFT_JUMP
             else:
-                if other_pos[0] > my_pos[0]:
-                    return AI_DIR_RIGHT
-                else:
+                curr_land = lands[self.helper.get_above_which_land(my_pos)]
+                if curr_land[0][1] > other_pos[1]:  
+                    if my_pos[0] > other_pos[0]:
+                        return AI_DIR_LEFT
+                    else:
+                        return AI_DIR_RIGHT
+                elif abs(curr_land[0][0] - other_pos[0]) < abs(curr_land[1][0] - other_pos[0]):
                     return AI_DIR_LEFT
+                else:
+                    return AI_DIR_RIGHT
         else:
             return AI_DIR_ATTACK
         
