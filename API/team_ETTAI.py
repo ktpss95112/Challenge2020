@@ -40,10 +40,10 @@ class TeamAI(BaseAI):
         #    self.jump = False
         #    return AI_DIR_JUMP
         if decision == None:
-            decision = self.not_drop()
-
-        if decision == None:
             decision = self.attack()
+        
+        if decision == None:
+            decision = self.not_drop()
 
         if decision == None:
             decision = self.use_immediate_item()
@@ -57,8 +57,8 @@ class TeamAI(BaseAI):
         if decision == None:
             decision = self.pick_item()
 
-        if decision == None:
-            decision = self.walk_to_highest_voltage_vincible_player()
+        #if decision == None:
+        #    decision = self.walk_to_highest_voltage_vincible_player()
 
         if decision == None:
             decision = self.walk_to_nearest_vincible_player()
@@ -75,7 +75,7 @@ class TeamAI(BaseAI):
         nearest_id = self.helper.get_nearest_player()
         nearest_player_position = self.helper.get_other_position(nearest_id)
         if self.helper.get_self_can_attack_time() == 0 and \
-           self.helper.get_distance(self.helper.get_self_position(), nearest_player_position) < 1.5 * self.helper.get_self_radius() + self.helper.get_other_radius(nearest_id):
+           self.helper.get_distance(self.helper.get_self_position(), nearest_player_position) <  self.helper.get_self_radius() + 1.2 * self.helper.get_other_radius(nearest_id):
             return AI_DIR_ATTACK
         return None
 
@@ -109,7 +109,7 @@ class TeamAI(BaseAI):
                 continue
             other_position = self.helper.get_other_position(i)
             distance = self.helper.get_distance(self_position, other_position)
-            if not self.helper.get_other_is_invincible(i) and not self.helper.get_other_will_drop(i):
+            if not self.helper.get_other_is_invincible(i):
                 if nearest_distance == None or distance < nearest_distance:
                     nearest_distance, nearest_player_position = distance, other_position
         
@@ -129,7 +129,7 @@ class TeamAI(BaseAI):
             other_voltage = self.helper.get_other_voltage(i)
             if other_voltage > 85:
                 continue
-            if not self.helper.get_other_is_invincible(i) and not self.helper.get_other_will_drop(i):
+            if not self.helper.get_other_is_invincible(i):
                 if highest_voltage == None or other_voltage > highest_voltage:
                     highest_voltage, target_player_position = other_voltage, other_position
         
@@ -288,14 +288,14 @@ class TeamAI(BaseAI):
     def exist_right_platform(self):
         platforms = self.helper.get_platform_position()
         for upper_left, bottom_right in platforms:
-            if upper_left[0] > self.helper.get_self_position()[0]:
+            if bottom_right[0] > self.helper.get_self_position()[0]:
                 return True
         return False
 
     def exist_left_platform(self):
         platforms = self.helper.get_platform_position()
         for upper_left, bottom_right in platforms:
-            if bottom_right[0] < self.helper.get_self_position()[0]:
+            if upper_left[0] < self.helper.get_self_position()[0]:
                 return True
         return False
 
