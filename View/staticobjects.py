@@ -8,7 +8,7 @@ import math
 
 
 import Model.GameObject.item as model_item
-from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel
+from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole
 from View.utils import scaled_surface, load_image
 import Const
 
@@ -166,7 +166,8 @@ class View_entities(__Object_base):
         'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber.png')), 0.15),
         'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber_red.png')), 0.15),
         'banana_bullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_pulp.png')), 0.15),
-        'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7)
+        'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7),
+        'black_hole': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'blackhole.png')), 0.3)
     }
 
     @classmethod
@@ -186,6 +187,8 @@ class View_entities(__Object_base):
             elif isinstance(entity, BananaPeel):
                 screen.blit(self.images['banana_peel'], self.images['banana_peel'].get_rect(center=entity.position))
 
+            elif isinstance(entity, BigBlackHole):
+                screen.blit(self.images['black_hole'], self.images['black_hole'].get_rect(center=entity.position))
             else:
                 center = (int(entity.position.x),int(entity.position.y))
                 pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
