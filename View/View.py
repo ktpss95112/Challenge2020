@@ -104,6 +104,9 @@ class GraphicalView:
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
+        elif isinstance(event, EventUseRainbowGrounder):
+            self.animation_list.append(View.animations.Animation_Rainbow(center=event.player_position))
+
     def display_fps(self):
         '''
         Display the current fps on the window caption.
@@ -157,7 +160,7 @@ class GraphicalView:
 
         if self.current_stop_index == self.model.stop_screen_index:
             return
-        
+
         self.current_stop_index = self.model.stop_screen_index
 
         self.stop.draw(target)

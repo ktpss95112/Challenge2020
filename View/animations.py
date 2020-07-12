@@ -100,14 +100,14 @@ class Animation_raster(Animation_base):
 class Animation_Bomb_Explode(Animation_raster):
     frames = tuple(
         scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, f'explosion_{_i//2}.png')),
+            load_image(os.path.join(Const.IMAGE_PATH, f'explosion_{_i}.png')),
             0.8
         )
-            for _i in range(2, 35)
+            for _i in range(1, 18)
     )
 
     def __init__(self, **pos):
-        super().__init__(2, len(self.frames), **pos)
+        super().__init__(2, 2*len(self.frames), **pos)
 
 
 class Animation_Lightning(Animation_raster):
@@ -199,14 +199,14 @@ class Animation_player_attack_big(Animation_raster):
 class Animation_Bomb_Explode(Animation_raster):
     frames = tuple(
         scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, f'explosion_{_i//2}.png')),
+            load_image(os.path.join(Const.IMAGE_PATH, f'explosion_{_i}.png')),
             0.8
         )
-            for _i in range(2, 35)
+            for _i in range(1, 18)
     )
 
     def __init__(self, **pos):
-        super().__init__(2, len(self.frames), **pos)
+        super().__init__(2, 2*len(self.frames), **pos)
         r = Const.BOMB_SCREEN_VIBRATION_RADIUS
         self.vibration = np.zeros((Const.BOMB_TIME, 2), dtype=np.int8)
         self.vibration[:Const.BOMB_SCREEN_VIBRATION_DURATION, :] = np.random.randint(-r, r+1, size=(Const.BOMB_SCREEN_VIBRATION_DURATION, 2))
@@ -220,11 +220,30 @@ class Animation_Bomb_Explode(Animation_raster):
 
         if update: self.update()
 
+class Animation_Rainbow(Animation_raster):
+    frames = tuple(
+        scaled_surface(
+            load_image(os.path.join(Const.IMAGE_PATH, f'rainbow_{min(_i, 11)}.png')),
+            1
+        )
+            for _i in range(1, 22)
+    )
+
+    def __init__(self, **pos):
+        super().__init__(4, 4*len(self.frames), **pos)
+
+    def draw(self, screen, update=True):
+        screen.blit(
+            self.frames[self.frame_index_to_draw],
+            self.frames[self.frame_index_to_draw].get_rect(**self.pos),
+        )
+        if update: self.update()
 
 def init_animation():
     Animation_player_attack.init_convert()
     Animation_player_attack_big.init_convert()
     Animation_Bomb_Explode.init_convert()
     Animation_Lightning.init_convert()
+    Animation_Rainbow.init_convert()
 
 
