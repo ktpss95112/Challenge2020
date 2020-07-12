@@ -139,7 +139,18 @@ class View_players(__Object_base):
 
             img_play_state = player.player_id * 5 + img_shining_period + (int)( player.player_radius / Const.PLAYER_RADIUS - 1) * 20
             screen.blit(self.images[img_play_state], self.images[img_play_state].get_rect(center=player.position))
+            rect_height = min((Const.VOLTAGE_OUT[1] - 2),(Const.VOLTAGE_OUT[1] - 2) / 120 * player.voltage)
 
+
+            pg.draw.rect(screen, (255, 255, 255), [player.position.x + Const.PLAYER_RADIUS + 8, player.position.y - Const.PLAYER_RADIUS - 2, Const.VOLTAGE_OUT[0], Const.VOLTAGE_OUT[1]], 1)
+            if player.voltage > 0 and player.voltage < 50:
+                pg.draw.rect(screen, (60, 180, 75), [player.position.x + Const.PLAYER_RADIUS + 9, player.position.y - Const.PLAYER_RADIUS - 1, Const.VOLTAGE_OUT[0] - 2 , rect_height] , 0)
+            elif player.voltage >=50 and player.voltage < 80:
+                pg.draw.rect(screen, (255, 255, 25), [player.position.x + Const.PLAYER_RADIUS + 9, player.position.y - Const.PLAYER_RADIUS - 1, Const.VOLTAGE_OUT[0] - 2 , rect_height] , 0)
+            elif player.voltage >=80 and player.voltage < 100:
+                pg.draw.rect(screen, (245, 130, 48), [player.position.x + Const.PLAYER_RADIUS + 9, player.position.y - Const.PLAYER_RADIUS - 1, Const.VOLTAGE_OUT[0] - 2 , rect_height] , 0)
+            elif player.voltage >=100 :
+                pg.draw.rect(screen, (230, 25, 75), [player.position.x + Const.PLAYER_RADIUS + 9, player.position.y - Const.PLAYER_RADIUS - 1, Const.VOLTAGE_OUT[0] - 2 , rect_height] , 0)
             # temp voltage monitor
             # TODO: create a class MutableText() similar to PureText()
             voltage_surface = self.font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))

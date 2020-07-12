@@ -137,7 +137,7 @@ class Animation_Lightning(Animation_raster):
             (self.pos,0),
             )
         if (self._timer>16 and self._timer<22) or (self._timer>25 and self._timer<29):
-            pg.draw.rect(screen, (255, 255, 255, 10), pg.Rect((0, 0), Const.ARENA_SIZE))
+            pg.draw.rect(screen, (255, 255, 255, 10), pg.Rect((0, 0), Const.WINDOW_SIZE))
 
         if update: self.update()
 
