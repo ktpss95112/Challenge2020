@@ -167,8 +167,8 @@ ITEM_ENABLED = {
 ITEM_PROBABILITY = {
     BANANA_PISTOL: 0.2,
     BIG_BLACK_HOLE: 0.05,
-    CANCER_BOMB: 0.2,
-    ZAP_ZAP_ZAP: 0.05,
+    CANCER_BOMB: 0.05,
+    ZAP_ZAP_ZAP: 0.2,
     BANANA_PEEL: 0.2,
     RAINBOW_GROUNDER: 0.2,
     INVINCIBLE_BATTERY: 0.1,
@@ -223,7 +223,7 @@ DEATH_RAIN_VELOCITY = pg.Vector2(0, 100)
 # view
 WINDOW_CAPTION = 'Challenge 2020'
 WINDOW_SIZE = (1200, 800)
-ARENA_SIZE = (800, 800)
+ARENA_SIZE = (1200, 800)
 BACKGROUND_COLOR = pg.Color(0x23, 0x23, 0x23)
 PLAYER_COLOR = [pg.Color('green'), pg.Color('magenta'), pg.Color('orange'), pg.Color('red')]
 PLAYER_PIC = ['player1_0.png', 'player1_1.png', 'player1_2.png', 'player1_3.png', 'player1_4.png',
@@ -239,6 +239,7 @@ ATTACK_ERROR = 2.8
 ITEM_COLOR = [pg.Color('white'), pg.Color('yellow'), pg.Color('deepskyblue'), pg.Color('gray'), pg.Color('mediumpurple'), pg.Color('darkgreen'), pg.Color('tan'), pg.Color('olivedrab')]
 FLOATING_RADIUS = 4
 FLOATING_THETA = 0.06
+VOLTAGE_OUT = (8, 2 * PLAYER_RADIUS)
 
 # controller
 PLAYER_MOVE_KEYS = {
