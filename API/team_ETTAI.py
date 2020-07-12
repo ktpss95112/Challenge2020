@@ -39,7 +39,6 @@ class TeamAI(BaseAI):
         #if decision == None and self.jump:
         #    self.jump = False
         #    return AI_DIR_JUMP
-
         if decision == None:
             decision = self.not_drop()
 
@@ -304,15 +303,15 @@ class TeamAI(BaseAI):
         if not self.helper.get_self_will_drop():
             return None
         if self.helper.get_self_direction() == LEFT:
-            if self.exist_left_platform() and self.helper.get_self_can_jump():
+            if self.exist_left_platform():
                 return AI_DIR_LEFT_JUMP
             else:
-                return AI_DIR_RIGHT
+                return AI_DIR_RIGHT_JUMP
         else:
             if self.exist_right_platform():
                 return AI_DIR_RIGHT_JUMP
             else:
-                return AI_DIR_LEFT
+                return AI_DIR_LEFT_JUMP
 
         self_position = self.helper.get_self_position()
         platforms = self.helper.get_platform_position()
