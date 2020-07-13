@@ -231,7 +231,7 @@ class Player:
         #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def be_attacked_by_cancer_bomb(self, unit, magnitude, time):
-        self.velocity += Const.BE_ATTACKED_ACCELERATION * self.voltage_acceleration() * unit / magnitude / Const.FPS
+        self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / magnitude / Const.FPS
         self.voltage += Const.BOMB_ATK
         #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
