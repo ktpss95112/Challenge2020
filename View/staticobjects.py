@@ -8,7 +8,7 @@ import math
 
 from Model.Model import GameEngine as model
 import Model.GameObject.item as model_item
-from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole
+from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole, DeathRain
 from View.utils import scaled_surface, load_image, PureText, MutableText
 import Const
 
@@ -154,11 +154,13 @@ class View_players(__Object_base):
 
 
 class View_entities(__Object_base):
+    # TODO: remove gift if item_gift is finished
     images = {
         'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber.png')), 0.15),
         'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber_red.png')), 0.15),
         'banana_bullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_pulp.png')), 0.15),
         'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7),
+        'gift' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_gift.png')), 0.12),
         'black_hole': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'blackhole.png')), 0.3)
     }
 
@@ -179,8 +181,12 @@ class View_entities(__Object_base):
             elif isinstance(entity, BananaPeel):
                 screen.blit(self.images['banana_peel'], self.images['banana_peel'].get_rect(center=entity.position))
 
+            elif isinstance(entity, DeathRain):
+                screen.blit(self.images['gift'], self.images['gift'].get_rect(center=entity.position))
+
             elif isinstance(entity, BigBlackHole):
                 screen.blit(self.images['black_hole'], self.images['black_hole'].get_rect(center=entity.position))
+
             else:
                 center = (int(entity.position.x),int(entity.position.y))
                 pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
@@ -237,6 +243,7 @@ class View_scoreboard(__Object_base):
 
 
 class View_items(__Object_base):
+    # TODO: add item_gift.png
     images = {
         Const.BANANA_PISTOL     : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.04),
         Const.BIG_BLACK_HOLE    : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.05),
@@ -252,9 +259,6 @@ class View_items(__Object_base):
         cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
 
     def draw(self, screen):
-        # for market in self.model.priced_market_list:
-        #     if market.item:
-        #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
         floating = (0, Const.FLOATING_RADIUS * math.sin(Const.FLOATING_THETA*self.model.timer))
         for item in self.model.items:
             screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position + floating))
@@ -283,14 +287,9 @@ class View_timer(__Object_base):
 
     @classmethod
     def init_convert(cls):
-        #cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 18)
 
     def draw(self, screen):
-        # for market in self.model.priced_market_list:
-        #     if market.item:
-        #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
-        # TODO: create a class MutableText() similar to PureText()
         timer_surface = self.font.render(f"{self.model.timer / Const.FPS:.0f}", 1, pg.Color('white'))
         timer_rect = timer_surface.get_rect()
         timer_rect.midright = (642, 752)
