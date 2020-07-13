@@ -252,9 +252,6 @@ class View_items(__Object_base):
         cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
 
     def draw(self, screen):
-        # for market in self.model.priced_market_list:
-        #     if market.item:
-        #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
         floating = (0, Const.FLOATING_RADIUS * math.sin(Const.FLOATING_THETA*self.model.timer))
         for item in self.model.items:
             screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position + floating))
@@ -283,14 +280,9 @@ class View_timer(__Object_base):
 
     @classmethod
     def init_convert(cls):
-        #cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 18)
 
     def draw(self, screen):
-        # for market in self.model.priced_market_list:
-        #     if market.item:
-        #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
-        # TODO: create a class MutableText() similar to PureText()
         timer_surface = self.font.render(f"{self.model.timer / Const.FPS:.0f}", 1, pg.Color('white'))
         timer_rect = timer_surface.get_rect()
         timer_rect.midright = (642, 752)
