@@ -310,6 +310,15 @@ class Helper(object):
     def get_all_item_position(self):
         return [tuple(item.position) for item in self.model.items]
     
+    def get_black_hole_effect_radius(self):
+        return Const.BLACK_HOLE_EFFECT_RADIUS
+    
+    def get_cancer_bomb_effect_radius(self):
+        return Const.BOMB_EXPLODE_RADIUS
+
+    def get_zap_zap_zap_effect_range(self):
+        return Const.ZAP_ZAP_ZAP_RANGE
+
     # get platform information 
     def get_platform_position(self):
         return [(tuple(platform.upper_left), tuple(platform.bottom_right)) for platform in self.model.platforms]
