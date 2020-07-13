@@ -6,7 +6,7 @@ import pygame as pg
 import os.path
 import math
 
-from Model.Model import GameEngine as model
+
 import Model.GameObject.item as model_item
 from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole, DeathRain
 from View.utils import scaled_surface, load_image, PureText, MutableText
@@ -84,18 +84,42 @@ class View_menu(__Object_base):
 class View_endgame(__Object_base):
     images = {
         'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'background.png')), 0.24),
-        0: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
-        1: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
-        2: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24),
-        3: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_first.png')), 0.29),
-        4: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_second.png')), 0.29),
-        5: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_third.png')), 0.29),
-        6: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_fourth.png')), 0.29),
-        7: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player1_0.png')), 0.15),
-        8: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player2_0.png')), 0.15),
-        9: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player3_0.png')), 0.15),
-        10: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player4_0.png')), 0.15)
-    }
+        'medal_first': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
+        'medal_second': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
+        'medal_third': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24),
+        'emoji_blue_first':
+         scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_blue_first.png')), 0.4),
+        'emoji_blue_second':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_blue_second.png')), 0.4),
+        'emoji_blue_third':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_blue_third.png')), 0.4),
+        'emoji_blue_fourth':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_blue_fourth.png')), 0.4),
+        'emoji_green_first':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_green_first.png')), 0.4),
+        'emoji_green_second':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_green_second.png')), 0.4),
+        'emoji_green_third':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_green_third.png')), 0.4),
+        'emoji_green_fourth':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_green_fourth.png')), 0.4),
+        'emoji_purple_first':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_purple_first.png')), 0.4),
+        'emoji_purple_second':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_purple_second.png')), 0.4),
+        'emoji_purple_third':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_purple_third.png')), 0.4),
+        'emoji_purple_fourth':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_purple_fourth.png')), 0.4),
+        'emoji_yellow_first':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_yellow_first.png')), 0.4),
+        'emoji_yellow_second':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_yellow_second.png')), 0.4),
+        'emoji_yellow_third':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_yellow_third.png')), 0.4),
+        'emoji_yellow_fourth':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_yellow_fourth.png')), 0.4),
+        }
 
     @classmethod
     def init_convert(cls):
@@ -119,17 +143,59 @@ class View_endgame(__Object_base):
             # draw player score
             self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen)
 
-            ball_surface = self.images[player_id + 7]
-            ball_rect = ball_surface.get_rect(center=(675 + (player_id - 1.89) * 200, 330))
+            #draw player ball
+
+            if self.model.players[player_id].rank == 1:
+                if player_id == 0:
+                    ball_surface = self.images['emoji_blue_first']
+                elif player_id == 1:
+                    ball_surface = self.images['emoji_green_first']
+                elif player_id == 2:
+                    ball_surface = self.images['emoji_purple_first']
+                elif player_id == 3:
+                    ball_surface = self.images['emoji_yellow_first']
+
+            elif self.model.players[player_id].rank == 2:
+                if player_id == 0:
+                    ball_surface = self.images['emoji_blue_second']
+                elif player_id == 1:
+                    ball_surface = self.images['emoji_green_second']
+                elif player_id == 2:
+                    ball_surface = self.images['emoji_purple_second']
+                elif player_id == 3:
+                    ball_surface = self.images['emoji_yellow_second']
+
+            elif self.model.players[player_id].rank == 3:
+                if player_id == 0:
+                    ball_surface = self.images['emoji_blue_third']
+                elif player_id == 1:
+                    ball_surface = self.images['emoji_green_third']
+                elif player_id == 2:
+                    ball_surface = self.images['emoji_purple_third']
+                elif player_id == 3:
+                    ball_surface = self.images['emoji_yellow_third']
+
+            elif self.model.players[player_id].rank == 4:
+                if player_id == 0:
+                    ball_surface = self.images['emoji_blue_fourth']
+                elif player_id == 1:
+                    ball_surface = self.images['emoji_green_fourth']
+                elif player_id == 2:
+                    ball_surface = self.images['emoji_purple_fourth']
+                elif player_id == 3:
+                    ball_surface = self.images['emoji_yellow_fourth']
+
+            ball_rect = ball_surface.get_rect(center=(675 + (player_id - 1.89) * 200, 280))
             screen.blit(ball_surface, ball_rect)
 
-            face_surface = self.images[self.model.players[player_id].rank + 2]
-            face_rect = (675 + (player_id - 1.98) * 200, 328)
-            screen.blit(face_surface, face_rect)
-
             if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
-                medal_surface = self.images[self.model.players[player_id].rank - 1]
-                medal_rect = medal_surface.get_rect(center=(675 + (player_id - 1.5) * 200, 340))
+                if self.model.players[player_id].rank == 1:
+                    medal_surface = self.images['medal_first']
+                elif self.model.players[player_id].rank == 2:
+                    medal_surface = self.images['medal_second']
+                elif self.model.players[player_id].rank == 3:
+                    medal_surface = self.images['medal_third']
+                medal_rect = medal_surface.get_rect(center=(685 + (player_id - 1.5) * 200, 210))
                 screen.blit(medal_surface, medal_rect)
 
 class View_players(__Object_base):
