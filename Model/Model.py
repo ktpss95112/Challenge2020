@@ -144,6 +144,16 @@ class GameEngine:
                 self.state_machine.pop()
 
         elif isinstance(event, EventTimesUp):
+            # compute score
+            max_KO_amount = max(player.KO_amount for player in self.players)
+            for player in self.players:
+                if player.KO_amount == max_KO_amount:
+                    player.just_too_good_score = 500
+                if player.die_amount == 0:
+                    player.just_a_nerd_score = 2000
+                player.score = player.KO_score + player.die_score\
+                            + player.just_too_good_score + player.just_a_nerd_score
+            # compute rank
             scores = []
             for player in self.players:
                 scores.append(player.score)

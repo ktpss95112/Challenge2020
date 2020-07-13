@@ -37,6 +37,12 @@ class Player:
 
         self.KO_amount = 0
         self.die_amount = 0
+
+        self.KO_score = 0 # compute every tick
+        self.die_score = 0 # compute every tick
+        self.just_too_good_score = 0 # compute when timesup
+        self.just_a_nerd_score = 0 # compute when timesup
+        
         self.score = 0
         self.rank = 4
 
@@ -125,7 +131,9 @@ class Player:
 
     def maintain_score_every_tick(self):
         # called by model update_players()
-        self.score = self.KO_amount * 300 - self.die_amount * 150
+        self.KO_score = self.KO_amount * 300
+        self.die_score = -self.die_amount * 150
+        self.score = self.KO_score + self.die_score
 
     def collision(self, other, platforms: list):
         # Deal with collision with other player
