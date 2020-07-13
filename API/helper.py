@@ -461,7 +461,7 @@ class Helper(object):
         self_velocity = self.get_self_velocity()
         self_jump_quota = self.get_self_jump_quota()
         closest_land_vector = self.get_position_vector_to_closest_land()
-        if self_velocity[1] > 0 and self_jump_quota == 0 :
+        if self_velocity[1] > 0 and self_jump_quota == 0 and player_above_which_land == -1:
             if closest_land_vector[0] < 0:
                 command = AI_DIR_LEFT
             else:
