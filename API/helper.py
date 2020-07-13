@@ -21,7 +21,7 @@ class Helper(object):
     def __init__(self, model, index):
         self.model = model
         self.player_id = index
-        self.jump_delay = 0
+        
 
     # get game information
     def get_game_left_time(self):
