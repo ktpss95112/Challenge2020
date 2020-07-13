@@ -51,6 +51,7 @@ class GraphicalView:
 
         # animations
         self.animation_list = []
+        self.animation_black_hole_list = [] # should be rendered lastly
 
         # static objects
         self.scoreboard = View.staticobjects.View_scoreboard(self.model)
@@ -107,6 +108,9 @@ class GraphicalView:
         elif isinstance(event, EventUseRainbowGrounder):
             self.animation_list.append(View.animations.Animation_Rainbow(center=event.player_position))
 
+        elif isinstance(event, EventUseBigBlackHole):
+            self.animation_black_hole_list.append(View.animations.Animation_Black_Hole(event.black_hole_position))
+
     def display_fps(self):
         '''
         Display the current fps on the window caption.
@@ -143,6 +147,11 @@ class GraphicalView:
         # draw animation
         for ani in self.animation_list:
             if ani.expired: self.animation_list.remove(ani)
+            else          : ani.draw(target, update)
+
+        # draw blackhole
+        for ani in self.animation_black_hole_list:
+            if ani.expired: self.animation_black_hole_list.remove(ani)
             else          : ani.draw(target, update)
 
         # draw scoreboard
