@@ -107,6 +107,9 @@ class GraphicalView:
         elif isinstance(event, EventUseRainbowGrounder):
             self.animation_list.append(View.animations.Animation_Rainbow(center=event.player_position))
 
+        elif isinstance(event, EventDeathRainTrigger):
+            self.animation_list.append(View.animations.Animation_Gift_Explode(center=event.position))
+
     def display_fps(self):
         '''
         Display the current fps on the window caption.
