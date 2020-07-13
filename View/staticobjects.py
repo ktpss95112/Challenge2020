@@ -6,10 +6,10 @@ import pygame as pg
 import os.path
 import math
 
-
+from Model.Model import GameEngine as model
 import Model.GameObject.item as model_item
-from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel
-from View.utils import scaled_surface, load_image
+from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole
+from View.utils import scaled_surface, load_image, PureText, MutableText
 import Const
 
 '''
@@ -91,31 +91,30 @@ class View_endgame(__Object_base):
 
     @classmethod
     def init_convert(cls):
-        # TODO: use View.utils.PureText to render static words
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 28)
         cls.score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 22)
-        # cls.menu = cls.menu.convert()
-        # cls.base = cls.base.convert_alpha()
-        pass
+        cls.name_text = []
+        cls.score_text = []
+        for player_id in range(4):
+            cls.name_text.append(MutableText(1, cls.font, pg.Color('white'), center=(600 + (player_id - 1.5) * 200, 390)))
+            cls.score_text.append(MutableText(1, cls.score_font, pg.Color('white'), center=(600 + (player_id - 1.5) * 200, 430)))
+
 
     def draw(self, screen):
         # draw background
         screen.blit(self.images['Background'], (0, 0))
 
         for player_id in range(4):
-            name_surface = self.font.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
-            name_rect = name_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 390))
-            screen.blit(name_surface, name_rect)
+            # draw player name
+            self.name_text[player_id].draw(self.model.players[player_id].player_name, screen)
 
-            score_surface = self.score_font.render(f"{self.model.players[player_id].score}", 1, pg.Color('white'))
-            score_rect = score_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 430))
-            screen.blit(score_surface, score_rect)
+            # draw player score
+            self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen)
 
             if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
                 medal_surface = self.images[self.model.players[player_id].rank - 1]
                 medal_rect = medal_surface.get_rect(center=(675 + (player_id - 1.5) * 200, 340))
                 screen.blit(medal_surface, medal_rect)
-
 
 class View_players(__Object_base):
     images = tuple(
@@ -135,8 +134,6 @@ class View_players(__Object_base):
         # draw players
         img_shining_period = (int)(self.model.timer / 7 ) % 5
         for player in self.model.players:
-            if player.invincible_time > 0:
-                pass
 
             #magnification =
             img_play_state = player.player_id * 5 + img_shining_period + (int)( player.player_radius / Const.PLAYER_RADIUS - 1) * 20
@@ -154,11 +151,6 @@ class View_players(__Object_base):
                 pg.draw.rect(screen, (245, 130, 48), [R_X + 1, R_Y - 2, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
             elif player.voltage >=100 :
                 pg.draw.rect(screen, (230, 25, 75), [R_X + 1, R_Y - 2,  rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
-            # temp voltage monitor
-            # TODO: create a class MutableText() similar to PureText()
-            voltage_surface = self.font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
-            voltage_pos = player.position
-            screen.blit(voltage_surface, voltage_surface.get_rect(center=voltage_pos))
 
 
 class View_entities(__Object_base):
@@ -166,7 +158,8 @@ class View_entities(__Object_base):
         'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber.png')), 0.15),
         'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber_red.png')), 0.15),
         'banana_bullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_pulp.png')), 0.15),
-        'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7)
+        'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7),
+        'black_hole': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'blackhole.png')), 0.3)
     }
 
     @classmethod
@@ -186,6 +179,8 @@ class View_entities(__Object_base):
             elif isinstance(entity, BananaPeel):
                 screen.blit(self.images['banana_peel'], self.images['banana_peel'].get_rect(center=entity.position))
 
+            elif isinstance(entity, BigBlackHole):
+                screen.blit(self.images['black_hole'], self.images['black_hole'].get_rect(center=entity.position))
             else:
                 center = (int(entity.position.x),int(entity.position.y))
                 pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
@@ -239,40 +234,6 @@ class View_scoreboard(__Object_base):
 
             lives = self.model.players[player_id].life
             pg.draw.rect(screen, Const.BACKGROUND_COLOR, (live_posx[player_id] + 118, 686, 18 * (5 - lives), 15))
-
-
-
-        # fontsize = 24
-        # posX = (Const.WINDOW_SIZE[0] * 7 / 8)
-        # posY = (Const.WINDOW_SIZE[1] * 1 / 32)
-        # heart_image = self.images['Heart']
-        # for player_id in range(1, 5):
-        #     heartposX = posX + 43
-        #     heartposY = posY + (fontsize + 14)
-        #     position = posX, posY
-        #     # TODO: f'Voltage: {voltage:.2f}'
-        #     voltage = round(self.model.players[player_id - 1].voltage, 2)
-        #     item = self.model.players[player_id - 1].keep_item_id
-        #     score = self.model.players[player_id - 1].score
-        #     text = [f"Player {player_id}", "Life: ", f"Voltage: {voltage}", f"Item: {item}", f"Score: {score}"]
-        #     # TODO: no need to use a list to store the labels
-        #     label = []
-
-        #     # TODO: merge the for loop with the following one
-        #     for line in text:
-        #         label.append(self.namefont.render(line, True, pg.Color('white')))
-
-        #     # TODO: merge the for loop with the previous one
-        #     # draw words
-        #     for line in range(len(label)):
-        #         screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
-
-        #     # draw heart
-        #     lives = self.model.players[player_id - 1].life
-        #     for i in range(lives):
-        #         screen.blit(heart_image, (heartposX, heartposY))
-        #         heartposX += 20
-        #     posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
 
 
 class View_items(__Object_base):
