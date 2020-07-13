@@ -86,7 +86,15 @@ class View_endgame(__Object_base):
         'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'background.png')), 0.24),
         0: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
         1: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
-        2: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24)
+        2: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24),
+        3: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_first.png')), 0.29),
+        4: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_second.png')), 0.29),
+        5: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_third.png')), 0.29),
+        6: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_fourth.png')), 0.29),
+        7: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player1_0.png')), 0.15),
+        8: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player2_0.png')), 0.15),
+        9: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player3_0.png')), 0.15),
+        10: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player4_0.png')), 0.15)
     }
 
     @classmethod
@@ -110,6 +118,14 @@ class View_endgame(__Object_base):
 
             # draw player score
             self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen)
+
+            ball_surface = self.images[player_id + 7]
+            ball_rect = ball_surface.get_rect(center=(675 + (player_id - 1.89) * 200, 330))
+            screen.blit(ball_surface, ball_rect)
+
+            face_surface = self.images[self.model.players[player_id].rank + 2]
+            face_rect = (675 + (player_id - 1.98) * 200, 328)
+            screen.blit(face_surface, face_rect)
 
             if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
                 medal_surface = self.images[self.model.players[player_id].rank - 1]
