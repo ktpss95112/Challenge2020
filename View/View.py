@@ -4,6 +4,7 @@ from Events.EventManager import *
 from Model.Model import GameEngine
 from View.utils import scaled_surface, load_image
 import View.staticobjects
+import View.sound
 import View.animations
 import Const
 
@@ -63,6 +64,7 @@ class GraphicalView:
         self.endgame = View.staticobjects.View_endgame(self.model)
         self.stop = View.staticobjects.View_stop(self.model)
         self.stage = View.staticobjects.View_stage(self.model)
+        self.sounds = View.sound.audio.effect_list
 
     def notify(self, event):
         '''
@@ -70,6 +72,7 @@ class GraphicalView:
         '''
         if isinstance(event, EventInitialize):
             self.initialize()
+            pg.mixer.music.play()
 
         elif isinstance(event, EventEveryTick):
             self.display_fps()
@@ -89,8 +92,15 @@ class GraphicalView:
         elif isinstance(event, EventPlayerAttack):
             if self.model.players[event.player_id].player_radius / Const.PLAYER_RADIUS == 1:
                 self.animation_list.append(View.animations.Animation_player_attack(self.model.players[event.player_id]))
+                self.sounds['attack'].play()
             else:
                 self.animation_list.append(View.animations.Animation_player_attack_big(self.model.players[event.player_id]))
+
+        elif isinstance(event, EventPlayerJump):
+            self.sounds['jump'].play()
+
+        elif isinstance(event, EventPlayerPickItem):
+            self.sounds['pick_item'].play()
 
         elif isinstance(event, EventStop):
             cur_state = self.model.state_machine.peek()
@@ -102,10 +112,27 @@ class GraphicalView:
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
         elif isinstance(event, EventUseZapZapZap):
+            self.sounds['electric_shock'].play()
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
         elif isinstance(event, EventUseRainbowGrounder):
+            self.sounds['rainbow'].play()
             self.animation_list.append(View.animations.Animation_Rainbow(center=event.player_position))
+
+        elif isinstance(event, EventUseBigBlackHole):
+            self.sounds['blackhole'].play()
+
+        elif isinstance(event, EventUseBananaPeel):
+            self.sounds['banana_peel'].play()
+
+        elif isinstance(event, EventUseInvincibleBattery):
+            self.sounds['Invincible'].play()
+
+        elif isinstance(event, EventUseCancerBomb):
+            self.sounds['bomb_explode'].play()
+
+        elif isinstance(event, EventUseBananaPistol):
+            self.sounds['gun_shot'].play()
 
     def display_fps(self):
         '''
