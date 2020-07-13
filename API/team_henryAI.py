@@ -36,6 +36,9 @@ class TeamAI(BaseAI):
         self_position = self.helper.get_self_position()
         target_player_position = self.helper.get_other_position(self.helper.get_nearest_player())
         nearest_item_position = self.helper.get_nearest_item_position()
+
+        return self.helper.walk_to_position(self.helper.get_other_position(3))
+        '''
         if self.helper.get_other_voltage(self.helper.get_highest_voltage_player()) >= 100 and self.in_the_map(self.helper.get_other_position(self.helper.get_highest_voltage_player())):
             target_player_position = self.helper.get_other_position(self.helper.get_highest_voltage_player())
         if self.helper.get_distance(self_position , target_player_position) <= ATTACK_RADIUS and self.helper.get_self_can_attack_time() == 0:
@@ -50,4 +53,5 @@ class TeamAI(BaseAI):
             return  self.helper.walk_to_position(nearest_item_position)
         
         return self.helper.walk_to_position((590,0))
+        '''
         # add your code

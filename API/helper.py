@@ -38,11 +38,8 @@ class Helper(object):
         # return top-left and bottom-right
         return ((Const.LIFE_BOUNDARY[0], Const.LIFE_BOUNDARY[1]), (Const.LIFE_BOUNDARY[2], Const.LIFE_BOUNDARY[3]))
 
-    def get_game_player_gravity_acceleration(self):
+    def get_game_gravity_acceleration(self):
         return Const.GRAVITY_ACCELERATION / Const.FPS
-
-    def get_game_item_gravity_acceleration(self):
-        return Const.GRAVITY_ACCELERATION_FOR_ITEM / Const.FPS
 
     # get self information
     def get_self_id(self):
@@ -124,12 +121,12 @@ class Helper(object):
     def get_all_direction(self):
         return [tuple(player.direction) for player in self.model.players]
 
-    def get_all_player_distance(self):
-        return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
+    def get_all_normal_speed(self):
+        return [player.normal_speed for player in self.model.players]
 
-    def get_all_player_vector(self):
-        return [self.get_vector(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
-
+    def get_all_jump_speed(self):
+        return [player.jump_speed for player in self.model.players]
+    
     def get_all_keep_item_id(self):
         return [player.keep_item_id for player in self.model.players]
 
@@ -168,6 +165,12 @@ class Helper(object):
     
     def get_all_can_attack(self):
         return [player.can_attack() for player in self.model.players]
+
+    def get_all_player_distance(self):
+        return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
+
+    def get_all_player_vector(self):
+        return [self.get_vector(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
     
     # get other players information
     def get_other_position(self, index):
@@ -179,11 +182,11 @@ class Helper(object):
     def get_other_direction(self, index):
         return tuple(self.model.players[index].direction)
 
-    def get_other_vector(self, index):
-        return self.get_vector(self.get_self_position(), self.get_other_position(index))
+    def get_other_normal_speed(self, index):
+        return self.model.players[index].normal_speed
 
-    def get_other_distance(self, index):
-        return self.get_distance(self.get_self_position(), self.get_other_position(index))
+    def get_other_jump_speed(self, index):
+        return self.model.players[index].jump_speed
 
     def get_other_keep_item_id(self, index):
         return self.model.players[index].keep_item_id
@@ -232,6 +235,12 @@ class Helper(object):
             if platform[0][0] < other_position[0] < platform[1][0] and other_position[1] + other_radius <= platform[0][1]:
                 return False
         return True
+
+    def get_other_player_vector(self, index):
+        return self.get_vector(self.get_self_position(), self.get_other_position(index))
+
+    def get_other_player_distance(self, index):
+        return self.get_distance(self.get_self_position(), self.get_other_position(index))
 
     def get_live_player_num(self):
         lives = self.get_all_life()
@@ -449,7 +458,7 @@ class Helper(object):
         self_velocity = self.get_self_velocity()
         self_jump_quota = self.get_self_jump_quota()
         closest_land_vector = self.get_position_vector_to_closest_land()
-        if self_velocity[1] > 0 and self_jump_quota == 0 :
+        if self_velocity[1] > 0 and self_jump_quota == 0 and player_above_which_land == -1:
             if closest_land_vector[0] < 0:
                 command = AI_DIR_LEFT
             else:
