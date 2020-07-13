@@ -12,7 +12,7 @@ AI_DIR_STAY        = 7
 class TeamAI(BaseAI):
     def __init__(self, helper):
         self.helper = helper
-        self.enhancement = [0, 0, 0]
+        self.enhancement = [0, 0, 0, 0]
     
     def decide(self):
         my_index = self.helper.get_self_id()

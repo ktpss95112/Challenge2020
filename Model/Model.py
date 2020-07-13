@@ -263,7 +263,6 @@ class GameEngine:
         '''
         self.overlap_detect()
         self.players_collision_detect()
-        highest_KO_amount = max(player.KO_amount for player in self.players)
         for player in self.players:
             if player.is_alive():
                 # maintain position, velocity and timer
@@ -276,13 +275,14 @@ class GameEngine:
                         player.pick_item(item.item_id)
                         self.ev_manager.post(EventPlayerPickItem(player.player_id, item.item_id))
                         self.items.remove(item)
-                        
-                # maintain scores
-                player.maintain_score_every_tick(highest_KO_amount)
 
                 # maintain lifes
                 if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                     self.ev_manager.post(EventPlayerDied(player.player_id))
+        # maintain scores
+        highest_KO_amount = max(player.KO_amount for player in self.players)
+        for player in self.players:
+            player.maintain_score_every_tick(highest_KO_amount)
 
     def update_objects(self):
         '''
