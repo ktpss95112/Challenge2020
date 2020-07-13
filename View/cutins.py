@@ -125,6 +125,13 @@ class Cutin_raster(Cutin_board):
     Base class of all cut-ins that need to show text on board
     '''
     skill_name = 'Skill Name'
+    images = {
+        'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
+        1 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_first.png')), 0.6),
+        2 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_second.png')), 0.6),
+        3 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_third.png')), 0.6),
+        4 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_fourth.png')), 0.6),
+    }
     def __init__(self, player_id, players):
         # Add type_time to random type speed of typewriter
         super().__init__(player_id)
@@ -155,9 +162,13 @@ class Cutin_raster(Cutin_board):
         
         # Draw player on board
         self.board = self.images['board'].copy()
+        player = self.players_image[self.player_id].copy()
+        # Draw emotion on player
+        self.emotion_draw(player)
+
         self.board.blit(
-            self.players_image[self.player_id],
-            self.players_image[self.player_id].get_rect(center=(5 * self.board_width / 7, 5 * self.board_height / 6))
+            player,
+            player.get_rect(center=(5 * self.board_width / 7, 5 * self.board_height / 6))
         )
 
         # Update text to show
@@ -185,6 +196,12 @@ class Cutin_raster(Cutin_board):
         if update:
             self.update()
 
+    def emotion_draw(self, target):
+        target.blit(
+            self.images[self.rank],
+            self.images[self.rank].get_rect(center=(3 * target.get_width() / 7, target.get_height() / 2))
+        )
+
     def text(self):
         # Determine the text to show
         word = ''
@@ -200,8 +217,8 @@ class Cutin_raster(Cutin_board):
 
     def ranking(self, players):
         rank = 1
-        for player in self.players:
-            if player.player_id != self.player_id and player.score > self.players[self.player_id].score:
+        for player in players:
+            if player.player_id != self.player_id and player.score > players[self.player_id].score:
                 rank += 1
         return rank
         
@@ -209,6 +226,64 @@ class Cutin_raster(Cutin_board):
 class Cutin_big_black_hole(Cutin_raster):
     # Cut-in of big black hole
     skill_name = 'Black Hole'
+    images = {
+        'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
+        'big_black_hole' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole_normal.png')), 0.2),
+        1 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_first.png')), 0.6),
+        2 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_second.png')), 0.6),
+        3 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_third.png')), 0.6),
+        4 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_fourth.png')), 0.6),
+    }
+
+    def draw(self, screen, update=True):
+        # Draw board with name of skill and player
+        #self.board.blit(
+        #    self.board_image,
+        #    (0, 0)
+        #)
+        
+        # Draw player on board
+        self.board = self.images['board'].copy()
+        player = self.players_image[self.player_id].copy()
+        # Draw emotion on player
+        self.emotion_draw(player)
+
+        self.board.blit(
+            player,
+            player.get_rect(center=(5 * self.board_width / 7, 5 * self.board_height / 6))
+        )
+
+        # Draw big black hole
+        self.board.blit(
+            self.images['big_black_hole'],
+            self.images['big_black_hole'].get_rect(center=(self.board_width / 4, 4 * self.board_height / 5))
+        )
+
+        # Update text to show
+        text_type = self.text()
+        # Draw skill's name on board
+        text_surface = self.fontLarge.render(text_type, 1, pg.Color('white'))
+        self.board.blit(
+            text_surface,
+            (self.board_width / 11, 3 * self.board_height / 7)
+        )
+
+        text_on_laptop = self.fontSmall.render(text_type, 1, pg.Color('white'))
+        text_on_laptop = pg.transform.rotate(text_on_laptop, 32)
+        self.board.blit(
+            text_on_laptop,
+            text_on_laptop.get_rect(bottomleft=(256, 394))
+        )
+
+        # Draw board to screen
+        screen.blit(
+            self.board,
+            self.board.get_rect(center=self.board_position)
+        )
+        
+        if update:
+            self.update()
+
 
 
 def init_cutin():
