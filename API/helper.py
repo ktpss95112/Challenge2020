@@ -38,11 +38,8 @@ class Helper(object):
         # return top-left and bottom-right
         return ((Const.LIFE_BOUNDARY[0], Const.LIFE_BOUNDARY[1]), (Const.LIFE_BOUNDARY[2], Const.LIFE_BOUNDARY[3]))
 
-    def get_game_player_gravity_acceleration(self):
+    def get_game_gravity_acceleration(self):
         return Const.GRAVITY_ACCELERATION / Const.FPS
-
-    def get_game_item_gravity_acceleration(self):
-        return Const.GRAVITY_ACCELERATION_FOR_ITEM / Const.FPS
 
     # get self information
     def get_self_id(self):
