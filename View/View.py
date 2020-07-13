@@ -30,6 +30,7 @@ class GraphicalView:
         self.is_initialized = False
         self.screen = None
         self.stop_background = None
+        self.cutin_screen = None
         self.clock = None
         self.last_update = 0
         self.current_stop_index = None
@@ -42,6 +43,7 @@ class GraphicalView:
         pg.font.init()
         pg.display.set_caption(Const.WINDOW_CAPTION)
         self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
+        self.cutin_screen = pg.Surface(Const.WINDOW_SIZE)
         self.stop_background = pg.Surface(Const.WINDOW_SIZE)
         self.clock = pg.time.Clock()
         self.is_initialized = True
@@ -108,12 +110,9 @@ class GraphicalView:
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
         elif isinstance(event, EventCutInStart):
-            self.render_play(update=False)
-
-            if event.item_id == Const.ZAP_ZAP_ZAP:
-                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id))
-            elif event.item_id == Const.BIG_BLACK_HOLE:
-                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id))
+            self.render_play(self.cutin_screen)
+            if event.item_id == Const.BIG_BLACK_HOLE:
+                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id, self.model.players))
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
@@ -180,15 +179,17 @@ class GraphicalView:
 
         pg.display.flip()
 
-    def render_cutin(self):
-        self.screen.blit(self.screen, (0, 0))
-
+    def render_cutin(self, target=None, update=True):
+        if target is None:
+            target = self.screen
+        # self.render_play()
+        target.blit(self.cutin_screen, (0, 0))
         if not self.cutin_list:
             self.ev_manager.post(EventCutInEnd())
             return
 
         if self.cutin_list[0].expired: self.cutin_list.pop(0)
-        else:                          self.cutin_list[0].draw(self.screen, True)
+        else:                          self.cutin_list[0].draw(target, True)
         
         pg.display.flip()
 

@@ -47,11 +47,12 @@ class Cutin_board(Cutin_base):
     Base class for all cut-in with a board
     '''
     # TODO: Image of board
-    board_image = pg.Surface(Const.CUTIN_BOARD_SIZE, pg.SRCALPHA)
-    board_image.fill((192, 192, 192))
+    images = {
+        'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
+    }    
 
     # TODO(?): Image of player
-    players = tuple(
+    players_image = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),
             0.15
@@ -61,14 +62,16 @@ class Cutin_board(Cutin_base):
 
     @classmethod
     def init_convert(cls):
-        cls.players = tuple( _player.convert_alpha() for _player in cls.players)
+        cls.players_image = tuple( _player.convert_alpha() for _player in cls.players_image)
+        cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
 
     def __init__(self, player_id, expire_time=Const.FPS):
         self.player_id = player_id
         self._timer = 0
         self.expire_time = expire_time
         self.expired = False
-        self.board = pg.Surface(Const.CUTIN_BOARD_SIZE, pg.SRCALPHA)
+        self.board_height = self.images['board'].get_height()
+        self.board_width = self.images['board'].get_width()
         self.board_speed = Const.CUTIN_BOARD_INITIAL_SPEED
         self.board_position = list(Const.CUTIN_BOARD_INITIAL_POSITION)
         self.board_up = False
@@ -79,18 +82,16 @@ class Cutin_board(Cutin_base):
         self.update_board_position()
         if self._timer == self.expire_time:
             self.board_up = True
-        if self.board_position[1] < -Const.CUTIN_BOARD_SIZE[1]:
+        if self.board_position[1] < -self.board_height:
             self.expired = True
     
     def draw(self, screen, update=True):
         # Draw board with image of player
+        self.board = self.images['board'].copy()
+
         self.board.blit(
-            self.board_image,
-            (0, 0)
-        )
-        self.board.blit(
-            self.players[self.player_id],
-            self.players[self.player_id].get_rect(center=(Const.CUTIN_PLAYER_POSITION))
+            self.players_image[self.player_id],
+            self.players_image[self.player_id].get_rect(center=(self.board_width / 2, self.board_height / 2))
         )
         screen.blit(
             self.board,
@@ -106,30 +107,32 @@ class Cutin_board(Cutin_base):
         if not self.board_up:
             self.board_position[1] += self.board_speed / Const.FPS
             self.board_speed += Const.CUTIN_GRAVITY / Const.FPS
-            distance = Const.CUTIN_BOARD_FINAL_POSITION[1] - self.board_position[1]
+            distance = self.board_height / 2 - self.board_position[1]
             if distance < 0:
                 self.board_speed *= -Const.ATTENUATION_COEFFICIENT
                 self.board_position[1] += 2 * distance
             if abs(self.board_speed) < Const.CUTIN_SPEED_MINIMUM:
                 self.board_speed = 0
-                self.board_position[1] = Const.CUTIN_BOARD_FINAL_POSITION[1]
+                self.board_position[1] = self.board_height / 2
         # Board up
         else:
             self.board_position[1] += 2 * self.board_speed / Const.FPS
             self.board_speed -= Const.CUTIN_GRAVITY / Const.FPS
 
 
-class Cutin_text(Cutin_board):
+class Cutin_raster(Cutin_board):
     '''
     Base class of all cut-ins that need to show text on board
     '''
     skill_name = 'Skill Name'
-    def __init__(self, player_id):
+    def __init__(self, player_id, players):
         # Add type_time to random type speed of typewriter
         super().__init__(player_id)
+        self.rank = self.ranking(players)
         self.type_time = np.zeros(len(self.skill_name), dtype=np.int8)
         self.type_time[:] = np.random.randint(5, 20, size=len(self.skill_name))
-        self.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
+        self.fontLarge = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 54)
+        self.fontSmall = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 6)
         self.stay_time = Const.CUTIN_STAY_TIME # The time cut-in would stay after every thing finish
 
     def update(self):
@@ -140,24 +143,37 @@ class Cutin_text(Cutin_board):
             self.stay_time -= 1
         if self.stay_time == 0:
             self.board_up = True
-        if self.board_position[1] < -Const.CUTIN_BOARD_SIZE[1]:
+        if self.board_position[1] < -self.board_height:
             self.expired = True
 
     def draw(self, screen, update=True):
         # Draw board with name of skill and player
-        self.board.fill((19, 19, 19)) # For Test
+        #self.board.blit(
+        #    self.board_image,
+        #    (0, 0)
+        #)
         
         # Draw player on board
+        self.board = self.images['board'].copy()
         self.board.blit(
-            self.players[self.player_id],
-            self.players[self.player_id].get_rect(center=(Const.CUTIN_PLAYER_POSITION))
+            self.players_image[self.player_id],
+            self.players_image[self.player_id].get_rect(center=(5 * self.board_width / 7, 5 * self.board_height / 6))
         )
 
+        # Update text to show
+        text_type = self.text()
         # Draw skill's name on board
-        text_surface = self.font.render(self.text(), 1, pg.Color('white'))
+        text_surface = self.fontLarge.render(text_type, 1, pg.Color('white'))
         self.board.blit(
             text_surface,
-            Const.CUTIN_TEXT_POSITION
+            (self.board_width / 11, 3 * self.board_height / 7)
+        )
+
+        text_on_laptop = self.fontSmall.render(text_type, 1, pg.Color('white'))
+        text_on_laptop = pg.transform.rotate(text_on_laptop, 32)
+        self.board.blit(
+            text_on_laptop,
+            text_on_laptop.get_rect(bottomleft=(256, 394))
         )
 
         # Draw board to screen
@@ -181,9 +197,16 @@ class Cutin_text(Cutin_board):
         if self.type_time[-1] != 0 or (self._timer // Const.CUTIN_CURSOR_PERIOD) % 2 != 0:
             word += '_'
         return word
+
+    def ranking(self, players):
+        rank = 1
+        for player in self.players:
+            if player.player_id != self.player_id and player.score > self.players[self.player_id].score:
+                rank += 1
+        return rank
         
 
-class Cutin_big_black_hole(Cutin_text):
+class Cutin_big_black_hole(Cutin_raster):
     # Cut-in of big black hole
     skill_name = 'Black Hole'
 
