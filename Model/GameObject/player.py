@@ -301,10 +301,10 @@ class Player:
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
             for angle, speed in zip(Const.BANANA_PEEL_DROP_ANGLE, Const.BANANA_PEEL_DROP_SPEED):
-                if self.direction.x > 0:
-                    direction = -self.direction.rotate(angle)
+                if self.direction.x < 0:
+                    direction = self.direction.rotate(angle)
                 else:
-                    direction = -self.direction.rotate(-angle)
+                    direction = self.direction.rotate(-angle)
                 pos = self.position + direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02
                 entities.append(BananaPeel(self.player_id, pos, direction * speed))
 
