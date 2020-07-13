@@ -48,14 +48,10 @@ PLATFORM_INIT_POSITION = [
         [pg.Vector2(732 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(1032 + X_OFFSET, 450 + Y_OFFSET)]
     ],
     [ # stage 2
-        [pg.Vector2(0 + X_OFFSET, 100 + Y_OFFSET), pg.Vector2(180 + X_OFFSET, 110 + Y_OFFSET)],
-        [pg.Vector2(0 + X_OFFSET, 250 + Y_OFFSET), pg.Vector2(210 + X_OFFSET, 260 + Y_OFFSET)],
-        [pg.Vector2(0 + X_OFFSET, 400 + Y_OFFSET), pg.Vector2(300 + X_OFFSET, 410 + Y_OFFSET)],
-        [pg.Vector2(0 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(420 + X_OFFSET, 580 + Y_OFFSET)],
-        [pg.Vector2(952 + X_OFFSET, 100 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 110 + Y_OFFSET)],
-        [pg.Vector2(922 + X_OFFSET, 250 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 260 + Y_OFFSET)],
-        [pg.Vector2(832 + X_OFFSET, 400 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 410 + Y_OFFSET)],
-        [pg.Vector2(712 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 580 + Y_OFFSET)]
+        [pg.Vector2(150 + X_OFFSET, 270 + Y_OFFSET), pg.Vector2(491 + X_OFFSET, 280 + Y_OFFSET)],
+        [pg.Vector2(614 + X_OFFSET, 370 + Y_OFFSET), pg.Vector2(955 + X_OFFSET, 380 + Y_OFFSET)],
+        [pg.Vector2(150 + X_OFFSET, 470 + Y_OFFSET), pg.Vector2(491 + X_OFFSET, 480 + Y_OFFSET)],
+        [pg.Vector2(641 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(955 + X_OFFSET, 580 + Y_OFFSET)],
     ],
     [ # stage 3
         [pg.Vector2(0 + X_OFFSET, 532 + Y_OFFSET), pg.Vector2(230 + X_OFFSET, 542 + Y_OFFSET)],
@@ -75,10 +71,10 @@ PLAYER_INIT_POSITION = [
         pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 2
-        pg.Vector2(100 + X_OFFSET, 75 + Y_OFFSET),
-        pg.Vector2(100 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(1042 + X_OFFSET, 75 + Y_OFFSET),
-        pg.Vector2(1042 + X_OFFSET, 545 + Y_OFFSET)
+        pg.Vector2(320 + X_OFFSET, 240 + Y_OFFSET),
+        pg.Vector2(785 + X_OFFSET, 340 + Y_OFFSET),
+        pg.Vector2(320 + X_OFFSET, 440 + Y_OFFSET),
+        pg.Vector2(785 + X_OFFSET, 540 + Y_OFFSET)
     ],
     [ # stage 3
         pg.Vector2(100 + X_OFFSET, 507 + Y_OFFSET),
@@ -95,10 +91,10 @@ PLAYER_RESPAWN_POSITION = [
         pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 2
-        pg.Vector2(100 + X_OFFSET, 75 + Y_OFFSET),
-        pg.Vector2(100 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(1042 + X_OFFSET, 75 + Y_OFFSET),
-        pg.Vector2(1042 + X_OFFSET, 545 + Y_OFFSET)
+        pg.Vector2(320 + X_OFFSET, 240 + Y_OFFSET),
+        pg.Vector2(785 + X_OFFSET, 340 + Y_OFFSET),
+        pg.Vector2(320 + X_OFFSET, 440 + Y_OFFSET),
+        pg.Vector2(785 + X_OFFSET, 540 + Y_OFFSET)
     ],
     [ # stage 3
         pg.Vector2(100 + X_OFFSET, 507 + Y_OFFSET),
@@ -169,8 +165,8 @@ ITEM_ENABLED = {
 ITEM_PROBABILITY = {
     BANANA_PISTOL: 0.2,
     BIG_BLACK_HOLE: 0.05,
-    CANCER_BOMB: 0.2,
-    ZAP_ZAP_ZAP: 0.05,
+    CANCER_BOMB: 0.05,
+    ZAP_ZAP_ZAP: 0.2,
     BANANA_PEEL: 0.2,
     RAINBOW_GROUNDER: 0.2,
     INVINCIBLE_BATTERY: 0.1,
@@ -225,7 +221,7 @@ DEATH_RAIN_VELOCITY = pg.Vector2(0, 100)
 # view
 WINDOW_CAPTION = 'Challenge 2020'
 WINDOW_SIZE = (1200, 800)
-ARENA_SIZE = (800, 800)
+ARENA_SIZE = (1200, 800)
 BACKGROUND_COLOR = pg.Color(0x23, 0x23, 0x23)
 PLAYER_COLOR = [pg.Color('green'), pg.Color('magenta'), pg.Color('orange'), pg.Color('red')]
 PLAYER_PIC = ['player1_0.png', 'player1_1.png', 'player1_2.png', 'player1_3.png', 'player1_4.png',
@@ -241,6 +237,7 @@ ATTACK_ERROR = 2.8
 ITEM_COLOR = [pg.Color('white'), pg.Color('yellow'), pg.Color('deepskyblue'), pg.Color('gray'), pg.Color('mediumpurple'), pg.Color('darkgreen'), pg.Color('tan'), pg.Color('olivedrab')]
 FLOATING_RADIUS = 4
 FLOATING_THETA = 0.06
+VOLTAGE_OUT = (8, 2 * PLAYER_RADIUS)
 
 # controller
 PLAYER_MOVE_KEYS = {
