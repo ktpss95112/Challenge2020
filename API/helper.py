@@ -94,7 +94,7 @@ class Helper(object):
         return self.model.players[self.player_id].jump_quota
 
     def get_self_jump_to_the_highest_time(self):
-        return self.model.players[self.player_id].velocity.y / Const.GRAVITY_ACCELERATION
+        return - self.model.players[self.player_id].velocity.y / Const.GRAVITY_ACCELERATION
 
     def get_self_can_attack_time(self):
         return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
