@@ -19,6 +19,7 @@ class Player:
         self.keep_item_id = Const.NO_ITEM
         self.invincible_time = 0
         self.uncontrollable_time = 0
+        self.attack_power = Const.ATTACK_POWER
         self.attack_cool_down_time = 0
         self.attack_cool_down = Const.ATTACK_COOL_DOWN_TIME
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
@@ -54,7 +55,7 @@ class Player:
     def enhance(self, enhancement):
         self.attack_radius *= (1 + enhancement[Const.ATTACK_RADIUS_ENHANCEMENT_INDEX] * Const.ATTACK_RADIUS_ENHANCEMENT)
         self.normal_speed *= (1 + enhancement[Const.SPEED_ENHANCEMENT_INDEX] * Const.SPEED_ENHANCEMENT)
-        self.jump_speed *= (1 + enhancement[Const.JUMP_ENHANCEMENT_INDEX] * Const.JUMP_ENHANCEMENT)
+        self.attack_power *= (1 + enhancement[Const.ATTACK_POWER_ENHANCEMENT_INDEX] * Const.ATTACK_POWER_ENHANCEMENT)
         self.attack_cool_down *= (1 - enhancement[Const.ATTACK_COOL_DOWN_ENHANCEMENT_INDEX] * Const.ATTACK_COOL_DOWN_ENHANCEMENT)
 
     def set_position(self, position: pg.Vector2):
@@ -208,10 +209,10 @@ class Player:
             # attack if they are close enough
             if (self.player_radius == Const.INVINCIBLE_BATTERY_PLAYER_RADIUS and magnitude < Const.INVINCIBLE_BATTERY_ATTACK_RADIUS) or magnitude < self.attack_radius:
                 unit = (player.position - self.position).normalize()
-                player.be_attacked(unit, magnitude, self.player_id, time)
+                player.be_attacked(unit, magnitude, self.attack_power, self.player_id, time)
 
-    def be_attacked(self, unit, magnitude, attacker_id, time):
-        self.velocity += Const.BE_ATTACKED_ACCELERATION * self.voltage_acceleration() * unit / magnitude / Const.FPS
+    def be_attacked(self, unit, magnitude, attack_power, attacker_id, time):
+        self.velocity += Const.BE_ATTACKED_ACCELERATION * self.voltage_acceleration() * attack_power * unit / magnitude / Const.FPS
         self.voltage += (Const.ATTACK_VOLTAGE_INCREASE / magnitude)
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
