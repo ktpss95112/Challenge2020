@@ -31,9 +31,12 @@ class Player:
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
         # others
         self.last_being_attacked_by = -1
+        self.last_being_collided_with = -1
         self.last_being_attacked_time_elapsed = 0
+        self.last_being_collided_time_elapsed = 0
+
         self.KO_amount = 0
-        self.be_KO_amount = 0
+        self.die_amount = 0
         self.score = 0
         self.rank = 4
 
@@ -120,13 +123,9 @@ class Player:
                 return item
         return None
 
-    def maintain_score_every_tick(self, highest_KO_amount):
+    def maintain_score_every_tick(self):
         # called by model update_players()
-        self.score = self.KO_amount * 30 - self.be_KO_amount * 15
-        if self.be_KO_amount == 0:
-            self.score += 100
-        if self.KO_amount == highest_KO_amount:
-            self.score += 50
+        self.score = self.KO_amount * 300 - self.die_amount * 150
 
     def collision(self, other, platforms: list):
         # Deal with collision with other player
@@ -247,11 +246,11 @@ class Player:
     def die(self, players, time):
         # EventPlayerDied
         self.life -= 1
-        atk_id = self.last_being_attacked_by
-        atk_t = self.last_being_attacked_time_elapsed
-        if atk_id != -1 and atk_t - time < Const.VALID_KO_TIME:
-            self.be_KO_amount += 1
-            players[atk_id].KO_amount += 1
+        self.die_amount += 1
+        if self.last_being_attacked_by != -1 and self.last_being_attacked_time_elapsed - time < Const.VALID_KO_TIME:
+            players[self.last_being_attacked_by].KO_amount += 1
+        elif self.last_being_collided_with != -1 and self.last_being_collided_time_elapsed - time < Const.VALID_KO_TIME:
+            players[self.last_being_collided_with].KO_amount += 1
 
     def respawn(self, position: pg.Vector2):
         # EventPlayerRespawn
@@ -268,7 +267,9 @@ class Player:
         self.velocity = pg.Vector2(0, 0)
         # others
         self.last_being_attacked_by = -1
+        self.last_being_collided_with = -1
         self.last_being_attacked_time_elapsed = 0
+        self.last_being_collided_time_elapsed = 0
 
     def pick_item(self, item_id):
         self.keep_item_id = item_id
