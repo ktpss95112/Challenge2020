@@ -234,6 +234,10 @@ class EventDeathRainTrigger(BaseEvent):
     # Call when the death rain box be touched
     name = 'Death rain trigger event (model => view)'
 
+    def __init__(self, position, time):
+        self.position = position
+        self.time = time
+
 
 class EventDeathRainStart(BaseEvent):
     # Call when going to rain
