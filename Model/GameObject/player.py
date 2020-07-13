@@ -23,7 +23,7 @@ class Player:
         self.attack_cool_down = Const.ATTACK_COOL_DOWN_TIME
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         # move
-        self.direction = pg.Vector2(1,0)
+        self.direction = pg.Vector2(1, 0)
         self.position = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
         self.normal_speed = Const.PLAYER_INIT_SPEED # speed gain when players try to move left and right
