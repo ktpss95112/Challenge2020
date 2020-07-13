@@ -8,7 +8,7 @@ import math
 
 from Model.Model import GameEngine as model
 import Model.GameObject.item as model_item
-from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel
+from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole
 from View.utils import scaled_surface, load_image, PureText, MutableText
 import Const
 
@@ -91,7 +91,6 @@ class View_endgame(__Object_base):
 
     @classmethod
     def init_convert(cls):
-        # TODO: use View.utils.PureText to render static words
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 28)
         cls.score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 22)
         cls.name_text = []
@@ -117,7 +116,6 @@ class View_endgame(__Object_base):
                 medal_rect = medal_surface.get_rect(center=(675 + (player_id - 1.5) * 200, 340))
                 screen.blit(medal_surface, medal_rect)
 
-
 class View_players(__Object_base):
     images = tuple(
         scaled_surface(
@@ -136,8 +134,6 @@ class View_players(__Object_base):
         # draw players
         img_shining_period = (int)(self.model.timer / 7 ) % 5
         for player in self.model.players:
-            if player.invincible_time > 0:
-                pass
 
             #magnification =
             img_play_state = player.player_id * 5 + img_shining_period + (int)( player.player_radius / Const.PLAYER_RADIUS - 1) * 20
@@ -155,11 +151,6 @@ class View_players(__Object_base):
                 pg.draw.rect(screen, (245, 130, 48), [R_X + 1, R_Y - 2, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
             elif player.voltage >=100 :
                 pg.draw.rect(screen, (230, 25, 75), [R_X + 1, R_Y - 2,  rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
-            # temp voltage monitor
-            # TODO: create a class MutableText() similar to PureText()
-            voltage_surface = self.font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
-            voltage_pos = player.position
-            screen.blit(voltage_surface, voltage_surface.get_rect(center=voltage_pos))
 
 
 class View_entities(__Object_base):
@@ -167,7 +158,8 @@ class View_entities(__Object_base):
         'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber.png')), 0.15),
         'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber_red.png')), 0.15),
         'banana_bullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_pulp.png')), 0.15),
-        'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7)
+        'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7),
+        'black_hole': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'blackhole.png')), 0.3)
     }
 
     @classmethod
@@ -187,6 +179,8 @@ class View_entities(__Object_base):
             elif isinstance(entity, BananaPeel):
                 screen.blit(self.images['banana_peel'], self.images['banana_peel'].get_rect(center=entity.position))
 
+            elif isinstance(entity, BigBlackHole):
+                screen.blit(self.images['black_hole'], self.images['black_hole'].get_rect(center=entity.position))
             else:
                 center = (int(entity.position.x),int(entity.position.y))
                 pg.draw.circle(screen, Const.ITEM_COLOR[2], center, 10)
