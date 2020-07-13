@@ -136,7 +136,7 @@ class View_players(__Object_base):
     images = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),
-            0.075 if _i < 20 else 0.15
+            0.075 if _i < 20 else 0.075 * 1.5
         )
         for _i in range(0, 40)
     )
@@ -152,21 +152,21 @@ class View_players(__Object_base):
         for player in self.model.players:
 
             #magnification =
-            img_play_state = player.player_id * 5 + img_shining_period + (int)( player.player_radius / Const.PLAYER_RADIUS - 1) * 20
+            img_play_state = player.player_id * 5 + img_shining_period + (int)( 2*(player.player_radius / Const.PLAYER_RADIUS) - 2 ) * 20
             screen.blit(self.images[img_play_state], self.images[img_play_state].get_rect(center=player.position))
             rect_height = min((2 * player.player_radius - 2),(2 * player.player_radius - 2) / 120 * player.voltage)
 
             R_X = player.position.x - player.player_radius
             R_Y = player.position.y - player.player_radius
-            pg.draw.rect(screen, (255, 255, 255), [R_X, R_Y - 3, 2 * player.player_radius, Const.VOLTAGE_OUT[0]], 1)
+            pg.draw.rect(screen, (255, 255, 255), [R_X, R_Y - 10, 2 * player.player_radius, Const.VOLTAGE_OUT[0]], 1)
             if player.voltage > 0 and player.voltage < 50:
-                pg.draw.rect(screen, (60, 180, 75), [R_X + 1, R_Y - 2, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
+                pg.draw.rect(screen, (60, 180, 75), [R_X + 1, R_Y - 9, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
             elif player.voltage >=50 and player.voltage < 80:
-                pg.draw.rect(screen, (255, 255, 25), [R_X + 1, R_Y - 2, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
+                pg.draw.rect(screen, (255, 255, 25), [R_X + 1, R_Y - 9, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
             elif player.voltage >=80 and player.voltage < 100:
-                pg.draw.rect(screen, (245, 130, 48), [R_X + 1, R_Y - 2, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
+                pg.draw.rect(screen, (245, 130, 48), [R_X + 1, R_Y - 9, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
             elif player.voltage >=100 :
-                pg.draw.rect(screen, (230, 25, 75), [R_X + 1, R_Y - 2,  rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
+                pg.draw.rect(screen, (230, 25, 75), [R_X + 1, R_Y - 9,  rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
 
 
 class View_entities(__Object_base):
