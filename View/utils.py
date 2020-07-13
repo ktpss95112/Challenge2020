@@ -16,6 +16,22 @@ class PureText:
         screen.blit(self.text_surface, self.pos_rect)
 
 
+class MutableText:
+    def __init__(self, size, font, color, **pos):
+        '''
+        pos: refer to the attributes of pg.Rect
+        '''
+        self.color = color
+        self.size = size
+        self.pos = pos
+        self.font = font
+
+    def draw(self, text, screen):
+        self.text_surface = self.font.render(text, True, self.color)
+        self.pos_rect = self.text_surface.get_rect(**self.pos)
+        screen.blit(self.text_surface, self.pos_rect)
+
+
 __image_cache = dict()
 def load_image(path):
     global __image_cache
