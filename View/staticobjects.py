@@ -6,7 +6,7 @@ import pygame as pg
 import os.path
 import math
 
-
+from Model.Model import GameEngine as model
 import Model.GameObject.item as model_item
 from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole, DeathRain
 from View.utils import scaled_surface, load_image, PureText, MutableText

@@ -30,6 +30,8 @@ class TeamAI(BaseAI):
         self.state_tree_is_init = False
 
     def decide(self):
+        if self.helper.get_self_life() == 0:
+            return AI_DIR_STAY
         if not self.state_tree_is_init: # first initialize
             self.state_tree_is_init = True
             self.state_tree.initialize()
@@ -58,7 +60,7 @@ class StateTree(object):
     def initialize(self):
         # generate root using env
         self.env.initialize()
-        self.states = [SelfState(*self.env.self_info(), self.env)]
+        self.states = [SelfState(*self.env.self_info(), False, 0, 0, self.env)]
 
     def predict(self):
         # predict next state
@@ -112,10 +114,20 @@ class Environment(object):
         self.self_respawn_position = Const.PLAYER_RESPAWN_POSITION[self.helper.get_game_stage()][self.helper.get_self_id()]
 
         self.platforms = self.helper.get_platform_position()
-        self.items = self.helper.get_all_item_position()
+        self.items = {
+            1: self.helper.get_all_banana_pistol_position(),
+            2: self.helper.get_all_big_black_hole_position(),
+            3: self.helper.get_all_cancer_bomb_position(),
+            4: self.helper.get_all_zap_zap_zap_position(),
+            5: self.helper.get_all_banana_peel_position(),
+            6: self.helper.get_all_rainbow_grounder_position(),
+            7: self.helper.get_all_invincible_battery_position(),
+        }
         self.entities = self.helper.get_all_entity_position()
         self.other_player_pos = list(map(pg.Vector2, self.helper.get_all_position()))
         self.other_player_pos.pop(self.helper.get_self_id())
+        self.other_player_can_attack = [t > 0 for t in self.helper.get_all_can_attack_time()]
+        self.other_player_can_attack.pop(self.helper.get_self_id())
 
         self.arena_boundary = self.helper.get_game_arena_boundary()
         self.life_boundary = self.helper.get_game_life_boundary()
@@ -130,6 +142,7 @@ class Environment(object):
 class SelfState(object):
     def __init__(self, life, pos, vel, voltage, item_id,\
                 jump_quota, attack_cd, invincible_time, uncontrollable_time,\
+                used_item, attack_player_num, be_attacked_num,\
                 environment):
         self.life = life
         self.pos = pg.Vector2(pos)
@@ -140,6 +153,9 @@ class SelfState(object):
         self.attack_cd = attack_cd
         self.invincible_time = invincible_time
         self.uncontrollable_time = uncontrollable_time
+        self.used_item = used_item
+        self.attack_player_num = attack_player_num
+        self.be_attacked_num = be_attacked_num
 
         self.env = environment
 
@@ -153,6 +169,9 @@ class SelfState(object):
         next_attack_cd = self.attack_cd
         next_invincible_time = self.invincible_time
         next_uncontrollable_time = self.uncontrollable_time
+        next_used_item = self.used_item
+        next_attack_player_num = self.attack_player_num
+        next_be_attacked_num = self.be_attacked_num
         
         if step == AI_DIR_LEFT:
             if next_uncontrollable_time > 0:
@@ -184,6 +203,9 @@ class SelfState(object):
         elif step == AI_DIR_ATTACK:
             if self.attack_cd > 0:
                 return None
+            for pos in self.env.other_player_pos:
+                if self.env.helper.get_distance(next_pos, pos) < self.env.self_attack_radius / 2:
+                    next_attack_player_num += 1
             next_attack_cd = 90 # frame
 
         elif step == AI_DIR_USE_ITEM:
@@ -203,10 +225,18 @@ class SelfState(object):
                 next_voltage -= 10
             elif next_item_id == 7:
                 next_invincible_time += 300
+            next_used_item = True
             next_item_id = 0
 
         elif step == AI_DIR_STAY:
             pass
+
+        # detect be attacked
+        '''
+        for pos, can_attack in zip(self.env.other_player_pos, self.env.other_player_can_attack):
+            if can_attack and self.env.helper.get_distance(next_pos, pos) < self.env.self_attack_radius / 2:
+                next_be_attacked_num += 1
+        '''
 
         # update pos and vel (simple ver.)
         next_vel.y -= self.env.g
@@ -249,6 +279,7 @@ class SelfState(object):
 
         return SelfState(next_life, next_pos, next_vel, next_voltage, next_item_id,\
                 next_jump_quota, next_attack_cd, next_invincible_time, next_uncontrollable_time,\
+                next_used_item, next_attack_player_num, next_be_attacked_num,\
                 self.env)
 
 
@@ -269,5 +300,17 @@ def score(selfstate, env):
         width = platform[1][0] - platform[0][0]
         dist = env.helper.get_distance(selfstate.pos, (pg.Vector2(platform[0]) + pg.Vector2(platform[1])) / 2)
         score += width / dist
+
+    for item_id, pos_list in env.items.items():
+        for pos in pos_list:
+            dist = env.helper.get_distance(selfstate.pos, pg.Vector2(pos))
+            score += 500 / dist
+    for pos in env.entities:
+        dist = env.helper.get_distance(selfstate.pos, pg.Vector2(pos))
+        score -= 200 / dist
     
+    if selfstate.used_item:
+        score += 50
+
+    score += 10 * selfstate.attack_player_num
     return score

@@ -15,13 +15,14 @@ PLAYER_INIT_VELOCITY = pg.Vector2(0, 0)
 PLAYER_INIT_SPEED = 300
 PLAYER_FINAL_SPEED = 600
 PLAYER_SPEED_PARAMETER = (PLAYER_INIT_SPEED - PLAYER_FINAL_SPEED) / GAME_LENGTH ** 2
-PLAYER_JUMP_SPEED = 900
+PLAYER_JUMP_SPEED = 1500
 DIRECTION_TO_VEC2 = {
     'left': pg.Vector2(-1, 0),
     'right': pg.Vector2(1, 0),
 }
 PLAYER_JUMP_QUOTA = 3
 
+ATTACK_POWER = 1
 ATTACK_RADIUS = 12 * PLAYER_RADIUS
 ATTACK_COOL_DOWN_TIME = 1.5 * FPS
 ATTACK_VOLTAGE_INCREASE = 1000
@@ -48,14 +49,10 @@ PLATFORM_INIT_POSITION = [
         [pg.Vector2(732 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(1032 + X_OFFSET, 450 + Y_OFFSET)]
     ],
     [ # stage 2
-        [pg.Vector2(0 + X_OFFSET, 100 + Y_OFFSET), pg.Vector2(180 + X_OFFSET, 110 + Y_OFFSET)],
-        [pg.Vector2(0 + X_OFFSET, 250 + Y_OFFSET), pg.Vector2(210 + X_OFFSET, 260 + Y_OFFSET)],
-        [pg.Vector2(0 + X_OFFSET, 400 + Y_OFFSET), pg.Vector2(300 + X_OFFSET, 410 + Y_OFFSET)],
-        [pg.Vector2(0 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(420 + X_OFFSET, 580 + Y_OFFSET)],
-        [pg.Vector2(952 + X_OFFSET, 100 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 110 + Y_OFFSET)],
-        [pg.Vector2(922 + X_OFFSET, 250 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 260 + Y_OFFSET)],
-        [pg.Vector2(832 + X_OFFSET, 400 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 410 + Y_OFFSET)],
-        [pg.Vector2(712 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(1132 + X_OFFSET, 580 + Y_OFFSET)]
+        [pg.Vector2(150 + X_OFFSET, 270 + Y_OFFSET), pg.Vector2(491 + X_OFFSET, 280 + Y_OFFSET)],
+        [pg.Vector2(614 + X_OFFSET, 370 + Y_OFFSET), pg.Vector2(955 + X_OFFSET, 380 + Y_OFFSET)],
+        [pg.Vector2(150 + X_OFFSET, 470 + Y_OFFSET), pg.Vector2(491 + X_OFFSET, 480 + Y_OFFSET)],
+        [pg.Vector2(641 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(955 + X_OFFSET, 580 + Y_OFFSET)],
     ],
     [ # stage 3
         [pg.Vector2(0 + X_OFFSET, 532 + Y_OFFSET), pg.Vector2(230 + X_OFFSET, 542 + Y_OFFSET)],
@@ -75,10 +72,10 @@ PLAYER_INIT_POSITION = [
         pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 2
-        pg.Vector2(100 + X_OFFSET, 75 + Y_OFFSET),
-        pg.Vector2(100 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(1042 + X_OFFSET, 75 + Y_OFFSET),
-        pg.Vector2(1042 + X_OFFSET, 545 + Y_OFFSET)
+        pg.Vector2(320 + X_OFFSET, 240 + Y_OFFSET),
+        pg.Vector2(320 + X_OFFSET, 440 + Y_OFFSET),
+        pg.Vector2(785 + X_OFFSET, 340 + Y_OFFSET),
+        pg.Vector2(785 + X_OFFSET, 540 + Y_OFFSET)
     ],
     [ # stage 3
         pg.Vector2(100 + X_OFFSET, 507 + Y_OFFSET),
@@ -89,22 +86,22 @@ PLAYER_INIT_POSITION = [
 ]
 PLAYER_RESPAWN_POSITION = [
     [ # stage 1
-        pg.Vector2(150 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(420 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(690 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
+        pg.Vector2(250 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(479 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(652 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(882 + X_OFFSET, 0 + Y_OFFSET)
     ],
     [ # stage 2
-        pg.Vector2(100 + X_OFFSET, 75 + Y_OFFSET),
-        pg.Vector2(100 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(1042 + X_OFFSET, 75 + Y_OFFSET),
-        pg.Vector2(1042 + X_OFFSET, 545 + Y_OFFSET)
+        pg.Vector2(290 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(350 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(768 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(828 + X_OFFSET, 0 + Y_OFFSET)
     ],
     [ # stage 3
-        pg.Vector2(100 + X_OFFSET, 507 + Y_OFFSET),
-        pg.Vector2(405 + X_OFFSET, 577 + Y_OFFSET),
-        pg.Vector2(732 + X_OFFSET, 577 + Y_OFFSET),
-        pg.Vector2(1032 + X_OFFSET, 507 + Y_OFFSET)
+        pg.Vector2(100 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(471 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(660 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(1012 + X_OFFSET, 0 + Y_OFFSET)
     ]
 ]
 
@@ -140,8 +137,8 @@ ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP = 50
 ZAP_ZAP_ZAP_VERTICAL_ACCELERATION = 800 * FPS
 ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION = 1000 * FPS
 RAINBOW_GROUNDER_VOLTAGE_DOWN = 10
-INVINCIBLE_BATTERY_PLAYER_RADIUS = 2 * PLAYER_RADIUS
-INVINCIBLE_BATTERY_ATTACK_RADIUS = 2 * ATTACK_RADIUS
+INVINCIBLE_BATTERY_PLAYER_RADIUS = 1.5 * PLAYER_RADIUS
+INVINCIBLE_BATTERY_ATTACK_RADIUS = 1.5 * ATTACK_RADIUS
 INVINCIBLE_BATTERY_TIME = 5 * FPS
 RESPAWN_INVINCIBLE_TIME = 2 * FPS
 
@@ -187,7 +184,7 @@ BANANA_PEEL_TIME = 15 * FPS
 BANANA_PEEL_RADIUS = 8
 BANANA_PEEL_AFFECT_TIME = 0.5 * FPS
 BANANA_PEEL_DROP_ANGLE = [0, 10, 20]
-BANANA_PEEL_DROP_SPEED = [15 * FPS, 20 * FPS, 25 * FPS]
+BANANA_PEEL_DROP_SPEED = [20 * FPS, 30 * FPS, 35 * FPS]
 
 BOMB_TIME = 3 * FPS
 BOMB_EXPLODE_RADIUS = 8 * PLAYER_RADIUS
@@ -289,10 +286,10 @@ FONT_PATH = os.path.join('View', 'fonts')
 # Enhancement
 ATTACK_RADIUS_ENHANCEMENT_INDEX = 0
 SPEED_ENHANCEMENT_INDEX = 1
-JUMP_ENHANCEMENT_INDEX = 2
+ATTACK_POWER_ENHANCEMENT_INDEX = 2
 ATTACK_COOL_DOWN_ENHANCEMENT_INDEX = 3
 
 ATTACK_RADIUS_ENHANCEMENT = 0.01
 SPEED_ENHANCEMENT = 0.01
-JUMP_ENHANCEMENT = 0.01
+ATTACK_POWER_ENHANCEMENT = 0.01
 ATTACK_COOL_DOWN_ENHANCEMENT = 0.01

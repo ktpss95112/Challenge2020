@@ -21,7 +21,7 @@ class Helper(object):
     def __init__(self, model, index):
         self.model = model
         self.player_id = index
-        self.jump_delay = 0
+        
 
     # get game information
     def get_game_left_time(self):
@@ -103,7 +103,7 @@ class Helper(object):
         return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
 
     def get_self_can_attack(self):
-        return self.model.players[self.player_id].can_attack
+        return self.model.players[self.player_id].can_attack()
 
     def get_self_will_drop(self):
         self_position = self.get_self_position()
@@ -167,7 +167,7 @@ class Helper(object):
         return [player.attack_cool_down_time / Const.FPS for player in self.model.players]
     
     def get_all_can_attack(self):
-        return [player.can_attack for player in self.model.players]
+        return [player.can_attack() for player in self.model.players]
     
     # get other players information
     def get_other_position(self, index):
@@ -222,7 +222,7 @@ class Helper(object):
         return self.model.players[index].attack_cool_down_time / Const.FPS
 
     def get_other_can_attack(self, index):
-        return self.model.players[index].can_attack
+        return self.model.players[index].can_attack()
 
     def get_other_will_drop(self, index):
         other_position = self.get_other_position(index)

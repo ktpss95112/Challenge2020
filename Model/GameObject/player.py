@@ -19,6 +19,7 @@ class Player:
         self.keep_item_id = Const.NO_ITEM
         self.invincible_time = 0
         self.uncontrollable_time = 0
+        self.attack_power = Const.ATTACK_POWER
         self.attack_cool_down_time = 0
         self.attack_cool_down = Const.ATTACK_COOL_DOWN_TIME
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
@@ -30,9 +31,18 @@ class Player:
         self.jump_speed =  Const.PLAYER_JUMP_SPEED # speed gain when players try to jump
         # others
         self.last_being_attacked_by = -1
+        self.last_being_collided_with = -1
         self.last_being_attacked_time_elapsed = 0
+        self.last_being_collided_time_elapsed = 0
+
         self.KO_amount = 0
-        self.be_KO_amount = 0
+        self.die_amount = 0
+
+        self.KO_score = 0 # compute every tick
+        self.die_score = 0 # compute every tick
+        self.just_too_good_score = 0 # compute when timesup
+        self.just_a_nerd_score = 0 # compute when timesup
+        
         self.score = 0
         self.rank = 4
 
@@ -54,7 +64,7 @@ class Player:
     def enhance(self, enhancement):
         self.attack_radius *= (1 + enhancement[Const.ATTACK_RADIUS_ENHANCEMENT_INDEX] * Const.ATTACK_RADIUS_ENHANCEMENT)
         self.normal_speed *= (1 + enhancement[Const.SPEED_ENHANCEMENT_INDEX] * Const.SPEED_ENHANCEMENT)
-        self.jump_speed *= (1 + enhancement[Const.JUMP_ENHANCEMENT_INDEX] * Const.JUMP_ENHANCEMENT)
+        self.attack_power *= (1 + enhancement[Const.ATTACK_POWER_ENHANCEMENT_INDEX] * Const.ATTACK_POWER_ENHANCEMENT)
         self.attack_cool_down *= (1 - enhancement[Const.ATTACK_COOL_DOWN_ENHANCEMENT_INDEX] * Const.ATTACK_COOL_DOWN_ENHANCEMENT)
 
     def set_position(self, position: pg.Vector2):
@@ -119,13 +129,11 @@ class Player:
                 return item
         return None
 
-    def maintain_score_every_tick(self, highest_KO_amount):
+    def maintain_score_every_tick(self):
         # called by model update_players()
-        self.score = self.KO_amount * 30 - self.be_KO_amount * 15
-        if self.be_KO_amount == 0:
-            self.score += 100
-        if self.KO_amount == highest_KO_amount:
-            self.score += 50
+        self.KO_score = self.KO_amount * 300
+        self.die_score = -self.die_amount * 150
+        self.score = self.KO_score + self.die_score
 
     def collision(self, other, platforms: list):
         # Deal with collision with other player
@@ -176,9 +184,12 @@ class Player:
     
     def add_horizontal_velocity(self, direction: str):
         # EventPlayerMove
-        if abs(self.velocity.x) <= self.normal_speed:
-            self.velocity.x = self.normal_speed * Const.DIRECTION_TO_VEC2[direction].x
-        else:
+        if self.velocity.dot(Const.DIRECTION_TO_VEC2[direction]) > 0: # same direction
+            if abs(self.velocity.x) <= self.normal_speed:
+                self.velocity.x = self.normal_speed * Const.DIRECTION_TO_VEC2[direction].x
+            else:
+                pass
+        else: # reverse direction
             self.velocity += self.normal_speed * Const.DIRECTION_TO_VEC2[direction]
         if direction == 'left':
             self.direction = pg.Vector2(-1, 0)
@@ -188,10 +199,7 @@ class Player:
     def jump(self):
         # EventPlayerJump
         if self.jump_quota > 0:
-            if self.velocity.y > 0:
-                self.velocity.y = -self.jump_speed
-            else:
-                self.velocity.y -= self.jump_speed
+            self.velocity.y = -self.jump_speed
             self.jump_quota -= 1
 
     def attack(self, players, time):
@@ -205,10 +213,10 @@ class Player:
             # attack if they are close enough
             if (self.player_radius == Const.INVINCIBLE_BATTERY_PLAYER_RADIUS and magnitude < Const.INVINCIBLE_BATTERY_ATTACK_RADIUS) or magnitude < self.attack_radius:
                 unit = (player.position - self.position).normalize()
-                player.be_attacked(unit, magnitude, self.player_id, time)
+                player.be_attacked(unit, magnitude, self.attack_power, self.player_id, time)
 
-    def be_attacked(self, unit, magnitude, attacker_id, time):
-        self.velocity += Const.BE_ATTACKED_ACCELERATION * self.voltage_acceleration() * unit / magnitude / Const.FPS
+    def be_attacked(self, unit, magnitude, attack_power, attacker_id, time):
+        self.velocity += Const.BE_ATTACKED_ACCELERATION * self.voltage_acceleration() * attack_power * unit / magnitude / Const.FPS
         self.voltage += (Const.ATTACK_VOLTAGE_INCREASE / magnitude)
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
@@ -238,16 +246,19 @@ class Player:
         #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def voltage_acceleration(self):
-        return 1 + self.voltage * Const.VOLTAGE_ACCELERATION_COEFFICIENT
+        if self.voltage < 125:
+            return 1 + self.voltage * Const.VOLTAGE_ACCELERATION_COEFFICIENT
+        else:
+            return 10
 
     def die(self, players, time):
         # EventPlayerDied
         self.life -= 1
-        atk_id = self.last_being_attacked_by
-        atk_t = self.last_being_attacked_time_elapsed
-        if atk_id != -1 and atk_t - time < Const.VALID_KO_TIME:
-            self.be_KO_amount += 1
-            players[atk_id].KO_amount += 1
+        self.die_amount += 1
+        if self.last_being_attacked_by != -1 and self.last_being_attacked_time_elapsed - time < Const.VALID_KO_TIME:
+            players[self.last_being_attacked_by].KO_amount += 1
+        elif self.last_being_collided_with != -1 and self.last_being_collided_time_elapsed - time < Const.VALID_KO_TIME:
+            players[self.last_being_collided_with].KO_amount += 1
 
     def respawn(self, position: pg.Vector2):
         # EventPlayerRespawn
@@ -264,7 +275,9 @@ class Player:
         self.velocity = pg.Vector2(0, 0)
         # others
         self.last_being_attacked_by = -1
+        self.last_being_collided_with = -1
         self.last_being_attacked_time_elapsed = 0
+        self.last_being_collided_time_elapsed = 0
 
     def pick_item(self, item_id):
         self.keep_item_id = item_id
@@ -294,10 +307,10 @@ class Player:
                 
         elif self.keep_item_id == Const.BANANA_PEEL:
             for angle, speed in zip(Const.BANANA_PEEL_DROP_ANGLE, Const.BANANA_PEEL_DROP_SPEED):
-                if self.direction.x > 0:
-                    direction = -self.direction.rotate(angle)
+                if self.direction.x < 0:
+                    direction = self.direction.rotate(angle)
                 else:
-                    direction = -self.direction.rotate(-angle)
+                    direction = self.direction.rotate(-angle)
                 pos = self.position + direction * (self.player_radius + Const.BANANA_PEEL_RADIUS) * 1.02
                 entities.append(BananaPeel(self.player_id, pos, direction * speed))
 
