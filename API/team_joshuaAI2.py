@@ -45,7 +45,7 @@ class TeamAI(BaseAI):
             if distance < minimum_distance:
                 minimum_distance = distance
                 minimum_vector = vector
-        return minimum_vector 
+        return minimum_vector
 
     def use_item(self):
         item_id = self.helper.get_self_keep_item_id()
@@ -100,7 +100,7 @@ class TeamAI(BaseAI):
                 return AI_DIR_RIGHT
             elif(direction[0] < 0):
                 return AI_DIR_LEFT
-            else: 
+            else:
                 return AI_DIR_STAY
 
     def judge_direction(self, direction):
@@ -144,12 +144,12 @@ class TeamAI(BaseAI):
         future_pos = (my_pos[0] + my_v[0] * live_time, my_pos[1] + my_v[1] * live_time + 1/2 * g * live_time ** 2)
         if self.helper.get_position_will_drop(future_pos):
             if my_v[0] > 0:
-                if abs(my_v[0] > 300):
+                if abs(my_v[0] > 300) and self.can_jump():
                     return AI_DIR_LEFT_JUMP
                 else:
                     return AI_DIR_LEFT
             else:
-                if abs(my_v[0] > 300):
+                if abs(my_v[0] > 300) and self.can_jump():
                     return AI_DIR_RIGHT_JUMP
                 else:
                     return AI_DIR_RIGHT
@@ -160,7 +160,7 @@ class TeamAI(BaseAI):
         elif future_pos[0] > game_boundary[1][0]:
             return AI_DIR_LEFT
         return -1
-    
+
     def to_attack(self, mode):
         my_pos = self.helper.get_self_position()
         if mode == "nearest":
@@ -193,17 +193,35 @@ class TeamAI(BaseAI):
         return self.where_to_go(self.judge_direction(item_vector))
 
     def run_away(self, mode):
+        direction = (0, 0)
         if mode == "all":
             all_distance = self.helper.get_all_player_distance()
             all_vector = self.helper.get_all_player_vector()
             ideal_vector = (0, 0)
             for i in range(len(all_vector)):
-                ideal_vector = (ideal_vector[0] + all_vector[i][0] * all_distance[i],ideal_vector[1] + all_vector[i][1] * all_distance[i])
+                if self.helper.get_other_distance(i) < self.helper.get_other_attack_radius(i):
+                    ideal_vector = (ideal_vector[0] + all_vector[i][0] * all_distance[i],ideal_vector[1] + all_vector[i][1] * all_distance[i])
             direction = tuple_times(ideal_vector, -1/sum(all_distance))
         elif mode == "nearest":
             enemy_pos = self.helper.get_other_position(self.helper.get_nearest_player())
-            direction = tuple_times(self.helper.get_vector(self.helper.get_self_position(), enemy_pos), -1)
+            if self.helper.get_other_distance(self.helper.get_nearest_player()) < self.helper.get_other_attack_radius(self.helper.get_nearest_player()):
+                direction = tuple_times(self.helper.get_vector(self.helper.get_self_position(), enemy_pos), -1)
         return self.where_to_go(self.judge_direction(direction))
+
+    def avoid_urgent_item(self):
+        my_pos = self.helper.get_self_position()
+        nearest = (0, 0)
+        nearest_distance = 10000
+        direction = (0, 0)
+        for banana in self.helper.get_all_drop_banana_peel_position():
+            distance = self.helper.get_distance(my_pos, banana)
+            if self.helper.get_distance(my_pos, banana) < 40 and distance < nearest_distance:
+                nearest_distance = distance
+                nearest = banana
+        if nearest != (0, 0):
+            direction = self.helper.get_vector(my_pos, nearest)
+            direction = (-direction[0], -direction[1])
+        return self.where_to_go(direction)
 
     def avoid_item(self):
         my_pos = self.helper.get_self_position()
@@ -235,20 +253,20 @@ class TeamAI(BaseAI):
         voltages = self.helper.get_all_voltage()
         mean_voltage = sum(voltages) / len(voltages)
         highest_voltage = self.helper.get_other_voltage(self.helper.get_highest_voltage_player())
-        if self.helper.get_self_can_attack_time() < 0.5:
+        if self.helper.get_self_can_attack_time() < 0.75:
             if my_voltage < mean_voltage or self.helper.get_self_is_invincible() or self.helper.get_live_player_num() <= 2:
-                self.mode = [lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("highestV"), lambda self: self.trace_enemy("highestV"),
+                self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("highestV"), lambda self: self.trace_enemy("highestV"),
                             lambda self: self.use_item(), lambda self: self.trace_item()]
             elif my_voltage < (mean_voltage + highest_voltage) / 2:
-                self.mode = [lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("nearest"), lambda self: self.use_item(),
+                self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("nearest"), lambda self: self.use_item(),
                             lambda self: self.run_away("nearest"), lambda self: self.trace_enemy("nearest"), lambda self: self.trace_item()]
             else:
-                self.mode = [lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("nearest"), lambda self: self.use_item(),
+                self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("nearest"), lambda self: self.use_item(),
                             lambda self: self.run_away("all"), lambda self: self.trace_item()]
         else:
-            self.mode = [lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.use_item(),
+            self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.use_item(),
                         lambda self: self.run_away("nearest"), lambda self: self.trace_item()]
-        
+
         not_jump = 0
         for i, function in enumerate(self.mode):
             instruction = function(self)
