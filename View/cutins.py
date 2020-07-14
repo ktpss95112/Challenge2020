@@ -109,7 +109,7 @@ class Cutin_board(Cutin_base):
             self.board_speed += Const.CUTIN_GRAVITY / Const.FPS
             distance = self.board_height / 2 - self.board_position[1]
             if distance < 0:
-                self.board_speed *= -Const.ATTENUATION_COEFFICIENT
+                self.board_speed *= -Const.CUTIN_BOARD_ATTENUATION_COEFFICIENT
                 self.board_position[1] += 2 * distance
             if abs(self.board_speed) < Const.CUTIN_SPEED_MINIMUM:
                 self.board_speed = 0
@@ -137,7 +137,7 @@ class Cutin_raster(Cutin_board):
         super().__init__(player_id)
         self.rank = self.ranking(players)
         self.type_time = np.zeros(len(self.skill_name), dtype=np.int8)
-        self.type_time[:] = np.random.randint(5, 20, size=len(self.skill_name))
+        self.type_time[:] = np.random.randint(5, 10, size=len(self.skill_name))
         self.fontLarge = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 54)
         self.fontSmall = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 6)
         self.stay_time = Const.CUTIN_STAY_TIME # The time cut-in would stay after every thing finish
@@ -155,11 +155,6 @@ class Cutin_raster(Cutin_board):
 
     def draw(self, screen, update=True):
         # Draw board with name of skill and player
-        #self.board.blit(
-        #    self.board_image,
-        #    (0, 0)
-        #)
-
         # Draw player on board
         self.board = self.images['board'].copy()
         player = self.players_image[self.player_id].copy()
@@ -239,11 +234,6 @@ class Cutin_big_black_hole(Cutin_raster):
 
     def draw(self, screen, update=True):
         # Draw board with name of skill and player
-        #self.board.blit(
-        #    self.board_image,
-        #    (0, 0)
-        #)
-
         # Draw player on board
         self.board = self.images['board'].copy()
         player = self.players_image[self.player_id].copy()
