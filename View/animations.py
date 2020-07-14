@@ -264,11 +264,123 @@ class Animation_Rainbow(Animation_raster):
         )
         if update: self.update()
 
+class Animation_Black_Hole:
+    __slots__ = ('area', 'center', '_timer', 'expire_time', 'expired')
+    black_background = None
+
+    radius_max = 150
+    radius_min = 50
+    phase1_time = Const.BLACK_HOLE_TIME
+    phase2_time = 2 * Const.FPS
+
+    @classmethod
+    def init_convert(cls):
+        cls.black_background = pg.Surface((2 * cls.radius_max, 2 * cls.radius_max))
+
+        cls.transformedxi = []
+        cls.transformedyi = []
+
+        # the vibration radius grows by time
+        vibration_radius_max = 3
+        cls.vibration_radius = np.rint(np.random.rand(2, cls.phase1_time) * np.linspace(0, vibration_radius_max, cls.phase1_time))
+
+        # obtain Cartesian coordinate and polar coordinate
+        xv, yv = np.mgrid[-cls.radius_max:cls.radius_max, -cls.radius_max:cls.radius_max]
+        r, t = np.hypot(xv, yv), np.arctan2(yv, xv)
+
+        for _timer in range(cls.phase1_time):
+
+            # the radius of rotation decreases by time
+            rotate_radius = int(cls.radius_max - (cls.radius_max - cls.radius_min) / cls.phase1_time * _timer)
+            # rotate_radius = np.linspace(cls.radius_max, cls.radius_min, cls.phase1_time, dtype=np.int)
+
+            # new theta for rotation
+            newt = t - (20 * ((_timer / Const.FPS * 2 + 1) / 6)**3) * (-np.abs((r / rotate_radius - 0.5)) + 0.5)**3
+
+            # new radius for space compression
+            newr = cls.radius_max * (r / cls.radius_max) ** (1 / (1 + _timer / Const.FPS / 4))
+
+            # calculate rotated
+            mask_rotate = (r <= rotate_radius)
+            rotatedxv = np.where(mask_rotate, (r * np.cos(newt)).astype(np.int), xv) + cls.radius_max
+            rotatedyv = np.where(mask_rotate, (r * np.sin(newt)).astype(np.int), yv) + cls.radius_max
+
+            # calculate compressed
+            mask_compress = (r <= cls.radius_max)
+            compressedxv = np.where(mask_compress, (newr * np.cos(t)).astype(np.int), xv) + cls.radius_max
+            compressedyv = np.where(mask_compress, (newr * np.sin(t)).astype(np.int), yv) + cls.radius_max
+
+            # combine
+            yi, xi = np.indices((2 * cls.radius_max, 2 * cls.radius_max))
+            cls.transformedxi.append(xi[rotatedyv, rotatedxv][compressedyv, compressedxv])
+            cls.transformedyi.append(yi[rotatedyv, rotatedxv][compressedyv, compressedxv])
+
+    def __init__(self, center):
+        '''
+        center could be:
+            * 2-element tuple/list
+            * pygame.Vector2
+            * np.ndarray with shape (2,)
+        '''
+        self._timer = 0
+        self.expire_time = self.phase1_time + self.phase2_time
+        self.expired = False
+
+        self.area = pg.Rect(0, 0, 2 * self.radius_max, 2 * self.radius_max)
+        self.center = np.array(center)
+
+    def update(self):
+        self._timer += 1
+        if self._timer >= self.expire_time:
+            self.expired = True
+
+    def draw(self, screen, update=True):
+        if self._timer < Const.BLACK_HOLE_TIME: self.area.center = self.center + self.vibration_radius[:, self._timer]
+        else                                  : self.area.center = self.center
+        canvas = screen.get_rect()
+
+        # If this animation is completely outside the canvas, no need to draw it.
+        # This prevents "ValueError: subsurface rectangle outside surface area" in the following pg.Surface.subsurface()
+        # More precisely, area_inside would become `pg.Rect(_, _, 0, 0)`, causing subsurface to fail.
+        if not canvas.contains(self.area):
+            if update: self.update()
+            return
+
+        # phase 1: twist the screen
+        if self._timer < Const.BLACK_HOLE_TIME:
+            area_inside = self.area.clip(canvas)
+
+            sub_background = pg.Surface.subsurface(screen, area_inside)
+
+            self.black_background.fill(pg.Color(0x232323)) # TODO: use Const.BACKGROUND_COLOR
+            position = {}
+            if self.area.left < canvas.left: position['left'] = canvas.left - self.area.left
+            else                           : position['left'] = 0
+            if self.area.top < canvas.top  : position['top'] = canvas.top - self.area.top
+            else                           : position['top'] = 0
+
+            self.black_background.blit(sub_background, sub_background.get_rect(**position))
+            sub_background = self.black_background
+
+            source_array = pg.surfarray.array3d(sub_background)
+            result_array = source_array[self.transformedyi[self._timer], self.transformedxi[self._timer]]
+
+            result = pg.surfarray.make_surface(result_array)
+            # uncommented the following line if the quality is too poor
+            # result = pg.transform.smoothscale(pg.transform.smoothscale(result, (100, 100)), result.get_size())
+            screen.blit(result, self.area)
+
+        # phase 2: explode
+        else:
+            pass
+
+        if update: self.update()
+
+
 def init_animation():
     Animation_player_attack.init_convert()
     Animation_player_attack_big.init_convert()
     Animation_Bomb_Explode.init_convert()
     Animation_Lightning.init_convert()
     Animation_Rainbow.init_convert()
-
-
+    Animation_Black_Hole.init_convert()

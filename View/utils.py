@@ -19,20 +19,24 @@ class PureText(object):
 
 
 class MutableText(object):
-    __slots__ = ('color', 'size', 'pos', 'font', 'text_surface', 'pos_rect')
+    __slots__ = ('color', 'font', 'text_surface', 'pos_rect')
 
-    def __init__(self, size, font, color, **pos):
+    def __init__(self, font, color):
         '''
         pos: refer to the attributes of pg.Rect
         '''
         self.color = color
-        self.size = size
-        self.pos = pos
         self.font = font
 
-    def draw(self, text, screen):
+    def draw(self, text, screen, **pos):
         self.text_surface = self.font.render(text, True, self.color)
-        self.pos_rect = self.text_surface.get_rect(**self.pos)
+        self.pos_rect = self.text_surface.get_rect(**pos)
+        screen.blit(self.text_surface, self.pos_rect)
+
+    def draw_align_right(self, text, screen, pos):
+        self.text_surface = self.font.render(text, True, self.color)
+        self.pos_rect = self.text_surface.get_rect()
+        self.pos_rect.topright = pos
         screen.blit(self.text_surface, self.pos_rect)
 
 
