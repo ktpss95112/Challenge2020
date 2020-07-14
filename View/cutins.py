@@ -75,6 +75,7 @@ class Cutin_board(Cutin_base):
         self.board_speed = Const.CUTIN_BOARD_INITIAL_SPEED
         self.board_position = list(Const.CUTIN_BOARD_INITIAL_POSITION)
         self.board_up = False
+        self.board_stop = False
 
     def update(self):
         # Scroll the board back and set expired to true after board become invisible
@@ -82,7 +83,7 @@ class Cutin_board(Cutin_base):
         self.update_board_position()
         if self._timer == self.expire_time:
             self.board_up = True
-        if self.board_position[1] < -self.board_height:
+        if self.board_position[1] < -2 * self.board_height:
             self.expired = True
 
     def draw(self, screen, update=True):
@@ -111,6 +112,7 @@ class Cutin_board(Cutin_base):
             if distance < 0:
                 self.board_speed *= -Const.CUTIN_BOARD_ATTENUATION_COEFFICIENT
                 self.board_position[1] += 2 * distance
+                self.board_stop = True
             if abs(self.board_speed) < Const.CUTIN_SPEED_MINIMUM:
                 self.board_speed = 0
                 self.board_position[1] = self.board_height / 2
@@ -137,20 +139,24 @@ class Cutin_raster(Cutin_board):
         super().__init__(player_id)
         self.rank = self.ranking(players)
         self.type_time = np.zeros(len(self.skill_name), dtype=np.int8)
-        self.type_time[:] = np.random.randint(5, 10, size=len(self.skill_name))
+        self.type_time[1:] = np.random.randint(5, 10, size=len(self.skill_name) - 1)
         self.fontLarge = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 54)
         self.fontSmall = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 6)
         self.stay_time = Const.CUTIN_STAY_TIME # The time cut-in would stay after every thing finish
+        self.text_type = False
+
 
     def update(self):
         # Update board position and update the state
         self._timer += 1
         self.update_board_position()
+        if self.board_stop:
+            self.text_type = True
         if self.type_time[-1] == 0:
             self.stay_time -= 1
         if self.stay_time == 0:
             self.board_up = True
-        if self.board_position[1] < -self.board_height:
+        if self.board_position[1] < -2 * self.board_height:
             self.expired = True
 
     def draw(self, screen, update=True):
@@ -168,16 +174,16 @@ class Cutin_raster(Cutin_board):
         )
 
         # Update text to show
-        text_type = self.text()
+        text = self.text()
 
         # Draw skill's name on board
-        text_surface = self.fontLarge.render(text_type, 1, pg.Color('white'))
+        text_surface = self.fontLarge.render(text, 1, pg.Color('white'))
         self.board.blit(
             text_surface,
             (self.board_width / 11, 3 * self.board_height / 7)
         )
 
-        text_on_laptop = self.fontSmall.render(text_type, 1, pg.Color('white'))
+        text_on_laptop = self.fontSmall.render(text, 1, pg.Color('white'))
         text_on_laptop = pg.transform.rotate(text_on_laptop, 32)
         self.board.blit(
             text_on_laptop,
@@ -201,6 +207,8 @@ class Cutin_raster(Cutin_board):
 
     def text(self):
         # Determine the text to show
+        if not self.text_type:
+            return ''
         word = ''
         for i in range(len(self.type_time)):
             if self.type_time[i] == 0:
@@ -252,15 +260,15 @@ class Cutin_big_black_hole(Cutin_raster):
         )
 
         # Update text to show
-        text_type = self.text()
+        text = self.text()
         # Draw skill's name on board
-        text_surface = self.fontLarge.render(text_type, 1, pg.Color('white'))
+        text_surface = self.fontLarge.render(text, 1, pg.Color('white'))
         self.board.blit(
             text_surface,
             (self.board_width / 11, 3 * self.board_height / 7)
         )
 
-        text_on_laptop = self.fontSmall.render(text_type, 1, pg.Color('white'))
+        text_on_laptop = self.fontSmall.render(text, 1, pg.Color('white'))
         text_on_laptop = pg.transform.rotate(text_on_laptop, 32)
         self.board.blit(
             text_on_laptop,
@@ -303,15 +311,15 @@ class Cutin_zap_zap_zap(Cutin_raster):
         )
 
         # Update text to show
-        text_type = self.text()
+        text = self.text()
         # Draw skill's name on board
-        text_surface = self.fontLarge.render(text_type, 1, pg.Color('white'))
+        text_surface = self.fontLarge.render(text, 1, pg.Color('white'))
         self.board.blit(
             text_surface,
             (self.board_width / 11, 3 * self.board_height / 7)
         )
 
-        text_on_laptop = self.fontSmall.render(text_type, 1, pg.Color('white'))
+        text_on_laptop = self.fontSmall.render(text, 1, pg.Color('white'))
         text_on_laptop = pg.transform.rotate(text_on_laptop, 32)
         self.board.blit(
             text_on_laptop,
