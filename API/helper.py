@@ -11,9 +11,6 @@ AI_DIR_ATTACK      = 5
 AI_DIR_USE_ITEM    = 6
 AI_DIR_STAY        = 7
 
-JUMP_CONST_DELAY   = 30
-
-
 '''
 When return timers or velocity, please use "second" as time unit.
 '''
@@ -21,7 +18,6 @@ class Helper(object):
     def __init__(self, model, index):
         self.model = model
         self.player_id = index
-        
 
     # get game information
     def get_game_left_time(self):
@@ -413,26 +409,13 @@ class Helper(object):
                 minimum_vector = vector
         return minimum_vector
 
-    def get_above_which_land(self, position):
+    def get_above_which_platform(self, position):
         index = -1
-        count = 0
-        if self.model.stage == Const.STAGE_1:
-            for platform in self.model.platforms:
-                if position[0] > platform.upper_left.x - 20 and position[0] < platform.bottom_right.x + 20 and position[1] <= platform.upper_left.y:
-                    index = count
-                count+=1
-            if position[0] > self.model.platforms[2].upper_left.x - 20 and position[0] < self.model.platforms[2].bottom_right.x + 20 and position[1] < self.model.platforms[2].upper_left.y:
-                index = 2
-        elif self.model.stage == Const.STAGE_2:
-            temp = [3,2,1,0]
-            for i in range(0,4):
-                if position[0] > self.model.platforms[temp[i]].upper_left.x - 20 and position[0] < self.model.platforms[temp[i]].bottom_right.x + 20 and position[1] <= self.model.platforms[temp[i]].upper_left.y:
-                    index = temp[i]
-        elif self.model.stage == Const.STAGE_3:
-            temp = [2,0,1,3,4,5]
-            for i in range(0,6):
-                if position[0] > self.model.platforms[temp[i]].upper_left.x - 20 and position[0] < self.model.platforms[temp[i]].bottom_right.x + 20 and position[1] <= self.model.platforms[temp[i]].upper_left.y:
-                    index = temp[i]
+        current_platform_y = 10000
+        for i, platform in enumerate(self.get_platform_position()):
+            if platform[0][0] <= position[0] <= platform[1][0] and\
+                position[1] <= platform[0][1] <= current_platform_y:
+                index, current_platform_y = i, platform[0][1]
         return index
 
     # get all entity information
@@ -469,10 +452,10 @@ class Helper(object):
     def get_all_entity_position(self):
         return [tuple(entity.position) for entity in self.model.entities]
     
-    def walk_to_position(self,target_position):
+    def walk_to_position(self, target_position):
         player_position = tuple(self.model.players[self.player_id].position)
-        player_above_which_land = self.get_above_which_land(player_position)
-        target_above_which_land = self.get_above_which_land(target_position)
+        player_above_which_land = self.get_above_which_platform(player_position)
+        target_above_which_land = self.get_above_which_platform(target_position)
         command = AI_DIR_STAY        
         self_velocity = self.get_self_velocity()
         self_jump_quota = self.get_self_jump_quota()

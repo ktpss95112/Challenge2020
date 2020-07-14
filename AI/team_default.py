@@ -35,12 +35,11 @@ class TeamAI:
             min(distance) < self.helper.get_self_attack_radius():
             return AI_DIR_ATTACK
 
-        platform_id = self.helper.get_above_which_land(self.helper.get_self_position())
+        platform_id = self.helper.get_above_which_platform(self.helper.get_self_position())
         if platform_id != -1:
             # go to middle of the platform
             platform_pos = self.helper.get_platform_position()[platform_id]
-            platform_mid = ((platform_pos[0][0] + platform_pos[1][0]) / 2,\
-                            (platform_pos[0][1] + platform_pos[1][1]) / 2)
+            platform_mid = ((platform_pos[0][0] + platform_pos[1][0]) / 2, platform_pos[0][1])
             return self.helper.walk_to_position(platform_mid)
         else:
             # go to closest land
