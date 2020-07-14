@@ -8,14 +8,14 @@ import View.animations
 import Const
 
 
-class GraphicalView:
+class GraphicalView(object):
     '''
     Draws the state of GameEngine onto the screen.
     '''
-    __slots__ = ('ev_manager', 'model', 'is_initialized', 'screen', 'stop_screen',\
+    __slots__ = ('ev_manager', 'model', 'is_initialized', 'screen', 'stop_background',\
                 'clock', 'last_update', 'current_stop_index',\
                 'animation_list', 'scoreboard', 'players', 'platform', 'items', 'timer',\
-                'entities', 'menu', 'endgame')
+                'entities', 'menu', 'endgame', 'stop', 'stage')
 
     background = pg.Surface(Const.ARENA_SIZE)
     fullscreen = True
@@ -33,7 +33,7 @@ class GraphicalView:
         self.model = model
         self.is_initialized = False
         self.screen = None
-        self.stop_screen = None
+        self.stop_background = None
         self.clock = None
         self.last_update = 0
         self.current_stop_index = None
@@ -46,7 +46,7 @@ class GraphicalView:
         pg.font.init()
         pg.display.set_caption(Const.WINDOW_CAPTION)
         self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
-        self.stop_screen = pg.Surface(Const.WINDOW_SIZE)
+        self.stop_background = pg.Surface(Const.WINDOW_SIZE)
         self.clock = pg.time.Clock()
         self.is_initialized = True
 
@@ -66,6 +66,8 @@ class GraphicalView:
         self.entities = View.staticobjects.View_entities(self.model)
         self.menu = View.staticobjects.View_menu(self.model)
         self.endgame = View.staticobjects.View_endgame(self.model)
+        self.stop = View.staticobjects.View_stop(self.model)
+        self.stage = View.staticobjects.View_stage(self.model)
 
     def notify(self, event):
         '''
@@ -97,15 +99,18 @@ class GraphicalView:
 
         elif isinstance(event, EventStop):
             cur_state = self.model.state_machine.peek()
-            if cur_state == Const.STATE_MENU: self.render_menu(target=self.stop_screen, update=False)
-            elif cur_state == Const.STATE_PLAY: self.render_play(target=self.stop_screen, update=False)
-            elif cur_state == Const.STATE_ENDGAME: self.render_endgame(target=self.stop_screen, update=False)
+            if cur_state == Const.STATE_MENU: self.render_menu(target=self.stop_background, update=False)
+            elif cur_state == Const.STATE_PLAY: self.render_play(target=self.stop_background, update=False)
+            elif cur_state == Const.STATE_ENDGAME: self.render_endgame(target=self.stop_background, update=False)
 
         elif isinstance(event, EventBombExplode):
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
+
+        elif isinstance(event, EventUseRainbowGrounder):
+            self.animation_list.append(View.animations.Animation_Rainbow(center=event.player_position))
 
     def display_fps(self):
         '''
@@ -124,6 +129,9 @@ class GraphicalView:
     def render_play(self, target=None, update=True):
         if target is None:
             target = self.screen
+
+        # draw stage
+        self.stage.draw(target)
 
         # draw platform
         self.platform.draw(target)
@@ -151,23 +159,16 @@ class GraphicalView:
 
         pg.display.flip()
 
-    def render_stop(self):
+    def render_stop(self, target=None, update=True):
+        if target is None:
+            target = self.screen
+
         if self.current_stop_index == self.model.stop_screen_index:
             return
-        
+
         self.current_stop_index = self.model.stop_screen_index
 
-        self.stop_screen = scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, 'pause', f'paused{self.current_stop_index}.png')),
-            0.24
-        )
-        
-        self.screen.blit(self.stop_screen, (0, 0))
-
-        # font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 36)
-        # text_surface = font.render("Press [space] to continue ...", 1, pg.Color('gray88'))
-        # text_center = (Const.WINDOW_SIZE[0] / 2, Const.WINDOW_SIZE[1] / 2)
-        # self.screen.blit(text_surface, text_surface.get_rect(center=text_center))
+        self.stop.draw(target)
 
         pg.display.flip()
 

@@ -6,9 +6,10 @@ import pygame as pg
 import os.path
 import math
 
+from Model.Model import GameEngine as model
 import Model.GameObject.item as model_item
-from Model.GameObject.entity import CancerBomb , PistolBullet
-from View.utils import scaled_surface, load_image
+from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole, DeathRain
+from View.utils import scaled_surface, load_image, PureText, MutableText
 import Const
 
 '''
@@ -21,7 +22,7 @@ in the init_otherobjects() function!
 '''
 
 
-class __Object_base():
+class __Object_base(object):
     __slots__ = ('model',)
     images = tuple()
 
@@ -32,10 +33,21 @@ class __Object_base():
     def __init__(self, model):
         self.model = model
 
+class View_stage(__Object_base):
+    stage = scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'stage.png')), 1)
+
+    @classmethod
+    def init_convert(cls):
+        cls.stage = cls.stage.convert()
+
+    def draw(self, screen):
+        screen.fill(Const.BACKGROUND_COLOR)
+        screen.blit(self.stage, (34, 31))
+
 
 class View_platform(__Object_base):
     def draw(self, screen):
-        screen.fill(Const.BACKGROUND_COLOR)
+        # screen.fill(Const.BACKGROUND_COLOR)
         for platform in self.model.platforms:
             # TODO: refactor the below line to be cleaner
             pg.draw.rect(screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
@@ -75,42 +87,57 @@ class View_endgame(__Object_base):
         'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'background.png')), 0.24),
         0: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
         1: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
-        2: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24)
+        2: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24),
+        3: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_first.png')), 0.29),
+        4: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_second.png')), 0.29),
+        5: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_third.png')), 0.29),
+        6: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_fourth.png')), 0.29),
+        7: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player1_0.png')), 0.15),
+        8: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player2_0.png')), 0.15),
+        9: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player3_0.png')), 0.15),
+        10: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player4_0.png')), 0.15)
     }
 
     @classmethod
     def init_convert(cls):
-        # TODO: use View.utils.PureText to render static words
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 28)
         cls.score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 22)
-        # cls.menu = cls.menu.convert()
-        # cls.base = cls.base.convert_alpha()
-        pass
+        cls.name_text = []
+        cls.score_text = []
+        for player_id in range(4):
+            cls.name_text.append(MutableText(1, cls.font, pg.Color('white'), center=(600 + (player_id - 1.5) * 200, 390)))
+            cls.score_text.append(MutableText(1, cls.score_font, pg.Color('white'), center=(600 + (player_id - 1.5) * 200, 430)))
+
 
     def draw(self, screen):
         # draw background
         screen.blit(self.images['Background'], (0, 0))
 
         for player_id in range(4):
-            name_surface = self.font.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
-            name_rect = name_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 390))
-            screen.blit(name_surface, name_rect)
+            # draw player name
+            self.name_text[player_id].draw(self.model.players[player_id].player_name, screen)
 
-            score_surface = self.score_font.render(f"{self.model.players[player_id].score}", 1, pg.Color('white'))
-            score_rect = score_surface.get_rect(center=(600 + (player_id - 1.5) * 200, 430))
-            screen.blit(score_surface, score_rect)
+            # draw player score
+            self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen)
+
+            ball_surface = self.images[player_id + 7]
+            ball_rect = ball_surface.get_rect(center=(675 + (player_id - 1.89) * 200, 330))
+            screen.blit(ball_surface, ball_rect)
+
+            face_surface = self.images[self.model.players[player_id].rank + 2]
+            face_rect = (675 + (player_id - 1.98) * 200, 328)
+            screen.blit(face_surface, face_rect)
 
             if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
                 medal_surface = self.images[self.model.players[player_id].rank - 1]
                 medal_rect = medal_surface.get_rect(center=(675 + (player_id - 1.5) * 200, 340))
                 screen.blit(medal_surface, medal_rect)
 
-
 class View_players(__Object_base):
     images = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),
-            0.075 if _i < 20 else 0.15
+            0.075 if _i < 20 else 0.075 * 1.5
         )
         for _i in range(0, 40)
     )
@@ -124,25 +151,34 @@ class View_players(__Object_base):
         # draw players
         img_shining_period = (int)(self.model.timer / 7 ) % 5
         for player in self.model.players:
-            if player.invincible_time > 0:
-                pass
 
-            img_play_state = player.player_id * 5 + img_shining_period + (int)( player.player_radius / Const.PLAYER_RADIUS - 1) * 20
+            #magnification =
+            img_play_state = player.player_id * 5 + img_shining_period + (int)( 2*(player.player_radius / Const.PLAYER_RADIUS) - 2 ) * 20
             screen.blit(self.images[img_play_state], self.images[img_play_state].get_rect(center=player.position))
+            rect_height = min((2 * player.player_radius - 2),(2 * player.player_radius - 2) / 120 * player.voltage)
 
-            # temp voltage monitor
-            # TODO: create a class MutableText() similar to PureText()
-            voltage_surface = self.font.render(f"V = {player.voltage:.0f}", 1, pg.Color('white'))
-            voltage_pos = player.position
-            screen.blit(voltage_surface, voltage_surface.get_rect(center=voltage_pos))
+            R_X = player.position.x - player.player_radius
+            R_Y = player.position.y - player.player_radius
+            pg.draw.rect(screen, (255, 255, 255), [R_X, R_Y - 10, 2 * player.player_radius, Const.VOLTAGE_OUT[0]], 1)
+            if player.voltage > 0 and player.voltage < 50:
+                pg.draw.rect(screen, (60, 180, 75), [R_X + 1, R_Y - 9, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
+            elif player.voltage >=50 and player.voltage < 80:
+                pg.draw.rect(screen, (255, 255, 25), [R_X + 1, R_Y - 9, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
+            elif player.voltage >=80 and player.voltage < 100:
+                pg.draw.rect(screen, (245, 130, 48), [R_X + 1, R_Y - 9, rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
+            elif player.voltage >=100 :
+                pg.draw.rect(screen, (230, 25, 75), [R_X + 1, R_Y - 9,  rect_height, Const.VOLTAGE_OUT[0] - 2], 0)
 
 
 class View_entities(__Object_base):
+    # TODO: remove gift if item_gift is finished
     images = {
-        'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber_normal.png')), 0.15),
-        'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bomber_red.png')), 0.15),
-        'bananabullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaPeel.png')), 0.15),
-        'lightning'   : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_lightning.png')), 0.2)
+        'bomber_normal'      : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber.png')), 0.15),
+        'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber_red.png')), 0.15),
+        'banana_bullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_pulp.png')), 0.15),
+        'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7),
+        'gift' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_gift.png')), 0.12),
+        'black_hole': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'blackhole.png')), 0.3)
     }
 
     @classmethod
@@ -157,7 +193,16 @@ class View_entities(__Object_base):
                 screen.blit(self.images[img_bomb], self.images[img_bomb].get_rect(center=entity.position))
 
             elif isinstance(entity, PistolBullet):
-                screen.blit(self.images['bananabullet'], self.images['bananabullet'].get_rect(center=entity.position))
+                screen.blit(self.images['banana_bullet'], self.images['banana_bullet'].get_rect(center=entity.position))
+
+            elif isinstance(entity, BananaPeel):
+                screen.blit(self.images['banana_peel'], self.images['banana_peel'].get_rect(center=entity.position))
+
+            elif isinstance(entity, DeathRain):
+                screen.blit(self.images['gift'], self.images['gift'].get_rect(center=entity.position))
+
+            elif isinstance(entity, BigBlackHole):
+                screen.blit(self.images['black_hole'], self.images['black_hole'].get_rect(center=entity.position))
 
             else:
                 center = (int(entity.position.x),int(entity.position.y))
@@ -193,7 +238,7 @@ class View_scoreboard(__Object_base):
         for player_id in range(4):
             name_surface = self.namefont.render(self.model.players[player_id].player_name, 1, pg.Color('white'))
             screen.blit(name_surface, (name_posx[player_id], 683))
-            
+
             voltage_surface = self.numfont.render(f"{self.model.players[player_id].voltage:.1f}", 1, pg.Color('white'))
             voltage_rect = voltage_surface.get_rect()
             voltage_rect.topright = (voltage_posx[player_id] + 136, 713)
@@ -213,42 +258,9 @@ class View_scoreboard(__Object_base):
             lives = self.model.players[player_id].life
             pg.draw.rect(screen, Const.BACKGROUND_COLOR, (live_posx[player_id] + 118, 686, 18 * (5 - lives), 15))
 
-            
-
-        # fontsize = 24
-        # posX = (Const.WINDOW_SIZE[0] * 7 / 8)
-        # posY = (Const.WINDOW_SIZE[1] * 1 / 32)
-        # heart_image = self.images['Heart']
-        # for player_id in range(1, 5):
-        #     heartposX = posX + 43
-        #     heartposY = posY + (fontsize + 14)
-        #     position = posX, posY
-        #     # TODO: f'Voltage: {voltage:.2f}'
-        #     voltage = round(self.model.players[player_id - 1].voltage, 2)
-        #     item = self.model.players[player_id - 1].keep_item_id
-        #     score = self.model.players[player_id - 1].score
-        #     text = [f"Player {player_id}", "Life: ", f"Voltage: {voltage}", f"Item: {item}", f"Score: {score}"]
-        #     # TODO: no need to use a list to store the labels
-        #     label = []
-
-        #     # TODO: merge the for loop with the following one
-        #     for line in text:
-        #         label.append(self.namefont.render(line, True, pg.Color('white')))
-
-        #     # TODO: merge the for loop with the previous one
-        #     # draw words
-        #     for line in range(len(label)):
-        #         screen.blit(label[line], (position[0], position[1] + (line * (fontsize + 10))))
-
-        #     # draw heart
-        #     lives = self.model.players[player_id - 1].life
-        #     for i in range(lives):
-        #         screen.blit(heart_image, (heartposX, heartposY))
-        #         heartposX += 20
-        #     posY += (len(label) - 1) * (fontsize + 15) + (fontsize + 20)
-
 
 class View_items(__Object_base):
+    # TODO: add item_gift.png
     images = {
         Const.BANANA_PISTOL     : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_bananaGun.png')), 0.04),
         Const.BIG_BLACK_HOLE    : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole.png')), 0.05),
@@ -264,10 +276,7 @@ class View_items(__Object_base):
         cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
 
     def draw(self, screen):
-        # for market in self.model.priced_market_list:
-        #     if market.item:
-        #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
-        floating = (0, Const.FLOATING_RADIUS*math.sin(Const.FLOATING_THETA*self.model.timer))
+        floating = (0, Const.FLOATING_RADIUS * math.sin(Const.FLOATING_THETA*self.model.timer))
         for item in self.model.items:
             screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position + floating))
             #pg.draw.circle(screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
@@ -276,19 +285,28 @@ class View_items(__Object_base):
             #item_pos = item.position
             #screen.blit(item_surface, item_surface.get_rect(center = item_pos))
 
+class View_stop(__Object_base):
+    images = {
+        'Background0': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'pause', 'paused0.png')), 0.24),
+        'Background1': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'pause', 'paused1.png')), 0.24),
+        'Background2': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'pause', 'paused2.png')), 0.24)
+    }
+
+    @classmethod
+    def init_convert(cls):
+        cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
+
+    def draw(self, screen):
+        screen.blit(self.images[f'Background{self.model.stop_screen_index}'], (0, 0))
+
 
 class View_timer(__Object_base):
 
     @classmethod
     def init_convert(cls):
-        #cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 18)
 
     def draw(self, screen):
-        # for market in self.model.priced_market_list:
-        #     if market.item:
-        #         screen.blit(self.images[market.item.name], self.images[market.item.name].get_rect(center=(401, 398)))
-        # TODO: create a class MutableText() similar to PureText()
         timer_surface = self.font.render(f"{self.model.timer / Const.FPS:.0f}", 1, pg.Color('white'))
         timer_rect = timer_surface.get_rect()
         timer_rect.midright = (642, 752)
@@ -296,6 +314,7 @@ class View_timer(__Object_base):
 
 
 def init_staticobjects():
+    View_stage.init_convert()
     View_platform.init_convert()
     View_endgame.init_convert()
     View_players.init_convert()
@@ -304,3 +323,4 @@ def init_staticobjects():
     View_scoreboard.init_convert()
     View_menu.init_convert()
     View_timer.init_convert()
+    View_stop.init_convert()

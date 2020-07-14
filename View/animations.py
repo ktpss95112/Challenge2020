@@ -18,6 +18,7 @@ while True:
 import os
 import pygame as pg
 import numpy as np
+import random
 
 from Events.EventManager import *
 from Model.Model import GameEngine
@@ -36,7 +37,7 @@ in the init_otherobjects() function!
 '''
 
 
-class Animation_base():
+class Animation_base(object):
     '''
     Base class of all animation.
     There will be a list (call it ANI) of all currently effective animations in main.py of view.
@@ -102,17 +103,19 @@ class Animation_raster(Animation_base):
 class Animation_Bomb_Explode(Animation_raster):
     frames = tuple(
         scaled_surface(
-            pg.transform.rotate(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 2*_i),
-                0.01*_i
-            )
-            for _i in range(1, 36)
+            load_image(os.path.join(Const.IMAGE_PATH, f'explosion_{_i}.png')),
+            0.8
+        )
+            for _i in range(1, 18)
     )
 
     def __init__(self, **pos):
-        super().__init__(2, len(self.frames), **pos)
+        super().__init__(2, 2*len(self.frames), **pos)
 
 
 class Animation_Lightning(Animation_raster):
+    __slots__ = ('lightning_alpha', 'image')
+
     lightning = pg.transform.smoothscale(load_image(os.path.join(Const.IMAGE_PATH, 'lightning.png')),
     (int(2 * Const.ZAP_ZAP_ZAP_RANGE), 800))
 
@@ -123,9 +126,10 @@ class Animation_Lightning(Animation_raster):
     def __init__(self, pos):
         self._timer = 0
         self.delay_of_frames = 2
-        self.expire_time = 65
-        self.expired = False # turn tuple into vec2
+        self.expire_time = 27
+        self.expired = False
         self.pos = pos - Const.ZAP_ZAP_ZAP_RANGE
+        self.lightning_alpha = random.randint(100, 255)
 
     def update(self):
         self._timer += 1
@@ -133,19 +137,25 @@ class Animation_Lightning(Animation_raster):
             self.expired = True
 
     def draw(self, screen, update=True):
-        self.image = self.lightning.subsurface(pg.Rect(0, 0, 2 * Const.ZAP_ZAP_ZAP_RANGE, (Const.ARENA_SIZE[0] / self.expire_time ) * self._timer))
+        if self._timer % 7 == 0:
+            sign = [-1, 1]
+            self.pos += random.randint(3, 10) * random.choice(sign)
+            self.lightning_alpha = random.randint(100, 255)
+        self.image = self.lightning.subsurface(pg.Rect(0, 0, 2 * Const.ZAP_ZAP_ZAP_RANGE, (Const.ARENA_SIZE[1] / self.expire_time ) * self._timer))
+        self.image.set_alpha(self.lightning_alpha)
         screen.blit(
             self.image,
             (self.pos,0),
             )
-        if (self._timer>16 and self._timer<22) or (self._timer>25 and self._timer<29):
-            pg.draw.rect(screen, (255, 255, 255, 10), pg.Rect((0, 0), Const.ARENA_SIZE))
+        if (self._timer>11 and self._timer<17) or (self._timer>22 and self._timer<24):
+            pg.draw.rect(screen, (255, 255, 255, 10), pg.Rect((0, 0), Const.WINDOW_SIZE))
 
         if update: self.update()
 
 
 class Animation_player_attack(Animation_raster):
     __slots__ = ('player',)
+
     frames = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, 'electricattack.png')),
@@ -174,6 +184,7 @@ class Animation_player_attack(Animation_raster):
 
 class Animation_player_attack_big(Animation_raster):
     __slots__ = ('player',)
+
     frames = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, 'electricattack.png')),
@@ -202,16 +213,17 @@ class Animation_player_attack_big(Animation_raster):
 
 class Animation_Bomb_Explode(Animation_raster):
     __slots__ = ('vibration',)
+
     frames = tuple(
         scaled_surface(
-            pg.transform.rotate(load_image(os.path.join(Const.IMAGE_PATH, 'heart.png')), 2*_i),
-                0.01*_i
-            )
-            for _i in range(1, 36)
+            load_image(os.path.join(Const.IMAGE_PATH, f'explosion_{_i}.png')),
+            0.8
+        )
+            for _i in range(1, 18)
     )
 
     def __init__(self, **pos):
-        super().__init__(2, len(self.frames), **pos)
+        super().__init__(2, 2*len(self.frames), **pos)
         r = Const.BOMB_SCREEN_VIBRATION_RADIUS
         self.vibration = np.zeros((Const.BOMB_TIME, 2), dtype=np.int8)
         self.vibration[:Const.BOMB_SCREEN_VIBRATION_DURATION, :] = np.random.randint(-r, r+1, size=(Const.BOMB_SCREEN_VIBRATION_DURATION, 2))
@@ -225,11 +237,38 @@ class Animation_Bomb_Explode(Animation_raster):
 
         if update: self.update()
 
+class Animation_Rainbow(Animation_raster):
+    frames = tuple(
+        scaled_surface(
+            load_image(os.path.join(Const.IMAGE_PATH, f'rainbow_{_i}.png')),
+            1
+        )
+            for _i in range(1, 12)
+    )
+
+    def __init__(self, **pos):
+        super().__init__(4, 4*(len(self.frames) + 10), **pos)
+
+    def update(self):
+        self._timer += 1
+
+        if self._timer == self.expire_time:
+            self.expired = True
+        elif self._timer % self.delay_of_frames == 0:
+            self.frame_index_to_draw = (self.frame_index_to_draw + 1) % (len(self.frames) + 10)
+
+    def draw(self, screen, update=True):
+        screen.blit(
+            self.frames[min(self.frame_index_to_draw, 10)],
+            self.frames[min(self.frame_index_to_draw, 10)].get_rect(**self.pos),
+        )
+        if update: self.update()
 
 def init_animation():
     Animation_player_attack.init_convert()
     Animation_player_attack_big.init_convert()
     Animation_Bomb_Explode.init_convert()
     Animation_Lightning.init_convert()
+    Animation_Rainbow.init_convert()
 
 

@@ -3,7 +3,7 @@ from PIL import Image
 import numpy as np
 from View.transforms import RGBTransform
 
-class PureText:
+class PureText(object):
     __slots__ = ('font', 'text_surface', 'pos_rect')
 
     def __init__(self, text, size, font, color, **pos):
@@ -15,6 +15,24 @@ class PureText:
         self.pos_rect = self.text_surface.get_rect(**pos)
 
     def draw(self, screen):
+        screen.blit(self.text_surface, self.pos_rect)
+
+
+class MutableText(object):
+    __slots__ = ('color', 'size', 'pos', 'font', 'text_surface', 'pos_rect')
+
+    def __init__(self, size, font, color, **pos):
+        '''
+        pos: refer to the attributes of pg.Rect
+        '''
+        self.color = color
+        self.size = size
+        self.pos = pos
+        self.font = font
+
+    def draw(self, text, screen):
+        self.text_surface = self.font.render(text, True, self.color)
+        self.pos_rect = self.text_surface.get_rect(**self.pos)
         screen.blit(self.text_surface, self.pos_rect)
 
 
