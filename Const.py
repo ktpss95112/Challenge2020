@@ -44,9 +44,9 @@ Y_OFFSET = 31.85
 PLATFORM_INIT_POSITION = [
     [ # stage 1
         [pg.Vector2(150 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(982 + X_OFFSET, 580 + Y_OFFSET)],
-        [pg.Vector2(100 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(400 + X_OFFSET, 450 + Y_OFFSET)],
+        [pg.Vector2(100 + X_OFFSET, 370 + Y_OFFSET), pg.Vector2(400 + X_OFFSET, 380 + Y_OFFSET)],
         [pg.Vector2(350 + X_OFFSET, 270 + Y_OFFSET), pg.Vector2(782 + X_OFFSET, 280 + Y_OFFSET)],
-        [pg.Vector2(732 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(1032 + X_OFFSET, 450 + Y_OFFSET)]
+        [pg.Vector2(732 + X_OFFSET, 370 + Y_OFFSET), pg.Vector2(1032 + X_OFFSET, 380 + Y_OFFSET)]
     ],
     [ # stage 2
         [pg.Vector2(150 + X_OFFSET, 270 + Y_OFFSET), pg.Vector2(491 + X_OFFSET, 280 + Y_OFFSET)],
@@ -131,7 +131,7 @@ ZAP_ZAP_ZAP = 4
 BANANA_PEEL = 5
 RAINBOW_GROUNDER = 6
 INVINCIBLE_BATTERY = 7
-HAS_CUT_IN = [False, False, True, False, False, False, False, False]
+HAS_CUT_IN = [False, False, True, False, True, False, False, False]
 
 ZAP_ZAP_ZAP_RANGE = 5 * PLAYER_RADIUS
 ZAP_ZAP_ZAP_SELF_VOLTAGE_UP = 10
@@ -199,8 +199,7 @@ BOMB_SCREEN_VIBRATION_DURATION = 15
 BLACK_HOLE_TIME = 5 * FPS
 BLACK_HOLE_RADIUS = 10
 BLACK_HOLE_EFFECT_RADIUS = 10 * PLAYER_RADIUS
-BLACK_HOLE_FLOATING_VELOCITY = 5
-BLACK_HOLE_GRAVITY_ACCELERATION = 750 * FPS
+BLACK_HOLE_GRAVITY_ACCELERATION = 1250 * FPS
 
 BANANA_BOMB_DIRECTION = [
     pg.Vector2(-1, -1),
@@ -306,4 +305,5 @@ CUTIN_SPEED_MINIMUM = 3
 CUTIN_PLAYER_POSITION = (3 * CUTIN_BOARD_SIZE[0] // 4, 2 * CUTIN_BOARD_SIZE[1] // 3)
 CUTIN_TEXT_POSITION = (CUTIN_BOARD_SIZE[0] // 4, CUTIN_BOARD_SIZE[1] // 2)
 CUTIN_CURSOR_PERIOD = int(0.6 * FPS)
-CUTIN_STAY_TIME = int(1.5 * FPS) # The time cut-in would stay after every thing finish
+CUTIN_STAY_TIME = int(0.5 * FPS) # The time cut-in would stay after every thing finish
+CUTIN_BOARD_ATTENUATION_COEFFICIENT = 0.2
