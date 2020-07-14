@@ -55,7 +55,7 @@ class Cutin_board(Cutin_base):
     players_image = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, 'players', Const.PLAYER_PIC[_i])),
-            0.15
+            0.0375
         )
         for _i in range(0, 20, 5)
     )
@@ -290,7 +290,7 @@ class Cutin_zap_zap_zap(Cutin_raster):
     skill_name = 'Lightning'
     images = {
         'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
-        'lightning' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'lightning.png')), 0.26),
+        'lightning' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'lightning.png')), 0.12),
         1 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_first.png')), 0.27),
         2 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_second.png')), 0.27),
         3 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.27),
@@ -331,11 +331,6 @@ class Cutin_zap_zap_zap(Cutin_raster):
             self.images['lightning'],
             self.images['lightning'].get_rect(center=(self.board_width / 4, 4 * self.board_height / 5))
         )
-        self.board.blit(
-            self.images['lightning'],
-            self.images['lightning'].get_rect(center=(3 * self.board_width / 4, 4 * self.board_height / 5))
-        )
-
 
         # Draw board to screen
         screen.blit(
