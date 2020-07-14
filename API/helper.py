@@ -11,9 +11,6 @@ AI_DIR_ATTACK      = 5
 AI_DIR_USE_ITEM    = 6
 AI_DIR_STAY        = 7
 
-JUMP_CONST_DELAY   = 30
-
-
 '''
 When return timers or velocity, please use "second" as time unit.
 '''
@@ -21,7 +18,6 @@ class Helper(object):
     def __init__(self, model, index):
         self.model = model
         self.player_id = index
-        
 
     # get game information
     def get_game_left_time(self):
@@ -31,16 +27,19 @@ class Helper(object):
         return self.model.stage
 
     def get_game_arena_boundary(self):
-        # return top-left and bottom-right coordinate
+        # return upper-left and bottom-right coordinate of arena boundary
         return ((0, 0), Const.ARENA_SIZE)
 
     def get_game_life_boundary(self):
-        # return top-left and bottom-right
+        # return upper-left and bottom-right coordinate of life boundary
         return ((Const.LIFE_BOUNDARY[0], Const.LIFE_BOUNDARY[1]), (Const.LIFE_BOUNDARY[2], Const.LIFE_BOUNDARY[3]))
 
     def get_game_gravity_acceleration(self):
         return Const.GRAVITY_ACCELERATION / Const.FPS
 
+    def get_live_player_num(self):
+        return sum(1 if player.life > 0 else 0 for player in self.model.players)
+    
     # get self information
     def get_self_id(self):
         return self.player_id
@@ -78,14 +77,17 @@ class Helper(object):
     def get_self_invincible_time(self):
         return self.model.players[self.player_id].invincible_time / Const.FPS
 
+    def get_self_is_controllable(self):
+        return self.model.players[self.player_id].uncontrollable_time <= 0
+
     def get_self_uncontrollable_time(self):
         return self.model.players[self.player_id].uncontrollable_time / Const.FPS
-    
-    def get_self_life(self):
-        return self.model.players[self.player_id].life
 
-    def get_self_score(self):
-        return self.model.players[self.player_id].score
+    def get_self_can_attack(self):
+        return self.model.players[self.player_id].can_attack()
+
+    def get_self_can_attack_time(self):
+        return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
 
     def get_self_can_jump(self):
         return (self.get_self_jump_quota() > 0)
@@ -93,16 +95,16 @@ class Helper(object):
     def get_self_jump_quota(self):
         return self.model.players[self.player_id].jump_quota
 
+    def get_self_life(self):
+        return self.model.players[self.player_id].life
+
+    def get_self_score(self):
+        return self.model.players[self.player_id].score
+
     def get_self_jump_to_the_highest_time(self):
-        return self.model.players[self.player_id].velocity.y / Const.GRAVITY_ACCELERATION
+        return -self.model.players[self.player_id].velocity.y / Const.GRAVITY_ACCELERATION
 
-    def get_self_can_attack_time(self):
-        return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
-
-    def get_self_can_attack(self):
-        return self.model.players[self.player_id].can_attack()
-
-    def get_self_will_drop(self):
+    def get_self_have_platform_below(self):
         self_position = self.get_self_position()
         self_radius = self.get_self_radius()
         platforms = self.get_platform_position()
@@ -145,33 +147,39 @@ class Helper(object):
     def get_all_invincible_time(self):
         return [player.invincible_time / Const.FPS for player in self.model.players]
 
+    def get_all_is_controllable(self):
+        return [player.uncontrollable_time <= 0 for player in self.model.players]
+
     def get_all_uncontrollable_time(self):
         return [player.uncontrollable_time / Const.FPS for player in self.model.players]
     
+    def get_all_can_attack(self):
+        return [player.can_attack() for player in self.model.players]
+
+    def get_all_can_attack_time(self):
+        return [player.attack_cool_down_time / Const.FPS for player in self.model.players]
+
+    def get_all_can_jump(self):
+        return [player.jump_quota > 0 for player in self.model.players]
+
+    def get_all_jump_quota(self):
+        return [player.jump_quota for player in self.model.players]
+
     def get_all_life(self):
         return [player.life for player in self.model.players]
 
     def get_all_score(self):
         return [player.score for player in self.model.players]
 
-    def get_all_jump_quota(self):
-        return [player.jump_quota for player in self.model.players]
-
     def get_all_jump_to_the_highest_time(self):
-        return [player.velocity.y / Const.GRAVITY_ACCELERATION for player in self.model.players]
+        return [-player.velocity.y / Const.GRAVITY_ACCELERATION for player in self.model.players]
     
-    def get_all_can_attack_time(self):
-        return [player.attack_cool_down_time / Const.FPS for player in self.model.players]
-    
-    def get_all_can_attack(self):
-        return [player.can_attack() for player in self.model.players]
-
-    def get_all_player_distance(self):
-        return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
-
     def get_all_player_vector(self):
         return [self.get_vector(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
     
+    def get_all_player_distance(self):
+        return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
+
     # get other players information
     def get_other_position(self, index):
         return tuple(self.model.players[index].position)
@@ -206,28 +214,34 @@ class Helper(object):
     def get_other_invincible_time(self, index):
         return self.model.players[index].invincible_time / Const.FPS
 
+    def get_other_is_controllable(self, index):
+        return self.model.players[index].uncontrollable_time <= 0
+
     def get_other_uncontrollable_time(self, index):
         return self.model.players[index].uncontrollable_time / Const.FPS
     
+    def get_other_can_jump(self, index):
+        return (self.model.players[index].jump_quota > 0)
+
+    def get_other_jump_quota(self, index):
+        return self.model.players[index].jump_quota
+
     def get_other_life(self, index):
         return self.model.players[index].life
 
     def get_other_score(self, index):
         return self.model.players[index].score
 
-    def get_other_jump_quota(self, index):
-        return self.model.players[index].jump_quota
-
-    def get_other_jump_to_the_highest_time(self, index):
-        return self.model.players[index].velocity.y / Const.GRAVITY_ACCELERATION
+    def get_other_can_attack(self, index):
+        return self.model.players[index].can_attack()
 
     def get_other_can_attack_time(self, index):
         return self.model.players[index].attack_cool_down_time / Const.FPS
 
-    def get_other_can_attack(self, index):
-        return self.model.players[index].can_attack()
+    def get_other_jump_to_the_highest_time(self, index):
+        return -self.model.players[index].velocity.y / Const.GRAVITY_ACCELERATION
 
-    def get_other_will_drop(self, index):
+    def get_other_have_platform_below(self, index):
         other_position = self.get_other_position(index)
         other_radius = self.get_other_radius(index)
         platforms = self.get_platform_position()
@@ -242,14 +256,6 @@ class Helper(object):
     def get_other_player_distance(self, index):
         return self.get_distance(self.get_self_position(), self.get_other_position(index))
 
-    def get_live_player_num(self):
-        lives = self.get_all_life()
-        num = Const.PLAYER_NUM
-        for life in lives:
-            if life == 0:
-                num = num - 1
-        return num
-    
     # get item information
     def item_exists(self):
         return (True if self.model.items else False)
@@ -310,6 +316,15 @@ class Helper(object):
     def get_all_item_position(self):
         return [tuple(item.position) for item in self.model.items]
     
+    def get_black_hole_effect_radius(self):
+        return Const.BLACK_HOLE_EFFECT_RADIUS
+    
+    def get_cancer_bomb_effect_radius(self):
+        return Const.BOMB_EXPLODE_RADIUS
+
+    def get_zap_zap_zap_effect_range(self):
+        return Const.ZAP_ZAP_ZAP_RANGE
+
     # get platform information 
     def get_platform_position(self):
         return [(tuple(platform.upper_left), tuple(platform.bottom_right)) for platform in self.model.platforms]
@@ -394,26 +409,13 @@ class Helper(object):
                 minimum_vector = vector
         return minimum_vector
 
-    def get_above_which_land(self, position):
+    def get_above_which_platform(self, position):
         index = -1
-        count = 0
-        if self.model.stage == Const.STAGE_1:
-            for platform in self.model.platforms:
-                if position[0] > platform.upper_left.x - 20 and position[0] < platform.bottom_right.x + 20 and position[1] <= platform.upper_left.y:
-                    index = count
-                count+=1
-            if position[0] > self.model.platforms[2].upper_left.x - 20 and position[0] < self.model.platforms[2].bottom_right.x + 20 and position[1] < self.model.platforms[2].upper_left.y:
-                index = 2
-        elif self.model.stage == Const.STAGE_2:
-            for platform in self.model.platforms:
-                if position[0] > platform.upper_left.x - 20 and position[0] < platform.bottom_right.x + 20 and position[1] <= platform.upper_left.y and index < 0:
-                    index = count
-                count+=1
-        elif self.model.stage == Const.STAGE_3:
-            temp = [2,0,1,3,4,5]
-            for i in range(0,6):
-                if position[0] > self.model.platforms[temp[i]].upper_left.x - 20 and position[0] < self.model.platforms[temp[i]].bottom_right.x + 20 and position[1] <= self.model.platforms[temp[i]].upper_left.y:
-                    index = temp[i]
+        current_platform_y = 10000
+        for i, platform in enumerate(self.get_platform_position()):
+            if platform[0][0] - 20 <= position[0] <= platform[1][0] + 20 and\
+                position[1] <= platform[0][1] <= current_platform_y:
+                index, current_platform_y = i, platform[0][1]
         return index
 
     # get all entity information
@@ -450,10 +452,10 @@ class Helper(object):
     def get_all_entity_position(self):
         return [tuple(entity.position) for entity in self.model.entities]
     
-    def walk_to_position(self,target_position):
+    def walk_to_position(self, target_position):
         player_position = tuple(self.model.players[self.player_id].position)
-        player_above_which_land = self.get_above_which_land(player_position)
-        target_above_which_land = self.get_above_which_land(target_position)
+        player_above_which_land = self.get_above_which_platform(player_position)
+        target_above_which_land = self.get_above_which_platform(target_position)
         command = AI_DIR_STAY        
         self_velocity = self.get_self_velocity()
         self_jump_quota = self.get_self_jump_quota()
@@ -463,6 +465,12 @@ class Helper(object):
                 command = AI_DIR_LEFT
             else:
                 command = AI_DIR_RIGHT
+        elif self_velocity[1] > 0 and self_jump_quota == 0 and player_above_which_land != -1:
+            if (self.model.platforms[player_above_which_land].upper_left.x + self.model.platforms[player_above_which_land].bottom_right.x) / 2 - player_position[0] > 0 :
+                command = AI_DIR_RIGHT
+            else:
+                command = AI_DIR_LEFT
+
         elif player_above_which_land == -1:
             if self_velocity[1] >= 0 and self_jump_quota > 0 and player_position[1] > target_position[1]:
                 command = AI_DIR_JUMP
@@ -489,7 +497,7 @@ class Helper(object):
                 elif player_above_which_land == 3:
                     command = AI_DIR_LEFT
             elif self.model.stage == Const.STAGE_2:
-                if player_position[0] < 680:
+                if player_position[0] < 587:
                     command = AI_DIR_RIGHT
                 else:
                     command = AI_DIR_LEFT

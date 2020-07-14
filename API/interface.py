@@ -64,7 +64,7 @@ class Interface(object):
             # load TeamAI .py file
             # TODO: change the path
             try:
-                loadtmp = imp.load_source('', f"./API/team_{player.player_name}.py")
+                loadtmp = imp.load_source('', f"./AI/team_{player.player_name}.py")
             except:
                 self.load_msg(str(player.player_id), player.player_name, "AI can't load")
                 player.player_name, player.is_AI = "Error", False
