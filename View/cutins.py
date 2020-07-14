@@ -27,6 +27,7 @@ class Cutin_base():
     To start an cutin, you have to append the new cutin to CUTIN.
     The first-in animation in CUTIN should be drawn (if valid) or be discarded (if expired) in every tick.
     '''
+    __slots__ = ('_timer', 'expired')
 
     def __init__(self, delay_of_flames):
         self._timer = 0
@@ -46,6 +47,9 @@ class Cutin_board(Cutin_base):
     '''
     Base class for all cut-in with a board
     '''
+    __slots__ = ('player_id', 'expire_time', 'board_height', 'board_width',\
+                'board_speed', 'board_position', 'board_up', 'board_stop')
+
     # TODO: Image of board
     images = {
         'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
@@ -126,6 +130,8 @@ class Cutin_raster(Cutin_board):
     '''
     Base class of all cut-ins that need to show text on board
     '''
+    __slots__ = ('rank', 'type_time', 'fontLarge', 'fontSmall', 'stay_time', 'text_type')
+
     skill_name = 'Skill Name'
     images = {
         'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
@@ -229,6 +235,8 @@ class Cutin_raster(Cutin_board):
 
 
 class Cutin_big_black_hole(Cutin_raster):
+    __slots__ = ('board',)
+
     # Cut-in of big black hole
     skill_name = 'Black Hole'
     images = {
@@ -287,6 +295,8 @@ class Cutin_big_black_hole(Cutin_raster):
 
 class Cutin_zap_zap_zap(Cutin_raster):
     # Cut-in of big black hole
+    __slots__ = ('board',)
+
     skill_name = 'Lightning'
     images = {
         'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
