@@ -82,17 +82,17 @@ class View_menu(__Object_base):
 class View_endgame(__Object_base):
     images = {
         'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'background.png')), 0.24),
-        'medal_first': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
-        'medal_second': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
-        'medal_third': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24),
+        'medal_1': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
+        'medal_2': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
+        'medal_3': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24),
         'emoji_1':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_first.png')), 0.3),
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_first.png')), 0.25),
         'emoji_2':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_second.png')), 0.3),
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_second.png')), 0.25),
         'emoji_3':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.3),
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.25),
         'emoji_4':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_fourth.png')), 0.3),
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_fourth.png')), 0.25),
         'cross':
         scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cross.png')), 0.24),
         }
@@ -150,12 +150,7 @@ class View_endgame(__Object_base):
             # draw medal
 
             if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
-                if self.model.players[player_id].rank == 1:
-                    medal_surface = self.images['medal_first']
-                elif self.model.players[player_id].rank == 2:
-                    medal_surface = self.images['medal_second']
-                elif self.model.players[player_id].rank == 3:
-                    medal_surface = self.images['medal_third']
+                medal_surface = self.images[f'medal_{self.model.players[player_id].rank}']
                 medal_rect = medal_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 75, 210))
                 screen.blit(medal_surface, medal_rect)
 

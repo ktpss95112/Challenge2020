@@ -127,10 +127,10 @@ class Cutin_raster(Cutin_board):
     skill_name = 'Skill Name'
     images = {
         'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
-        1 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_first.png')), 0.6),
-        2 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_second.png')), 0.6),
-        3 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_third.png')), 0.6),
-        4 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_fourth.png')), 0.6),
+        'emoticon_1' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_first.png')), 0.27),
+        'emoticon_2' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_second.png')), 0.27),
+        'emoticon_3' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.27),
+        'emoticon_4' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_fourth.png')), 0.27),
     }
     def __init__(self, player_id, players):
         # Add type_time to random type speed of typewriter
@@ -163,6 +163,7 @@ class Cutin_raster(Cutin_board):
         # Draw player on board
         self.board = self.images['board'].copy()
         player = self.players_image[self.player_id].copy()
+
         # Draw emotion on player
         self.emotion_draw(player)
 
@@ -173,6 +174,7 @@ class Cutin_raster(Cutin_board):
 
         # Update text to show
         text_type = self.text()
+
         # Draw skill's name on board
         text_surface = self.fontLarge.render(text_type, 1, pg.Color('white'))
         self.board.blit(
@@ -199,7 +201,7 @@ class Cutin_raster(Cutin_board):
     def emotion_draw(self, target):
         target.blit(
             self.images[self.rank],
-            self.images[self.rank].get_rect(center=(3 * target.get_width() / 7, target.get_height() / 2))
+            self.images[self.rank].get_rect(center=(target.get_width() / 2, target.get_height() / 2))
         )
 
     def text(self):
@@ -229,10 +231,10 @@ class Cutin_big_black_hole(Cutin_raster):
     images = {
         'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
         'big_black_hole' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'item_blackHole_normal.png')), 0.2),
-        1 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_first.png')), 0.6),
-        2 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_second.png')), 0.6),
-        3 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_third.png')), 0.6),
-        4 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'ball_emoticon_fourth.png')), 0.6),
+        1 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_first.png')), 0.27),
+        2 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_second.png')), 0.27),
+        3 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.27),
+        4 : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_fourth.png')), 0.27),
     }
 
     def draw(self, screen, update=True):
