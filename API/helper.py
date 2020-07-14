@@ -413,7 +413,7 @@ class Helper(object):
         index = -1
         current_platform_y = 10000
         for i, platform in enumerate(self.get_platform_position()):
-            if platform[0][0] <= position[0] <= platform[1][0] and\
+            if platform[0][0] - 20 <= position[0] <= platform[1][0] + 20 and\
                 position[1] <= platform[0][1] <= current_platform_y:
                 index, current_platform_y = i, platform[0][1]
         return index
