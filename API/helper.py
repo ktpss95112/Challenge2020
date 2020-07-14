@@ -31,11 +31,11 @@ class Helper(object):
         return self.model.stage
 
     def get_game_arena_boundary(self):
-        # return top-left and bottom-right coordinate
+        # return upper-left and bottom-right coordinate of arena boundary
         return ((0, 0), Const.ARENA_SIZE)
 
     def get_game_life_boundary(self):
-        # return top-left and bottom-right
+        # return upper-left and bottom-right coordinate of life boundary
         return ((Const.LIFE_BOUNDARY[0], Const.LIFE_BOUNDARY[1]), (Const.LIFE_BOUNDARY[2], Const.LIFE_BOUNDARY[3]))
 
     def get_game_gravity_acceleration(self):
@@ -78,14 +78,17 @@ class Helper(object):
     def get_self_invincible_time(self):
         return self.model.players[self.player_id].invincible_time / Const.FPS
 
+    def get_self_is_controllable(self):
+        return self.model.players[self.player_id].uncontrollable_time <= 0
+
     def get_self_uncontrollable_time(self):
         return self.model.players[self.player_id].uncontrollable_time / Const.FPS
-    
-    def get_self_life(self):
-        return self.model.players[self.player_id].life
 
-    def get_self_score(self):
-        return self.model.players[self.player_id].score
+    def get_self_can_attack(self):
+        return self.model.players[self.player_id].can_attack()
+
+    def get_self_can_attack_time(self):
+        return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
 
     def get_self_can_jump(self):
         return (self.get_self_jump_quota() > 0)
@@ -93,16 +96,16 @@ class Helper(object):
     def get_self_jump_quota(self):
         return self.model.players[self.player_id].jump_quota
 
+    def get_self_life(self):
+        return self.model.players[self.player_id].life
+
+    def get_self_score(self):
+        return self.model.players[self.player_id].score
+
     def get_self_jump_to_the_highest_time(self):
-        return - self.model.players[self.player_id].velocity.y / Const.GRAVITY_ACCELERATION
+        return -self.model.players[self.player_id].velocity.y / Const.GRAVITY_ACCELERATION
 
-    def get_self_can_attack_time(self):
-        return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
-
-    def get_self_can_attack(self):
-        return self.model.players[self.player_id].can_attack()
-
-    def get_self_will_drop(self):
+    def get_self_have_platform_below(self):
         self_position = self.get_self_position()
         self_radius = self.get_self_radius()
         platforms = self.get_platform_position()
