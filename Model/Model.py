@@ -154,6 +154,8 @@ class GameEngine:
             # compute score
             max_KO_amount = max(player.KO_amount for player in self.players)
             for player in self.players:
+                player.KO_score = player.KO_amount * 300
+                player.die_score = -player.die_amount * 150
                 if player.KO_amount == max_KO_amount:
                     player.just_too_good_score = 500
                 if player.die_amount == 0:
