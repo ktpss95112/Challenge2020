@@ -256,7 +256,7 @@ class GameEngine:
                 self.stage = random.randrange(Const.STAGE_NUMBER)
 
         elif isinstance(event, EventDeathRainTrigger):
-            self.ev_manager.post(EventDeathRainStart())
+            pass
 
         elif isinstance(event, EventDeathRainStart):
             self.death_rain()
@@ -327,7 +327,7 @@ class GameEngine:
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))
                 elif isinstance(entity, DeathRain):
-                    self.ev_manager.post(EventDeathRainTrigger())
+                    self.ev_manager.post(EventDeathRainTrigger(entity.position, self.timer))
                 self.entities.remove(entity)
 
     def update_stop(self):

@@ -254,6 +254,26 @@ class Animation_Rainbow(Animation_raster):
         )
         if update: self.update()
 
+class Animation_Gift_Explode(Animation_raster):
+    frames = tuple(
+        scaled_surface(
+            load_image(os.path.join(Const.IMAGE_PATH, 'gift', f'gift{_i}.png')),
+            0.3
+        )
+            for _i in range(1, 25)
+    )
+
+    def __init__(self, **pos):
+        super().__init__(4, 4*len(self.frames), **pos)
+
+    def draw(self, screen, update=True):
+        screen.blit(
+            self.frames[self.frame_index_to_draw],
+            self.frames[self.frame_index_to_draw].get_rect(**self.pos),
+        )
+
+        if update: self.update()
+
 class Animation_Black_Hole:
     black_background = None
 
@@ -365,11 +385,11 @@ class Animation_Black_Hole:
 
         if update: self.update()
 
-
 def init_animation():
     Animation_player_attack.init_convert()
     Animation_player_attack_big.init_convert()
     Animation_Bomb_Explode.init_convert()
     Animation_Lightning.init_convert()
     Animation_Rainbow.init_convert()
+    Animation_Gift_Explode.init_convert()
     Animation_Black_Hole.init_convert()
