@@ -218,7 +218,7 @@ class View_entities(__Object_base):
         'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber_red.png')), 0.15),
         'banana_bullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_pulp.png')), 0.15),
         'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7),
-        'gift' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_gift.png')), 0.12),
+        'gift' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_gift.png')), 0.28),
         'black_hole': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'blackhole.png')), 0.3)
     }
 
