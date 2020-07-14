@@ -60,8 +60,6 @@ class View_menu(__Object_base):
         cls.background = cls.background.convert()
 
     def draw(self, screen):
-        # screen.blit(self.menu, (0, 0))
-        # screen.blit(self.base, (10, 645))
         screen.fill(Const.BACKGROUND_COLOR)
         screen.blit(self.background, (0, 0))
 
@@ -87,54 +85,43 @@ class View_endgame(__Object_base):
         'medal_first': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
         'medal_second': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
         'medal_third': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24),
-        'emoji_blue_first':
-         scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_blue_first.png')), 0.3),
-        'emoji_blue_second':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_blue_second.png')), 0.3),
-        'emoji_blue_third':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_blue_third.png')), 0.3),
-        'emoji_blue_fourth':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_blue_fourth.png')), 0.3),
-        'emoji_green_first':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_green_first.png')), 0.3),
-        'emoji_green_second':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_green_second.png')), 0.3),
-        'emoji_green_third':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_green_third.png')), 0.3),
-        'emoji_green_fourth':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_green_fourth.png')), 0.3),
-        'emoji_purple_first':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_purple_first.png')), 0.3),
-        'emoji_purple_second':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_purple_second.png')), 0.3),
-        'emoji_purple_third':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_purple_third.png')), 0.3),
-        'emoji_purple_fourth':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_purple_fourth.png')), 0.3),
-        'emoji_yellow_first':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_yellow_first.png')), 0.3),
-        'emoji_yellow_second':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_yellow_second.png')), 0.3),
-        'emoji_yellow_third':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_yellow_third.png')), 0.3),
-        'emoji_yellow_fourth':
-        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'ball_emoticon_yellow_fourth.png')), 0.3),
+        'emoji_1':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_first.png')), 0.3),
+        'emoji_2':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_second.png')), 0.3),
+        'emoji_3':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.3),
+        'emoji_4':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_fourth.png')), 0.3),
         'cross':
         scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cross.png')), 0.24),
         }
 
+    player_images = tuple(
+        scaled_surface(
+            load_image(os.path.join(Const.IMAGE_PATH, 'players', Const.PLAYER_PIC[_i])),
+            0.15 if _i < 20 else 0.15 * 1.5
+        )
+        for _i in range(0, 40)
+    )
+
     @classmethod
     def init_convert(cls):
+        cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
+        cls.player_images = tuple( _frame.convert_alpha() for _frame in cls.player_images )
+
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 28)
         cls.score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 36)
         cls.small_score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 14)
+
         cls.score_list_text = MutableText(cls.small_score_font, pg.Color('white'))
+
         cls.name_text = []
         cls.score_text = []
+
         for player_id in range(4):
             cls.name_text.append(MutableText(cls.font, pg.Color('white')))
             cls.score_text.append(MutableText(cls.score_font, pg.Color('white')))
-
 
     def draw(self, screen):
         # draw background
@@ -145,51 +132,20 @@ class View_endgame(__Object_base):
             self.name_text[player_id].draw(self.model.players[player_id].player_name, screen, center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 345))
 
             # draw player score
+
             self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen, center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 600))
 
-            #draw player ball
+            # draw player ball
 
-            if self.model.players[player_id].rank == 1:
-                if player_id == 0:
-                    ball_surface = self.images['emoji_blue_first']
-                elif player_id == 1:
-                    ball_surface = self.images['emoji_green_first']
-                elif player_id == 2:
-                    ball_surface = self.images['emoji_purple_first']
-                elif player_id == 3:
-                    ball_surface = self.images['emoji_yellow_first']
+            img_shining_period = (int)(self.model.timer / 7 ) % 5
+            img_play_state = (player_id) * 5 + img_shining_period
+            screen.blit(self.player_images[img_play_state], self.player_images[img_play_state].get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260)))
 
-            elif self.model.players[player_id].rank == 2:
-                if player_id == 0:
-                    ball_surface = self.images['emoji_blue_second']
-                elif player_id == 1:
-                    ball_surface = self.images['emoji_green_second']
-                elif player_id == 2:
-                    ball_surface = self.images['emoji_purple_second']
-                elif player_id == 3:
-                    ball_surface = self.images['emoji_yellow_second']
+            # draw player emoticon
 
-            elif self.model.players[player_id].rank == 3:
-                if player_id == 0:
-                    ball_surface = self.images['emoji_blue_third']
-                elif player_id == 1:
-                    ball_surface = self.images['emoji_green_third']
-                elif player_id == 2:
-                    ball_surface = self.images['emoji_purple_third']
-                elif player_id == 3:
-                    ball_surface = self.images['emoji_yellow_third']
-
-            elif self.model.players[player_id].rank == 4:
-                if player_id == 0:
-                    ball_surface = self.images['emoji_blue_fourth']
-                elif player_id == 1:
-                    ball_surface = self.images['emoji_green_fourth']
-                elif player_id == 2:
-                    ball_surface = self.images['emoji_purple_fourth']
-                elif player_id == 3:
-                    ball_surface = self.images['emoji_yellow_fourth']
-            ball_rect = ball_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260))
-            screen.blit(ball_surface, ball_rect)
+            emoji_surface = self.images[f'emoji_{self.model.players[player_id].rank + 3}']
+            emoji_rect = emoji_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260))
+            screen.blit(emoji_surface, emoji_rect)
 
             # draw medal
 
@@ -226,7 +182,7 @@ class View_endgame(__Object_base):
 class View_players(__Object_base):
     images = tuple(
         scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),
+            load_image(os.path.join(Const.IMAGE_PATH, 'players', Const.PLAYER_PIC[_i])),
             0.075 if _i < 20 else 0.075 * 1.5
         )
         for _i in range(0, 40)
@@ -239,11 +195,11 @@ class View_players(__Object_base):
 
     def draw(self, screen):
         # draw players
-        img_shining_period = (int)(self.model.timer / 7 ) % 5
+        img_shining_period = (self.model.timer // 7 ) % 5
         for player in self.model.players:
 
             #magnification =
-            img_play_state = player.player_id * 5 + img_shining_period + (int)( 2*(player.player_radius / Const.PLAYER_RADIUS) - 2 ) * 20
+            img_play_state = player.player_id * 5 + img_shining_period + int( 2*(player.player_radius / Const.PLAYER_RADIUS) - 2 ) * 20
             screen.blit(self.images[img_play_state], self.images[img_play_state].get_rect(center=player.position))
             rect_height = min((2 * player.player_radius - 2),(2 * player.player_radius - 2) / 120 * player.voltage)
 
