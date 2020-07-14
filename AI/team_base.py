@@ -1,4 +1,4 @@
-from API.base import BaseAI
+from base import BaseAI
 
 # action
 AI_DIR_LEFT        = 0
@@ -26,5 +26,17 @@ class TeamAI(BaseAI):
         self.enhancement = [0, 0, 0, 0]
     
     def decide(self):
-        # add your code
-        pass
+       	if self.helper.get_self_keep_item_id() != NO_ITEM:
+       		return AI_DIR_USE_ITEM
+
+       	if self.helper.get_self_can_attack() and\
+       		min(self.helper.get_all_player_distance()) < self.helper.get_self_attack_radius():
+       		return AI_DIR_ATTACK
+
+       	return AI_DIR_STAY
+
+
+
+
+
+
