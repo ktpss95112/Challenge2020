@@ -49,12 +49,12 @@ class Cutin_board(Cutin_base):
     # TODO: Image of board
     images = {
         'board' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cutin', 'board.png')), 0.2),
-    }    
+    }
 
     # TODO(?): Image of player
     players_image = tuple(
         scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),
+            load_image(os.path.join(Const.IMAGE_PATH, 'players', Const.PLAYER_PIC[_i])),
             0.15
         )
         for _i in range(0, 20, 5)
@@ -84,7 +84,7 @@ class Cutin_board(Cutin_base):
             self.board_up = True
         if self.board_position[1] < -self.board_height:
             self.expired = True
-    
+
     def draw(self, screen, update=True):
         # Draw board with image of player
         self.board = self.images['board'].copy()
@@ -100,7 +100,7 @@ class Cutin_board(Cutin_base):
 
         if update:
             self.update()
-    
+
     def update_board_position(self):
         # Update position of board
         # Board down
@@ -159,7 +159,7 @@ class Cutin_raster(Cutin_board):
         #    self.board_image,
         #    (0, 0)
         #)
-        
+
         # Draw player on board
         self.board = self.images['board'].copy()
         player = self.players_image[self.player_id].copy()
@@ -192,7 +192,7 @@ class Cutin_raster(Cutin_board):
             self.board,
             self.board.get_rect(center=self.board_position)
         )
-        
+
         if update:
             self.update()
 
@@ -221,7 +221,7 @@ class Cutin_raster(Cutin_board):
             if player.player_id != self.player_id and player.score > players[self.player_id].score:
                 rank += 1
         return rank
-        
+
 
 class Cutin_big_black_hole(Cutin_raster):
     # Cut-in of big black hole
@@ -241,7 +241,7 @@ class Cutin_big_black_hole(Cutin_raster):
         #    self.board_image,
         #    (0, 0)
         #)
-        
+
         # Draw player on board
         self.board = self.images['board'].copy()
         player = self.players_image[self.player_id].copy()
@@ -280,7 +280,7 @@ class Cutin_big_black_hole(Cutin_raster):
             self.board,
             self.board.get_rect(center=self.board_position)
         )
-        
+
         if update:
             self.update()
 
