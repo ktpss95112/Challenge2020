@@ -6,7 +6,7 @@ import pygame as pg
 import os.path
 import math
 
-from Model.Model import GameEngine as model
+
 import Model.GameObject.item as model_item
 from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole, DeathRain
 from View.utils import scaled_surface, load_image, PureText, MutableText
@@ -60,8 +60,6 @@ class View_menu(__Object_base):
         cls.background = cls.background.convert()
 
     def draw(self, screen):
-        # screen.blit(self.menu, (0, 0))
-        # screen.blit(self.base, (10, 645))
         screen.fill(Const.BACKGROUND_COLOR)
         screen.blit(self.background, (0, 0))
 
@@ -84,29 +82,46 @@ class View_menu(__Object_base):
 class View_endgame(__Object_base):
     images = {
         'Background': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'background.png')), 0.24),
-        0: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
-        1: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
-        2: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24),
-        3: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_first.png')), 0.29),
-        4: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_second.png')), 0.29),
-        5: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_third.png')), 0.29),
-        6: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'ball_emoticon_fourth.png')), 0.29),
-        7: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player1_0.png')), 0.15),
-        8: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player2_0.png')), 0.15),
-        9: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player3_0.png')), 0.15),
-        10: scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'player4_0.png')), 0.15)
-    }
+        'medal_1': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'first.png')), 0.24),
+        'medal_2': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'second.png')), 0.24),
+        'medal_3': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'endgame', 'third.png')), 0.24),
+        'emoji_1':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_first.png')), 0.25),
+        'emoji_2':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_second.png')), 0.25),
+        'emoji_3':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.25),
+        'emoji_4':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_fourth.png')), 0.25),
+        'cross':
+        scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'cross.png')), 0.24),
+        }
+
+    player_images = tuple(
+        scaled_surface(
+            load_image(os.path.join(Const.IMAGE_PATH, 'players', Const.PLAYER_PIC[_i])),
+            0.15 if _i < 20 else 0.15 * 1.5
+        )
+        for _i in range(0, 40)
+    )
 
     @classmethod
     def init_convert(cls):
+        cls.images = { _name: cls.images[_name].convert_alpha() for _name in cls.images }
+        cls.player_images = tuple( _frame.convert_alpha() for _frame in cls.player_images )
+
         cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 28)
-        cls.score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 22)
+        cls.score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 36)
+        cls.small_score_font = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 14)
+
+        cls.score_list_text = MutableText(cls.small_score_font, pg.Color('white'))
+
         cls.name_text = []
         cls.score_text = []
-        for player_id in range(4):
-            cls.name_text.append(MutableText(1, cls.font, pg.Color('white'), center=(600 + (player_id - 1.5) * 200, 390)))
-            cls.score_text.append(MutableText(1, cls.score_font, pg.Color('white'), center=(600 + (player_id - 1.5) * 200, 430)))
 
+        for player_id in range(4):
+            cls.name_text.append(MutableText(cls.font, pg.Color('white')))
+            cls.score_text.append(MutableText(cls.score_font, pg.Color('white')))
 
     def draw(self, screen):
         # draw background
@@ -114,28 +129,55 @@ class View_endgame(__Object_base):
 
         for player_id in range(4):
             # draw player name
-            self.name_text[player_id].draw(self.model.players[player_id].player_name, screen)
+            self.name_text[player_id].draw(self.model.players[player_id].player_name, screen, center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 345))
 
             # draw player score
-            self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen)
 
-            ball_surface = self.images[player_id + 7]
-            ball_rect = ball_surface.get_rect(center=(675 + (player_id - 1.89) * 200, 330))
-            screen.blit(ball_surface, ball_rect)
+            self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen, center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 600))
 
-            face_surface = self.images[self.model.players[player_id].rank + 2]
-            face_rect = (675 + (player_id - 1.98) * 200, 328)
-            screen.blit(face_surface, face_rect)
+            # draw player ball
+
+            img_shining_period = (int)(self.model.player_image_timer / 7 ) % 5
+            img_play_state = (player_id) * 5 + img_shining_period
+            screen.blit(self.player_images[img_play_state], self.player_images[img_play_state].get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260)))
+
+            # draw player emoticon
+
+            emoji_surface = self.images[f'emoji_{self.model.players[player_id].rank}']
+            emoji_rect = emoji_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260))
+            screen.blit(emoji_surface, emoji_rect)
+
+            # draw medal
 
             if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
-                medal_surface = self.images[self.model.players[player_id].rank - 1]
-                medal_rect = medal_surface.get_rect(center=(675 + (player_id - 1.5) * 200, 340))
+                medal_surface = self.images[f'medal_{self.model.players[player_id].rank}']
+                medal_rect = medal_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 75, 210))
                 screen.blit(medal_surface, medal_rect)
+
+            # draw score
+            self.score_list_text.draw_align_right(f"+{self.model.players[player_id].KO_score}", screen, (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 403))
+            self.score_list_text.draw_align_right(f"-{-(self.model.players[player_id].die_score)}", screen, (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 441))
+            if self.model.players[player_id].just_too_good_score == 0:
+                cross_surface = self.images['cross']
+                cross_rect = cross_surface.get_rect()
+                cross_rect.topright = (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 487)
+                screen.blit(cross_surface, cross_rect)
+            else:
+                self.score_list_text.draw_align_right(f"+{self.model.players[player_id].just_too_good_score}", screen, (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 482))
+
+            if self.model.players[player_id].just_a_nerd_score == 0:
+                cross_surface = self.images['cross']
+                cross_rect = cross_surface.get_rect()
+                cross_rect.topright = (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 525)
+                screen.blit(cross_surface, cross_rect)
+            else:
+                self.score_list_text.draw_align_right(f"+{self.model.players[player_id].just_a_nerd_score}", screen, (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 520))
+
 
 class View_players(__Object_base):
     images = tuple(
         scaled_surface(
-            load_image(os.path.join(Const.IMAGE_PATH, Const.PLAYER_PIC[_i])),
+            load_image(os.path.join(Const.IMAGE_PATH, 'players', Const.PLAYER_PIC[_i])),
             0.075 if _i < 20 else 0.075 * 1.5
         )
         for _i in range(0, 40)
@@ -148,11 +190,11 @@ class View_players(__Object_base):
 
     def draw(self, screen):
         # draw players
-        img_shining_period = (int)(self.model.timer / 7 ) % 5
+        img_shining_period = (self.model.timer // 7 ) % 5
         for player in self.model.players:
 
             #magnification =
-            img_play_state = player.player_id * 5 + img_shining_period + (int)( 2*(player.player_radius / Const.PLAYER_RADIUS) - 2 ) * 20
+            img_play_state = player.player_id * 5 + img_shining_period + int( 2*(player.player_radius / Const.PLAYER_RADIUS) - 2 ) * 20
             screen.blit(self.images[img_play_state], self.images[img_play_state].get_rect(center=player.position))
             rect_height = min((2 * player.player_radius - 2),(2 * player.player_radius - 2) / 120 * player.voltage)
 

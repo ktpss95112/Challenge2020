@@ -82,6 +82,7 @@ class GameEngine:
         '''
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
+        self.player_image_timer = 0 # only use for player image change, change when STATE_PLAY and STATE_ENDGAME
         self.item_amount = Const.ITEMS_INIT_AMOUNT
         self.generate_item_probability = Const.GENERATE_ITEM_PROBABILITY
         self.death_rain_emerge_time = random.randint(*Const.DEATH_RAIN_EMERGE_TIME_RANGE)
@@ -121,6 +122,7 @@ class GameEngine:
                 self.update_objects()
                 self.update_variable()
                 self.timer -= 1
+                self.player_image_timer += 1
                 # check if game ends
                 cnt = sum(player.is_alive() for player in self.players)
                 if self.timer == 0 or cnt <= 1:
@@ -128,6 +130,7 @@ class GameEngine:
             elif cur_state == Const.STATE_STOP:
                 self.update_stop()
             elif cur_state == Const.STATE_ENDGAME:
+                self.player_image_timer += 1
                 self.update_endgame()
 
         elif isinstance(event, EventPlay):
@@ -164,7 +167,7 @@ class GameEngine:
                     if player.score == sorted_score[i]:
                         player.rank = i + 1
                         break
-                
+
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventRestart):
@@ -201,6 +204,8 @@ class GameEngine:
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
                 item_id = self.players[event.player_id].keep_item_id
+                if Const.HAS_CUT_IN[item_id]:
+                    self.ev_manager.post(EventCutInStart(event.player_id, item_id))
                 entities = self.players[event.player_id].use_item(self.players, self.timer)
                 peel_position, bullet_position, black_hole_position, bomb_position = [], None, None, None
                 for entity in entities:
@@ -228,6 +233,14 @@ class GameEngine:
                     self.ev_manager.post(EventUseRainbowGrounder(player.position, self.timer))
                 elif item_id == Const.INVINCIBLE_BATTERY:
                     self.ev_manager.post(EventUseInvincibleBattery(player.position, self.timer))
+
+        elif isinstance(event, EventCutInStart):
+            if self.state_machine.peek() != Const.STATE_CUTIN:
+                self.state_machine.push(Const.STATE_CUTIN)
+
+        elif isinstance(event, EventCutInEnd):
+            if self.state_machine.peek() == Const.STATE_CUTIN:
+                self.state_machine.pop()
 
         elif isinstance(event, EventPickArena):
             if self.stage == event.stage:
@@ -437,7 +450,7 @@ class GameEngine:
             find_limit -= 1
             if find_limit == 0:
                 find_position = True
-        
+
         self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
 
     def death_rain(self):
@@ -448,7 +461,7 @@ class GameEngine:
         for direction in Const.BANANA_BOMB_DIRECTION:
             unit = direction.normalize()
             self.entities.append(PistolBullet(-1, pg.Vector2(pos), unit * Const.BULLET_SPEED))
-        
+
 
     def run(self):
         '''
