@@ -167,7 +167,7 @@ class GameEngine:
                     if player.score == sorted_score[i]:
                         player.rank = i + 1
                         break
-                
+
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventRestart):
@@ -241,7 +241,7 @@ class GameEngine:
         elif isinstance(event, EventCutInEnd):
             if self.state_machine.peek() == Const.STATE_CUTIN:
                 self.state_machine.pop()
-       
+
         elif isinstance(event, EventPickArena):
             if self.stage == event.stage:
                 self.stage = Const.NO_STAGE
@@ -450,7 +450,7 @@ class GameEngine:
             find_limit -= 1
             if find_limit == 0:
                 find_position = True
-        
+
         self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
 
     def death_rain(self):
@@ -461,7 +461,7 @@ class GameEngine:
         for direction in Const.BANANA_BOMB_DIRECTION:
             unit = direction.normalize()
             self.entities.append(PistolBullet(-1, pg.Vector2(pos), unit * Const.BULLET_SPEED))
-        
+
 
     def run(self):
         '''

@@ -4,7 +4,7 @@ import os.path
 
 # model-game
 FPS = 60 # frame per second
-GAME_LENGTH = 180 * FPS
+GAME_LENGTH = FPS
 
 # model-player
 PLAYER_NUM = 4

@@ -137,13 +137,13 @@ class View_endgame(__Object_base):
 
             # draw player ball
 
-            img_shining_period = (int)(self.model.timer / 7 ) % 5
+            img_shining_period = (int)(self.model.player_image_timer / 7 ) % 5
             img_play_state = (player_id) * 5 + img_shining_period
             screen.blit(self.player_images[img_play_state], self.player_images[img_play_state].get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260)))
 
             # draw player emoticon
 
-            emoji_surface = self.images[f'emoji_{self.model.players[player_id].rank + 3}']
+            emoji_surface = self.images[f'emoji_{self.model.players[player_id].rank}']
             emoji_rect = emoji_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260))
             screen.blit(emoji_surface, emoji_rect)
 
