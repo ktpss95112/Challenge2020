@@ -60,7 +60,6 @@ class GameEngine:
     '''
     The main game engine. The main loop of the game is in GameEngine.run()
     '''
-
     def __init__(self, ev_manager: EventManager, AI_names: list):
         '''
         This function is called when the GameEngine is created.
@@ -74,8 +73,13 @@ class GameEngine:
         self.AI_names = AI_names
         while len(self.AI_names) < 4:
             self.AI_names.append("m")
-        check_probability()
+        self.check_probability()
 
+    @staticmethod
+    def check_probability():
+        if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
+            print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
+    
     def initialize(self):
         '''
         This method is called when a new game is instantiated.
@@ -473,65 +477,3 @@ class GameEngine:
         while self.running:
             self.ev_manager.post(EventEveryTick())
             self.clock.tick(Const.FPS)
-
-def check_probability():
-    if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
-        print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
-
-
-""" Events that model.py should handle.
-
-EventInitialize{
-    initiate all players;
-    respawn all players;
-    initiate timer
-}
-EventStateChange{
-    pass
-}
-EventEveryTick{
-
-}
-EventTimesUp{
-    maintain item spawn time
-    maintain player respawn time
-    maintain [layer last-being-attacked-time-elapsed;
-}
-EventPlayerMove
-EventPlayerAttack
-EventPlayerRespawn
-EventPlayerDied
-EventPlayerUseItem
-
-"""
-
-"""
-class player's varible
-
-player-id; (1-indexed):int
-last-being-attacked-by:int
-last-being-attacked-time-elapsed:int
-respawn-time-elapsed:int
-is-invincible; (is true when respawn-time-elapsed < t):int
-KO time:int
-has-item:int
-be KOed time:int
-voltage:int
-position:vec2
-velocity; (there is no acceleration variable because acceleration is instant)
-:vec2
-"""
-
-"""
-class item's varible
-item-id (0-indexed)
-postition
-"""
-
-"""
-class platform
-upper-left
-bottom-right
-"""
-
-
