@@ -142,10 +142,10 @@ class View_endgame(__Object_base):
 
         for player_id in range(4):
             # draw player name
-            self.name_text[player_id].draw(self.model.players[player_id].player_name, screen, center=(Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252, 345))
+            self.name_text[player_id].draw(self.model.players[player_id].player_name, screen, center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 345))
 
             # draw player score
-            self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen, center=(Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252, 600))
+            self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen, center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 600))
 
             #draw player ball
 
@@ -188,7 +188,7 @@ class View_endgame(__Object_base):
                     ball_surface = self.images['emoji_purple_fourth']
                 elif player_id == 3:
                     ball_surface = self.images['emoji_yellow_fourth']
-            ball_rect = ball_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252, 260))
+            ball_rect = ball_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260))
             screen.blit(ball_surface, ball_rect)
 
             # draw medal
@@ -200,27 +200,27 @@ class View_endgame(__Object_base):
                     medal_surface = self.images['medal_second']
                 elif self.model.players[player_id].rank == 3:
                     medal_surface = self.images['medal_third']
-                medal_rect = medal_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252 + 75, 210))
+                medal_rect = medal_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 75, 210))
                 screen.blit(medal_surface, medal_rect)
 
             # draw score
-            self.score_list_text.draw_align_right(f"+{self.model.players[player_id].KO_score}", screen, (Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252 + 89, 403))
-            self.score_list_text.draw_align_right(f"-{-(self.model.players[player_id].die_score)}", screen, (Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252 + 89, 441))
+            self.score_list_text.draw_align_right(f"+{self.model.players[player_id].KO_score}", screen, (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 403))
+            self.score_list_text.draw_align_right(f"-{-(self.model.players[player_id].die_score)}", screen, (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 441))
             if self.model.players[player_id].just_too_good_score == 0:
                 cross_surface = self.images['cross']
                 cross_rect = cross_surface.get_rect()
-                cross_rect.topright = (Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252 + 89, 487)
+                cross_rect.topright = (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 487)
                 screen.blit(cross_surface, cross_rect)
             else:
-                self.score_list_text.draw_align_right(f"+{self.model.players[player_id].just_too_good_score}", screen, (Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252 + 89, 482))
+                self.score_list_text.draw_align_right(f"+{self.model.players[player_id].just_too_good_score}", screen, (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 482))
 
             if self.model.players[player_id].just_a_nerd_score == 0:
                 cross_surface = self.images['cross']
                 cross_rect = cross_surface.get_rect()
-                cross_rect.topright = (Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252 + 89, 525)
+                cross_rect.topright = (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 525)
                 screen.blit(cross_surface, cross_rect)
             else:
-                self.score_list_text.draw_align_right(f"+{self.model.players[player_id].just_a_nerd_score}", screen, (Const.WINDOW_SIZE[0] / 2 - (player_id - 1.5) * 252 + 89, 520))
+                self.score_list_text.draw_align_right(f"+{self.model.players[player_id].just_a_nerd_score}", screen, (Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 89, 520))
 
 
 class View_players(__Object_base):
