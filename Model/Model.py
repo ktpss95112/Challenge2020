@@ -252,7 +252,7 @@ class GameEngine:
                 self.stage = random.randrange(Const.STAGE_NUMBER)
 
         elif isinstance(event, EventDeathRainTrigger):
-            self.ev_manager.post(EventDeathRainStart())
+            pass
 
         elif isinstance(event, EventDeathRainStart):
             self.death_rain()

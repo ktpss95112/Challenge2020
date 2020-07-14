@@ -258,7 +258,7 @@ class Animation_Gift_Explode(Animation_raster):
     frames = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, 'gift', f'gift{_i}.png')),
-            0.2
+            0.3
         )
             for _i in range(1, 25)
     )

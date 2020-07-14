@@ -161,6 +161,8 @@ class GraphicalView:
 
         # draw animation
         for ani in self.animation_list:
+            if ani.expired and isinstance(ani, View.animations.Animation_Gift_Explode):
+                self.ev_manager.post(EventDeathRainStart())
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(target, update)
 
