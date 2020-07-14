@@ -6,6 +6,7 @@ from View.utils import scaled_surface, load_image
 import View.staticobjects
 import View.animations
 import View.cutins
+import View.sounds
 import Const
 
 
@@ -199,7 +200,7 @@ class GraphicalView:
 
         if self.cutin_list[0].expired: self.cutin_list.pop(0)
         else:                          self.cutin_list[0].draw(target, True)
-        
+
         pg.display.flip()
 
     def render_endgame(self, target=None, update=True):
