@@ -73,8 +73,8 @@ PLAYER_INIT_POSITION = [
     ],
     [ # stage 2
         pg.Vector2(320 + X_OFFSET, 240 + Y_OFFSET),
-        pg.Vector2(785 + X_OFFSET, 340 + Y_OFFSET),
         pg.Vector2(320 + X_OFFSET, 440 + Y_OFFSET),
+        pg.Vector2(785 + X_OFFSET, 340 + Y_OFFSET),
         pg.Vector2(785 + X_OFFSET, 540 + Y_OFFSET)
     ],
     [ # stage 3
@@ -86,22 +86,22 @@ PLAYER_INIT_POSITION = [
 ]
 PLAYER_RESPAWN_POSITION = [
     [ # stage 1
-        pg.Vector2(150 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(420 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(690 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
+        pg.Vector2(250 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(479 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(652 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(882 + X_OFFSET, 0 + Y_OFFSET)
     ],
     [ # stage 2
-        pg.Vector2(320 + X_OFFSET, 240 + Y_OFFSET),
-        pg.Vector2(785 + X_OFFSET, 340 + Y_OFFSET),
-        pg.Vector2(320 + X_OFFSET, 440 + Y_OFFSET),
-        pg.Vector2(785 + X_OFFSET, 540 + Y_OFFSET)
+        pg.Vector2(290 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(350 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(768 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(828 + X_OFFSET, 0 + Y_OFFSET)
     ],
     [ # stage 3
-        pg.Vector2(100 + X_OFFSET, 507 + Y_OFFSET),
-        pg.Vector2(405 + X_OFFSET, 577 + Y_OFFSET),
-        pg.Vector2(732 + X_OFFSET, 577 + Y_OFFSET),
-        pg.Vector2(1032 + X_OFFSET, 507 + Y_OFFSET)
+        pg.Vector2(100 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(471 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(660 + X_OFFSET, 0 + Y_OFFSET),
+        pg.Vector2(1012 + X_OFFSET, 0 + Y_OFFSET)
     ]
 ]
 
@@ -119,6 +119,7 @@ STATE_MENU = 1
 STATE_PLAY = 2
 STATE_STOP = 3
 STATE_ENDGAME = 4 # show score board and handle restart
+STATE_CUTIN = 5
 
 # model-item
 ITEM_SPECIES = 7
@@ -130,6 +131,7 @@ ZAP_ZAP_ZAP = 4
 BANANA_PEEL = 5
 RAINBOW_GROUNDER = 6
 INVINCIBLE_BATTERY = 7
+HAS_CUT_IN = [False, False, True, False, False, False, False, False]
 
 ZAP_ZAP_ZAP_RANGE = 5 * PLAYER_RADIUS
 ZAP_ZAP_ZAP_SELF_VOLTAGE_UP = 10
@@ -137,8 +139,8 @@ ZAP_ZAP_ZAP_OTHERS_VOLTAGE_UP = 50
 ZAP_ZAP_ZAP_VERTICAL_ACCELERATION = 800 * FPS
 ZAP_ZAP_ZAP_HORIZONTAL_ACCELERATION = 1000 * FPS
 RAINBOW_GROUNDER_VOLTAGE_DOWN = 10
-INVINCIBLE_BATTERY_PLAYER_RADIUS = 2 * PLAYER_RADIUS
-INVINCIBLE_BATTERY_ATTACK_RADIUS = 2 * ATTACK_RADIUS
+INVINCIBLE_BATTERY_PLAYER_RADIUS = 1.5 * PLAYER_RADIUS
+INVINCIBLE_BATTERY_ATTACK_RADIUS = 1.5 * ATTACK_RADIUS
 INVINCIBLE_BATTERY_TIME = 5 * FPS
 RESPAWN_INVINCIBLE_TIME = 2 * FPS
 
@@ -293,3 +295,15 @@ ATTACK_RADIUS_ENHANCEMENT = 0.01
 SPEED_ENHANCEMENT = 0.01
 ATTACK_POWER_ENHANCEMENT = 0.01
 ATTACK_COOL_DOWN_ENHANCEMENT = 0.01
+
+# Cut-in
+CUTIN_BOARD_SIZE = (2 * ARENA_SIZE[0] // 3, 2 * ARENA_SIZE[1] // 5)
+CUTIN_BOARD_INITIAL_POSITION = ((ARENA_SIZE[0] // 2, -CUTIN_BOARD_SIZE[1] // 2))
+CUTIN_BOARD_FINAL_POSITION = ((ARENA_SIZE[0]) // 2, CUTIN_BOARD_SIZE[1] // 2)
+CUTIN_GRAVITY = 30 * FPS
+CUTIN_BOARD_INITIAL_SPEED = 0
+CUTIN_SPEED_MINIMUM = 3
+CUTIN_PLAYER_POSITION = (3 * CUTIN_BOARD_SIZE[0] // 4, 2 * CUTIN_BOARD_SIZE[1] // 3)
+CUTIN_TEXT_POSITION = (CUTIN_BOARD_SIZE[0] // 4, CUTIN_BOARD_SIZE[1] // 2)
+CUTIN_CURSOR_PERIOD = int(0.6 * FPS)
+CUTIN_STAY_TIME = int(1.5 * FPS) # The time cut-in would stay after every thing finish
