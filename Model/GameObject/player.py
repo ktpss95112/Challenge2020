@@ -24,7 +24,7 @@ class Player:
         self.attack_cool_down = Const.ATTACK_COOL_DOWN_TIME
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         # move
-        self.direction = pg.Vector2(1,0)
+        self.direction = pg.Vector2(1, 0)
         self.position = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(Const.PLAYER_INIT_VELOCITY) # current velocity of user
         self.normal_speed = Const.PLAYER_INIT_SPEED # speed gain when players try to move left and right
@@ -231,7 +231,7 @@ class Player:
         #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def be_attacked_by_cancer_bomb(self, unit, magnitude, time):
-        self.velocity += Const.BE_ATTACKED_ACCELERATION * self.voltage_acceleration() * unit / magnitude / Const.FPS
+        self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / magnitude / Const.FPS
         self.voltage += Const.BOMB_ATK
         #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 

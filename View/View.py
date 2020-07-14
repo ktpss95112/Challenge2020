@@ -5,6 +5,7 @@ from Model.Model import GameEngine
 from View.utils import scaled_surface, load_image
 import View.staticobjects
 import View.animations
+import View.cutins
 import Const
 
 
@@ -29,6 +30,7 @@ class GraphicalView:
         self.is_initialized = False
         self.screen = None
         self.stop_background = None
+        self.cutin_screen = None
         self.clock = None
         self.last_update = 0
         self.current_stop_index = None
@@ -41,6 +43,7 @@ class GraphicalView:
         pg.font.init()
         pg.display.set_caption(Const.WINDOW_CAPTION)
         self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
+        self.cutin_screen = pg.Surface(Const.WINDOW_SIZE)
         self.stop_background = pg.Surface(Const.WINDOW_SIZE)
         self.clock = pg.time.Clock()
         self.is_initialized = True
@@ -48,10 +51,14 @@ class GraphicalView:
         # convert images
         View.staticobjects.init_staticobjects()
         View.animations.init_animation()
+        View.cutins.init_cutin()
 
         # animations
         self.animation_list = []
         self.animation_black_hole_list = [] # should be rendered lastly
+
+        # cut-ins
+        self.cutin_list = []
 
         # static objects
         self.scoreboard = View.staticobjects.View_scoreboard(self.model)
@@ -79,6 +86,7 @@ class GraphicalView:
             if cur_state == Const.STATE_MENU: self.render_menu()
             elif cur_state == Const.STATE_PLAY: self.render_play()
             elif cur_state == Const.STATE_STOP: self.render_stop()
+            elif cur_state == Const.STATE_CUTIN: self.render_cutin()
             elif cur_state == Const.STATE_ENDGAME: self.render_endgame()
 
         elif isinstance(event, EventToggleFullScreen):
@@ -102,6 +110,10 @@ class GraphicalView:
         elif isinstance(event, EventBombExplode):
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
+        elif isinstance(event, EventCutInStart):
+            self.render_play(self.cutin_screen)
+            if event.item_id == Const.BIG_BLACK_HOLE:
+                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id, self.model.players))
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
@@ -174,6 +186,20 @@ class GraphicalView:
 
         self.stop.draw(target)
 
+        pg.display.flip()
+
+    def render_cutin(self, target=None, update=True):
+        if target is None:
+            target = self.screen
+        # self.render_play()
+        target.blit(self.cutin_screen, (0, 0))
+        if not self.cutin_list:
+            self.ev_manager.post(EventCutInEnd())
+            return
+
+        if self.cutin_list[0].expired: self.cutin_list.pop(0)
+        else:                          self.cutin_list[0].draw(target, True)
+        
         pg.display.flip()
 
     def render_endgame(self, target=None, update=True):
