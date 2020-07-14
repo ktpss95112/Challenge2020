@@ -430,7 +430,7 @@ class GameEngine:
                 self.generate_item_in_range(0, -100, Const.ARENA_SIZE[0], 100)
 
         if len(self.items) < int(self.item_amount) and random.random() < self.generate_item_probability:
-            self.generate_item_in_range(0, 0, Const.ARENA_SIZE[0], Const.ARENA_SIZE[1])
+            self.generate_item_in_range(0, 0, Const.ARENA_SIZE[0], Const.ARENA_SIZE[1] // 3)
 
     def generate_item_in_range(self, left, upper, width, height):
         enabled_items, p = [], []
