@@ -41,6 +41,9 @@ class Helper(object):
     def get_game_gravity_acceleration(self):
         return Const.GRAVITY_ACCELERATION / Const.FPS
 
+    def get_live_player_num(self):
+        return sum(1 if player.life > 0 else 0 for player in self.model.players)
+    
     # get self information
     def get_self_id(self):
         return self.player_id
@@ -161,7 +164,7 @@ class Helper(object):
         return [player.attack_cool_down_time / Const.FPS for player in self.model.players]
 
     def get_all_can_jump(self):
-        return [player.jump_quota >= 0 for player in self.model.players]
+        return [player.jump_quota > 0 for player in self.model.players]
 
     def get_all_jump_quota(self):
         return [player.jump_quota for player in self.model.players]
@@ -215,28 +218,34 @@ class Helper(object):
     def get_other_invincible_time(self, index):
         return self.model.players[index].invincible_time / Const.FPS
 
+    def get_other_is_controllable(self, index):
+        return self.model.players[index].uncontrollable_time <= 0
+
     def get_other_uncontrollable_time(self, index):
         return self.model.players[index].uncontrollable_time / Const.FPS
     
+    def get_other_can_jump(self, index):
+        return (self.model.players[index].jump_quota > 0)
+
+    def get_other_jump_quota(self, index):
+        return self.model.players[index].jump_quota
+
     def get_other_life(self, index):
         return self.model.players[index].life
 
     def get_other_score(self, index):
         return self.model.players[index].score
 
-    def get_other_jump_quota(self, index):
-        return self.model.players[index].jump_quota
-
-    def get_other_jump_to_the_highest_time(self, index):
-        return self.model.players[index].velocity.y / Const.GRAVITY_ACCELERATION
+    def get_other_can_attack(self, index):
+        return self.model.players[index].can_attack()
 
     def get_other_can_attack_time(self, index):
         return self.model.players[index].attack_cool_down_time / Const.FPS
 
-    def get_other_can_attack(self, index):
-        return self.model.players[index].can_attack()
+    def get_other_jump_to_the_highest_time(self, index):
+        return -self.model.players[index].velocity.y / Const.GRAVITY_ACCELERATION
 
-    def get_other_will_drop(self, index):
+    def get_other_have_platform_below(self, index):
         other_position = self.get_other_position(index)
         other_radius = self.get_other_radius(index)
         platforms = self.get_platform_position()
@@ -251,14 +260,6 @@ class Helper(object):
     def get_other_player_distance(self, index):
         return self.get_distance(self.get_self_position(), self.get_other_position(index))
 
-    def get_live_player_num(self):
-        lives = self.get_all_life()
-        num = Const.PLAYER_NUM
-        for life in lives:
-            if life == 0:
-                num = num - 1
-        return num
-    
     # get item information
     def item_exists(self):
         return (True if self.model.items else False)
