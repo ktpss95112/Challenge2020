@@ -44,9 +44,9 @@ Y_OFFSET = 31.85
 PLATFORM_INIT_POSITION = [
     [ # stage 1
         [pg.Vector2(150 + X_OFFSET, 570 + Y_OFFSET), pg.Vector2(982 + X_OFFSET, 580 + Y_OFFSET)],
-        [pg.Vector2(100 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(400 + X_OFFSET, 450 + Y_OFFSET)],
+        [pg.Vector2(100 + X_OFFSET, 370 + Y_OFFSET), pg.Vector2(400 + X_OFFSET, 380 + Y_OFFSET)],
         [pg.Vector2(350 + X_OFFSET, 270 + Y_OFFSET), pg.Vector2(782 + X_OFFSET, 280 + Y_OFFSET)],
-        [pg.Vector2(732 + X_OFFSET, 440 + Y_OFFSET), pg.Vector2(1032 + X_OFFSET, 450 + Y_OFFSET)]
+        [pg.Vector2(732 + X_OFFSET, 370 + Y_OFFSET), pg.Vector2(1032 + X_OFFSET, 380 + Y_OFFSET)]
     ],
     [ # stage 2
         [pg.Vector2(150 + X_OFFSET, 270 + Y_OFFSET), pg.Vector2(491 + X_OFFSET, 280 + Y_OFFSET)],
