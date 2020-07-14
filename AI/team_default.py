@@ -24,16 +24,28 @@ class TeamAI:
         self.enhancement = [0, 0, 0, 0]
     
     def decide(self):
-       	if self.helper.get_self_have_platform_below():
-       		# go to middle of the platform
-       		platform_id = self.helper.get_above_which_land(self.helper.get_self_position())
-       		platform = self.helper.get_platform_position()[platform_id]
-       		platform_mid = ((platform[0][0] + platform[1][0]) / 2, (platform[0][1] + platform[1][1]) / 2)
-       		return self.helper.walk_to_position(platform_mid)
-       	else:
-       		# go to closest land
-       		pos = self.helper.get_self_position()
-       		closest_land_vec = self.helper.get_position_vector_to_closest_land()
-       		closest_land_pos = (pos[0] + closest_land_vec[0], pos[1] + closest_land_vec[1])
-       		return self.helper.walk_to_position(closest_land_pos)
+        if self.helper.get_self_keep_item_id() != NO_ITEM:
+            return AI_DIR_USE_ITEM
+
+        # get distance to other player
+        distance = self.helper.get_all_player_distance()
+        distance.pop(self.helper.get_self_id())
+        
+        if self.helper.get_self_can_attack() and\
+            min(distance) < self.helper.get_self_attack_radius():
+            return AI_DIR_ATTACK
+
+        platform_id = self.helper.get_above_which_land(self.helper.get_self_position())
+        if platform_id != -1:
+            # go to middle of the platform
+            platform_pos = self.helper.get_platform_position()[platform_id]
+            platform_mid = ((platform_pos[0][0] + platform_pos[1][0]) / 2,\
+                            (platform_pos[0][1] + platform_pos[1][1]) / 2)
+            return self.helper.walk_to_position(platform_mid)
+        else:
+            # go to closest land
+            pos = self.helper.get_self_position()
+            closest_land_vec = self.helper.get_position_vector_to_closest_land()
+            closest_land_pos = (pos[0] + closest_land_vec[0], pos[1] + closest_land_vec[1])
+            return self.helper.walk_to_position(closest_land_pos)
 
