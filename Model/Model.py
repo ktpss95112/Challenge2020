@@ -292,7 +292,7 @@ class GameEngine:
         self.players_collision_detect()
         for player in self.players:
             if player.is_alive():
-                # maintain position, velocity and timer
+                # maintain position, velocity, timer and score
                 player.update_every_tick(self.platforms, self.timer)
 
                 # maintain items
@@ -306,9 +306,6 @@ class GameEngine:
                 # maintain lifes
                 if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                     self.ev_manager.post(EventPlayerDied(player.player_id))
-        # maintain scores
-        for player in self.players:
-            player.maintain_score_every_tick()
 
     def update_objects(self):
         '''
@@ -465,7 +462,6 @@ class GameEngine:
         for direction in Const.BANANA_BOMB_DIRECTION:
             unit = direction.normalize()
             self.entities.append(PistolBullet(-1, pg.Vector2(pos), unit * Const.BULLET_SPEED))
-
 
     def run(self):
         '''
