@@ -87,7 +87,7 @@ class BigBlackHole(Entity):
                 # below can be change into "normal.y * tangent.x > 0" but current one is clearer
                 if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0):
                     tangent *= -1
-                obj.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
+                obj.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 200
 
 
 class CancerBomb(Entity):
