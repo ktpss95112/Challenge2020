@@ -95,6 +95,9 @@ class Player(object):
         # Maintain three timers
         self.maintain_timer_every_tick()
 
+        # Maintain score
+        self.maintain_score_every_tick()
+
     def maintain_speed_every_tick(self, time):
         self.normal_speed = self.speed_function(time)
 
@@ -130,6 +133,11 @@ class Player(object):
     def move_every_tick(self):
         self.position += self.velocity / Const.FPS
 
+    def maintain_score_every_tick(self):
+        self.KO_score = self.KO_amount * 300
+        self.die_score = -self.die_amount * 150
+        self.score = self.KO_score + self.die_score
+
     def find_item_every_tick(self, items: list):
         # called by model update_players()
         for item in items:
@@ -137,12 +145,6 @@ class Player(object):
             if distance <= item.item_radius + self.player_radius:
                 return item
         return None
-
-    def maintain_score_every_tick(self):
-        # called by model update_players()
-        self.KO_score = self.KO_amount * 300
-        self.die_score = -self.die_amount * 150
-        self.score = self.KO_score + self.die_score
 
     def collision(self, other, platforms: list):
         # Deal with collision with other player

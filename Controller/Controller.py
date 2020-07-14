@@ -76,7 +76,7 @@ class Controller:
         for k, v in Const.PLAYER_MOVE_KEYS.items():
             if keys[k]:
                 self.ev_manager.post(EventPlayerMove(*v))
-        
+
         for event_pg in key_down_events:
             try:
                 Const.handle_keys[event_pg.key](self, self.model)

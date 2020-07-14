@@ -63,7 +63,7 @@ class GameEngine(object):
     The main game engine. The main loop of the game is in GameEngine.run()
     '''
     __slots__ = ('ev_manager', 'state_machine', 'AI_names',\
-                'clock', 'timer', 'item_amount', 'generate_item_probability',\
+                'clock', 'timer', 'player_image_timer', 'item_amount', 'generate_item_probability',\
                 'death_rain_emerge_time', 'death_rain_last_time', 'players',\
                 'random_stage_timer', 'stage', 'stop_screen_timer', 'stop_screen_index',\
                 'platforms', 'items', 'entities',\
@@ -82,14 +82,20 @@ class GameEngine(object):
         self.AI_names = AI_names
         while len(self.AI_names) < 4:
             self.AI_names.append("m")
-        check_probability()
+        self.check_probability()
 
+    @staticmethod
+    def check_probability():
+        if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
+            print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
+    
     def initialize(self):
         '''
         This method is called when a new game is instantiated.
         '''
         self.clock = pg.time.Clock()
         self.timer = Const.GAME_LENGTH
+        self.player_image_timer = 0 # only use for player image change, change when STATE_PLAY and STATE_ENDGAME
         self.item_amount = Const.ITEMS_INIT_AMOUNT
         self.generate_item_probability = Const.GENERATE_ITEM_PROBABILITY
         self.death_rain_emerge_time = random.randint(*Const.DEATH_RAIN_EMERGE_TIME_RANGE)
@@ -129,6 +135,7 @@ class GameEngine(object):
                 self.update_objects()
                 self.update_variable()
                 self.timer -= 1
+                self.player_image_timer += 1
                 # check if game ends
                 cnt = sum(player.is_alive() for player in self.players)
                 if self.timer == 0 or cnt <= 1:
@@ -136,6 +143,7 @@ class GameEngine(object):
             elif cur_state == Const.STATE_STOP:
                 self.update_stop()
             elif cur_state == Const.STATE_ENDGAME:
+                self.player_image_timer += 1
                 self.update_endgame()
 
         elif isinstance(event, EventPlay):
@@ -155,6 +163,8 @@ class GameEngine(object):
             # compute score
             max_KO_amount = max(player.KO_amount for player in self.players)
             for player in self.players:
+                player.KO_score = player.KO_amount * 300
+                player.die_score = -player.die_amount * 150
                 if player.KO_amount == max_KO_amount:
                     player.just_too_good_score = 500
                 if player.die_amount == 0:
@@ -172,7 +182,7 @@ class GameEngine(object):
                     if player.score == sorted_score[i]:
                         player.rank = i + 1
                         break
-                
+
             self.state_machine.push(Const.STATE_ENDGAME)
 
         elif isinstance(event, EventRestart):
@@ -209,6 +219,8 @@ class GameEngine(object):
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
                 item_id = self.players[event.player_id].keep_item_id
+                if Const.HAS_CUT_IN[item_id]:
+                    self.ev_manager.post(EventCutInStart(event.player_id, item_id))
                 entities = self.players[event.player_id].use_item(self.players, self.timer)
                 peel_position, bullet_position, black_hole_position, bomb_position = [], None, None, None
                 for entity in entities:
@@ -237,6 +249,14 @@ class GameEngine(object):
                 elif item_id == Const.INVINCIBLE_BATTERY:
                     self.ev_manager.post(EventUseInvincibleBattery(player.position, self.timer))
 
+        elif isinstance(event, EventCutInStart):
+            if self.state_machine.peek() != Const.STATE_CUTIN:
+                self.state_machine.push(Const.STATE_CUTIN)
+
+        elif isinstance(event, EventCutInEnd):
+            if self.state_machine.peek() == Const.STATE_CUTIN:
+                self.state_machine.pop()
+
         elif isinstance(event, EventPickArena):
             if self.stage == event.stage:
                 self.stage = Const.NO_STAGE
@@ -247,7 +267,7 @@ class GameEngine(object):
                 self.stage = random.randrange(Const.STAGE_NUMBER)
 
         elif isinstance(event, EventDeathRainTrigger):
-            self.ev_manager.post(EventDeathRainStart())
+            pass
 
         elif isinstance(event, EventDeathRainStart):
             self.death_rain()
@@ -283,7 +303,7 @@ class GameEngine(object):
         self.players_collision_detect()
         for player in self.players:
             if player.is_alive():
-                # maintain position, velocity and timer
+                # maintain position, velocity, timer and score
                 player.update_every_tick(self.platforms, self.timer)
 
                 # maintain items
@@ -297,9 +317,6 @@ class GameEngine(object):
                 # maintain lifes
                 if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                     self.ev_manager.post(EventPlayerDied(player.player_id))
-        # maintain scores
-        for player in self.players:
-            player.maintain_score_every_tick()
 
     def update_objects(self):
         '''
@@ -321,7 +338,7 @@ class GameEngine(object):
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))
                 elif isinstance(entity, DeathRain):
-                    self.ev_manager.post(EventDeathRainTrigger())
+                    self.ev_manager.post(EventDeathRainTrigger(entity.position, self.timer))
                 self.entities.remove(entity)
 
     def update_stop(self):
@@ -424,7 +441,7 @@ class GameEngine(object):
                 self.generate_item_in_range(0, -100, Const.ARENA_SIZE[0], 100)
 
         if len(self.items) < int(self.item_amount) and random.random() < self.generate_item_probability:
-            self.generate_item_in_range(0, 0, Const.ARENA_SIZE[0], Const.ARENA_SIZE[1])
+            self.generate_item_in_range(0, 0, Const.ARENA_SIZE[0], Const.ARENA_SIZE[1] // 3)
 
     def generate_item_in_range(self, left, upper, width, height):
         enabled_items, p = [], []
@@ -445,7 +462,7 @@ class GameEngine(object):
             find_limit -= 1
             if find_limit == 0:
                 find_position = True
-        
+
         self.items.append(Item(new_item, pos, Const.ITEM_RADIUS[new_item - 1], Const.ITEM_DRAG[new_item - 1]))
 
     def death_rain(self):
@@ -456,7 +473,6 @@ class GameEngine(object):
         for direction in Const.BANANA_BOMB_DIRECTION:
             unit = direction.normalize()
             self.entities.append(PistolBullet(-1, pg.Vector2(pos), unit * Const.BULLET_SPEED))
-        
 
     def run(self):
         '''
@@ -468,65 +484,3 @@ class GameEngine(object):
         while self.running:
             self.ev_manager.post(EventEveryTick())
             self.clock.tick(Const.FPS)
-
-def check_probability():
-    if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
-        print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
-
-
-""" Events that model.py should handle.
-
-EventInitialize{
-    initiate all players;
-    respawn all players;
-    initiate timer
-}
-EventStateChange{
-    pass
-}
-EventEveryTick{
-
-}
-EventTimesUp{
-    maintain item spawn time
-    maintain player respawn time
-    maintain [layer last-being-attacked-time-elapsed;
-}
-EventPlayerMove
-EventPlayerAttack
-EventPlayerRespawn
-EventPlayerDied
-EventPlayerUseItem
-
-"""
-
-"""
-class player's varible
-
-player-id; (1-indexed):int
-last-being-attacked-by:int
-last-being-attacked-time-elapsed:int
-respawn-time-elapsed:int
-is-invincible; (is true when respawn-time-elapsed < t):int
-KO time:int
-has-item:int
-be KOed time:int
-voltage:int
-position:vec2
-velocity; (there is no acceleration variable because acceleration is instant)
-:vec2
-"""
-
-"""
-class item's varible
-item-id (0-indexed)
-postition
-"""
-
-"""
-class platform
-upper-left
-bottom-right
-"""
-
-

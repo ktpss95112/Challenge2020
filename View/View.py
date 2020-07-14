@@ -5,6 +5,7 @@ from Model.Model import GameEngine
 from View.utils import scaled_surface, load_image
 import View.staticobjects
 import View.animations
+import View.cutins
 import Const
 
 
@@ -13,8 +14,9 @@ class GraphicalView(object):
     Draws the state of GameEngine onto the screen.
     '''
     __slots__ = ('ev_manager', 'model', 'is_initialized', 'screen', 'stop_background',\
-                'clock', 'last_update', 'current_stop_index',\
-                'animation_list', 'animation_black_hole_list', 'scoreboard', 'players', 'platform', 'items', 'timer',\
+                'cutin_screen', 'clock', 'last_update', 'current_stop_index',\
+                'animation_list', 'animation_black_hole_list', 'cutin_list',\
+                'scoreboard', 'players', 'platform', 'items', 'timer',\
                 'entities', 'menu', 'endgame', 'stop', 'stage')
 
     background = pg.Surface(Const.ARENA_SIZE)
@@ -34,6 +36,7 @@ class GraphicalView(object):
         self.is_initialized = False
         self.screen = None
         self.stop_background = None
+        self.cutin_screen = None
         self.clock = None
         self.last_update = 0
         self.current_stop_index = None
@@ -46,6 +49,7 @@ class GraphicalView(object):
         pg.font.init()
         pg.display.set_caption(Const.WINDOW_CAPTION)
         self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
+        self.cutin_screen = pg.Surface(Const.WINDOW_SIZE)
         self.stop_background = pg.Surface(Const.WINDOW_SIZE)
         self.clock = pg.time.Clock()
         self.is_initialized = True
@@ -53,10 +57,14 @@ class GraphicalView(object):
         # convert images
         View.staticobjects.init_staticobjects()
         View.animations.init_animation()
+        View.cutins.init_cutin()
 
         # animations
         self.animation_list = []
         self.animation_black_hole_list = [] # should be rendered lastly
+
+        # cut-ins
+        self.cutin_list = []
 
         # static objects
         self.scoreboard = View.staticobjects.View_scoreboard(self.model)
@@ -84,6 +92,7 @@ class GraphicalView(object):
             if cur_state == Const.STATE_MENU: self.render_menu()
             elif cur_state == Const.STATE_PLAY: self.render_play()
             elif cur_state == Const.STATE_STOP: self.render_stop()
+            elif cur_state == Const.STATE_CUTIN: self.render_cutin()
             elif cur_state == Const.STATE_ENDGAME: self.render_endgame()
 
         elif isinstance(event, EventToggleFullScreen):
@@ -107,11 +116,21 @@ class GraphicalView(object):
         elif isinstance(event, EventBombExplode):
             self.animation_list.append(View.animations.Animation_Bomb_Explode(center=event.position))
 
+        elif isinstance(event, EventCutInStart):
+            self.render_play(self.cutin_screen)
+            if event.item_id == Const.BIG_BLACK_HOLE:
+                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id, self.model.players))
+            elif event.item_id == Const.ZAP_ZAP_ZAP:
+                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id, self.model.players))
+                
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
         elif isinstance(event, EventUseRainbowGrounder):
             self.animation_list.append(View.animations.Animation_Rainbow(center=event.player_position))
+
+        elif isinstance(event, EventDeathRainTrigger):
+            self.animation_list.append(View.animations.Animation_Gift_Explode(center=event.position))
 
         elif isinstance(event, EventUseBigBlackHole):
             self.animation_black_hole_list.append(View.animations.Animation_Black_Hole(event.black_hole_position))
@@ -151,6 +170,8 @@ class GraphicalView(object):
 
         # draw animation
         for ani in self.animation_list:
+            if ani.expired and isinstance(ani, View.animations.Animation_Gift_Explode):
+                self.ev_manager.post(EventDeathRainStart())
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(target, update)
 
@@ -179,6 +200,20 @@ class GraphicalView(object):
 
         self.stop.draw(target)
 
+        pg.display.flip()
+
+    def render_cutin(self, target=None, update=True):
+        if target is None:
+            target = self.screen
+        # self.render_play()
+        target.blit(self.cutin_screen, (0, 0))
+        if not self.cutin_list:
+            self.ev_manager.post(EventCutInEnd())
+            return
+
+        if self.cutin_list[0].expired: self.cutin_list.pop(0)
+        else:                          self.cutin_list[0].draw(target, True)
+        
         pg.display.flip()
 
     def render_endgame(self, target=None, update=True):

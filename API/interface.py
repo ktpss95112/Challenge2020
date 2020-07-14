@@ -21,7 +21,7 @@ class Interface(object):
 
     def notify(self, event: BaseEvent):
         """
-        Receive events posted to the message queue. 
+        Receive events posted to the message queue.
         """
         if isinstance(event, EventEveryTick):
             cur_state = self.model.state_machine.peek()
@@ -49,7 +49,7 @@ class Interface(object):
                     self.ev_manager.post(EventPlayerMove(player.player_id, 'right'))
                     self.ev_manager.post(EventPlayerJump(player.player_id))
                 elif AI_dir == 5 and player.can_attack():
-                    self.ev_manager.post(EventPlayerAttack(player.player_id)) 
+                    self.ev_manager.post(EventPlayerAttack(player.player_id))
                 elif AI_dir == 6 and player.has_item():
                     self.ev_manager.post(EventPlayerItem(player.player_id))
                 elif AI_dir == 7:
@@ -59,14 +59,14 @@ class Interface(object):
         if self.is_init_AI:
             return
         self.is_init_AI = True
-        
+
         for player in self.model.players:
             if player.player_name == "manual":
                 continue
             # load TeamAI .py file
             # TODO: change the path
             try:
-                loadtmp = imp.load_source('', f"./API/team_{player.player_name}.py")
+                loadtmp = imp.load_source('', f"./AI/team_{player.player_name}.py")
             except:
                 self.load_msg(str(player.player_id), player.player_name, "AI can't load")
                 player.player_name, player.is_AI = "Error", False
