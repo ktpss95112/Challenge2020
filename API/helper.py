@@ -423,10 +423,10 @@ class Helper(object):
             if position[0] > self.model.platforms[2].upper_left.x - 20 and position[0] < self.model.platforms[2].bottom_right.x + 20 and position[1] < self.model.platforms[2].upper_left.y:
                 index = 2
         elif self.model.stage == Const.STAGE_2:
-            for platform in self.model.platforms:
-                if position[0] > platform.upper_left.x - 20 and position[0] < platform.bottom_right.x + 20 and position[1] <= platform.upper_left.y and index < 0:
-                    index = count
-                count+=1
+            temp = [3,2,1,0]
+            for i in range(0,4):
+                if position[0] > self.model.platforms[temp[i]].upper_left.x - 20 and position[0] < self.model.platforms[temp[i]].bottom_right.x + 20 and position[1] <= self.model.platforms[temp[i]].upper_left.y:
+                    index = temp[i]
         elif self.model.stage == Const.STAGE_3:
             temp = [2,0,1,3,4,5]
             for i in range(0,6):
@@ -481,6 +481,12 @@ class Helper(object):
                 command = AI_DIR_LEFT
             else:
                 command = AI_DIR_RIGHT
+        elif self_velocity[1] > 0 and self_jump_quota == 0 and player_above_which_land != -1:
+            if (self.model.platforms[player_above_which_land].upper_left.x + self.model.platforms[player_above_which_land].bottom_right.x) / 2 - player_position[0] > 0 :
+                command = AI_DIR_RIGHT
+            else:
+                command = AI_DIR_LEFT
+
         elif player_above_which_land == -1:
             if self_velocity[1] >= 0 and self_jump_quota > 0 and player_position[1] > target_position[1]:
                 command = AI_DIR_JUMP
@@ -507,7 +513,7 @@ class Helper(object):
                 elif player_above_which_land == 3:
                     command = AI_DIR_LEFT
             elif self.model.stage == Const.STAGE_2:
-                if player_position[0] < 680:
+                if player_position[0] < 587:
                     command = AI_DIR_RIGHT
                 else:
                     command = AI_DIR_LEFT
