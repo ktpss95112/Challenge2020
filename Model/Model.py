@@ -144,6 +144,16 @@ class GameEngine:
                 self.state_machine.pop()
 
         elif isinstance(event, EventTimesUp):
+            # compute score
+            max_KO_amount = max(player.KO_amount for player in self.players)
+            for player in self.players:
+                if player.KO_amount == max_KO_amount:
+                    player.just_too_good_score = 500
+                if player.die_amount == 0:
+                    player.just_a_nerd_score = 2000
+                player.score = player.KO_score + player.die_score\
+                            + player.just_too_good_score + player.just_a_nerd_score
+            # compute rank
             scores = []
             for player in self.players:
                 scores.append(player.score)
@@ -290,9 +300,8 @@ class GameEngine:
                 if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                     self.ev_manager.post(EventPlayerDied(player.player_id))
         # maintain scores
-        highest_KO_amount = max(player.KO_amount for player in self.players)
         for player in self.players:
-            player.maintain_score_every_tick(highest_KO_amount)
+            player.maintain_score_every_tick()
 
     def update_objects(self):
         '''
@@ -359,6 +368,11 @@ class GameEngine:
             if player2 == -1:
                 self.players[player1].bounce_reliable(collision_fps)
             else:
+                self.players[player1].last_being_collided_with = player2
+                self.players[player1].last_being_collided_time_elapsed = self.timer
+                self.players[player2].last_being_collided_with = player1
+                self.players[player2].last_being_collided_time_elapsed = self.timer
+
                 self.players[player1].collision_reliable(self.players[player2], collision_fps)
             origin_fps = collision_fps
             player1, player2, collision_fps = self.first_collision(origin_fps)
