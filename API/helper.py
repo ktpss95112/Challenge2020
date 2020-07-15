@@ -11,9 +11,10 @@ AI_DIR_ATTACK      = 5
 AI_DIR_USE_ITEM    = 6
 AI_DIR_STAY        = 7
 
-'''
+"""
 When return timers or velocity, please use "second" as time unit.
-'''
+document: https://hackmd.io/c7plwdAjS6yX-37Kh7PXaw?view
+"""
 class Helper(object):
     def __init__(self, model, index):
         self.model = model
@@ -226,17 +227,17 @@ class Helper(object):
     def get_other_jump_quota(self, index):
         return self.model.players[index].jump_quota
 
-    def get_other_life(self, index):
-        return self.model.players[index].life
-
-    def get_other_score(self, index):
-        return self.model.players[index].score
-
     def get_other_can_attack(self, index):
         return self.model.players[index].can_attack()
 
     def get_other_can_attack_time(self, index):
         return self.model.players[index].attack_cool_down_time / Const.FPS
+
+    def get_other_life(self, index):
+        return self.model.players[index].life
+
+    def get_other_score(self, index):
+        return self.model.players[index].score
 
     def get_other_jump_to_the_highest_time(self, index):
         return -self.model.players[index].velocity.y / Const.GRAVITY_ACCELERATION
@@ -256,126 +257,10 @@ class Helper(object):
     def get_other_player_distance(self, index):
         return self.get_distance(self.get_self_position(), self.get_other_position(index))
 
-    # get item information
-    def item_exists(self):
-        return (True if self.model.items else False)
-
-    def get_nearest_item_position(self):
-        player_pos = self.get_self_position()
-        minimum_distance = 10000
-        position = (0, 0)
-        for item in self.model.items:
-            distance = self.get_distance(player_pos, item.position)
-            if distance < minimum_distance:
-                minimum_distance = distance
-                position = item.position
-        return position
-    
-    def get_all_banana_pistol_position(self):
-        return [tuple(item.position) for item in self.model.items if item.item_id == 1]
-    
-    def get_all_banana_pistol_velocity(self):
-        return [tuple(item.velocity) for item in self.model.items if item.item_id == 1]
-            
-    def get_all_big_black_hole_position(self):
-        return [tuple(item.position) for item in self.model.items if item.item_id == 2]
-    
-    def get_all_big_black_hole_velocity(self):
-        return [tuple(item.velocity) for item in self.model.items if item.item_id == 2]
-    
-    def get_all_cancer_bomb_position(self):
-        return [tuple(item.position) for item in self.model.items if item.item_id == 3]
-
-    def get_all_cancer_bomb_velocity(self):
-        return [tuple(item.velocity) for item in self.model.items if item.item_id == 3]
-
-    def get_all_zap_zap_zap_position(self):
-        return [tuple(item.position) for item in self.model.items if item.item_id == 4]
-
-    def get_all_zap_zap_zap_velocity(self):
-        return [tuple(item.velocity) for item in self.model.items if item.item_id == 4]
-
-    def get_all_banana_peel_position(self):
-        return [tuple(item.position) for item in self.model.items if item.item_id == 5]
-
-    def get_all_banana_peel_velocity(self):
-        return [tuple(item.velocity) for item in self.model.items if item.item_id == 5]
-
-    def get_all_rainbow_grounder_position(self):
-        return [tuple(item.position) for item in self.model.items if item.item_id == 6]
-
-    def get_all_rainbow_grounder_velocity(self):
-        return [tuple(item.velocity) for item in self.model.items if item.item_id == 6]
-
-    def get_all_invincible_battery_position(self):
-        return [tuple(item.position) for item in self.model.items if item.item_id == 7]
-
-    def get_all_invincible_battery_velocity(self):
-        return [tuple(item.velocity) for item in self.model.items if item.item_id == 7]
-                
-    def get_all_item_position(self):
-        return [tuple(item.position) for item in self.model.items]
-    
-    def get_black_hole_effect_radius(self):
-        return Const.BLACK_HOLE_EFFECT_RADIUS
-    
-    def get_cancer_bomb_effect_radius(self):
-        return Const.BOMB_EXPLODE_RADIUS
-
-    def get_zap_zap_zap_effect_range(self):
-        return Const.ZAP_ZAP_ZAP_RANGE
-
     # get platform information 
     def get_platform_position(self):
         return [(tuple(platform.upper_left), tuple(platform.bottom_right)) for platform in self.model.platforms]
     
-    # get special information
-    def get_nearest_player(self):  # when the nearest_player not only one?
-        nearest_id = 0
-        minimum_distance = 10000 ** 2 
-        for player in self.model.players:
-            if player.player_id != self.player_id:
-                current_distance = (self.model.players[self.player_id].position - player.position).magnitude() 
-                if current_distance < minimum_distance:
-                    minimum_distance = current_distance
-                    nearest_id = player.player_id
-        return nearest_id
-    
-    def get_highest_voltage_player(self):    # when the highest_voltage_player not only one?
-        highest_voltage_id = 0
-        highest_voltage = 0
-        for player in self.model.players:
-            if player.player_id != self.player_id:
-                if player.voltage > highest_voltage:
-                    highest_voltage = player.voltage
-                    highest_voltage_id = player.player_id
-        return highest_voltage_id
-
-    def get_highest_score_player(self):   # when the highest_score_player not only one?
-        highest_score_id = 0
-        highest_score = 0
-        for player in self.model.players:
-            if player.player_id != self.player_id:
-                if player.score > highest_score:
-                    highest_score = player.score
-                    highest_score_id = player.player_id
-        return highest_score_id
-
-    def get_distance(self, p1, p2):
-        return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
-
-    def get_vector(self, p1, p2):
-        # get vector from p1 to p2
-        return ((p2[0] - p1[0]), (p2[1] - p1[1])) 
-
-    def get_position_will_drop(self, pos):
-        # Doesn't consider radius
-        platforms = self.get_platform_position()
-        for platform in platforms:
-            if platform[0][0] < pos[0] < platform[1][0] and pos[1] <= platform[0][1]:
-                return False
-        return True
-
     def get_distance_to_closest_land(self):
         minimum_distance = 10000 ** 2
         distance = 0
@@ -418,9 +303,72 @@ class Helper(object):
                 index, current_platform_y = i, platform[0][1]
         return index
 
+    # get item information
+    def item_exists(self):
+        return (True if self.model.items else False)
+
+    def get_nearest_item_position(self):
+        player_pos = self.get_self_position()
+        minimum_distance = 10000
+        position = (0, 0)
+        for item in self.model.items:
+            distance = self.get_distance(player_pos, item.position)
+            if distance < minimum_distance:
+                minimum_distance = distance
+                position = item.position
+        return position
+
+    def get_all_item_position(self):
+        return [tuple(item.position) for item in self.model.items]
+    
+    def get_all_banana_pistol_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 1]
+    
+    def get_all_banana_pistol_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 1]
+            
+    def get_all_big_black_hole_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 2]
+    
+    def get_all_big_black_hole_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 2]
+    
+    def get_all_cancer_bomb_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 3]
+
+    def get_all_cancer_bomb_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 3]
+
+    def get_all_zap_zap_zap_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 4]
+
+    def get_all_zap_zap_zap_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 4]
+
+    def get_all_banana_peel_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 5]
+
+    def get_all_banana_peel_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 5]
+
+    def get_all_rainbow_grounder_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 6]
+
+    def get_all_rainbow_grounder_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 6]
+
+    def get_all_invincible_battery_position(self):
+        return [tuple(item.position) for item in self.model.items if item.item_id == 7]
+
+    def get_all_invincible_battery_velocity(self):
+        return [tuple(item.velocity) for item in self.model.items if item.item_id == 7]
+
     # get all entity information
     def entity_exists(self):
         return (True if self.model.entities else False)
+
+    def get_all_entity_position(self):
+        return [tuple(entity.position) for entity in self.model.entities] 
     
     def get_all_drop_pistol_bullet_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, PistolBullet)]
@@ -449,9 +397,84 @@ class Helper(object):
     def get_all_drop_big_black_hole_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BigBlackHole)]
 
-    def get_all_entity_position(self):
-        return [tuple(entity.position) for entity in self.model.entities]
+    def get_black_hole_effect_radius(self):
+        return Const.BLACK_HOLE_EFFECT_RADIUS
     
+    def get_cancer_bomb_effect_radius(self):
+        return Const.BOMB_EXPLODE_RADIUS
+
+    def get_zap_zap_zap_effect_range(self):
+        return Const.ZAP_ZAP_ZAP_RANGE
+
+    # get special information
+    def get_nearest_player(self):  # when the nearest_player not only one?
+        return min\
+            (\
+                filter(lambda player: player.player_id != self.player_id, self.model.players),\
+                key = lambda player: (self.model.players[self.player_id].position - player.position).magnitude()\
+            ).player_id
+        '''
+        nearest_id = 0
+        minimum_distance = 10000 ** 2 
+        for player in self.model.players:
+            if player.player_id != self.player_id:
+                current_distance = (self.model.players[self.player_id].position - player.position).magnitude() 
+                if current_distance < minimum_distance:
+                    minimum_distance = current_distance
+                    nearest_id = player.player_id
+        return nearest_id
+        '''
+    
+    def get_highest_voltage_player(self):    # when the highest_voltage_player not only one?
+        return max\
+            (\
+                filter(lambda player: player.player_id != self.player_id, self.model.players),\
+                key = lambda player: player.voltage\
+            ).player_id
+        '''
+        highest_voltage_id = 0
+        highest_voltage = 0
+        for player in self.model.players:
+            if player.player_id != self.player_id:
+                if player.voltage > highest_voltage:
+                    highest_voltage = player.voltage
+                    highest_voltage_id = player.player_id
+        return highest_voltage_id
+        '''
+
+    def get_highest_score_player(self):   # when the highest_score_player not only one?
+        return max\
+            (\
+                filter(lambda player: player.player_id != self.player_id, self.model.players),\
+                key = lambda player: player.score\
+            ).player_id
+        '''
+        highest_score_id = 0
+        highest_score = 0
+        for player in self.model.players:
+            if player.player_id != self.player_id:
+                if player.score > highest_score:
+                    highest_score = player.score
+                    highest_score_id = player.player_id
+        return highest_score_id
+        '''
+
+    def get_distance(self, p1, p2):
+        return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
+
+    def get_vector(self, p1, p2):
+        # get vector from p1 to p2
+        return ((p2[0] - p1[0]), (p2[1] - p1[1])) 
+
+    def get_position_will_drop(self, pos):
+        # Doesn't consider radius
+        platforms = self.get_platform_position()
+        for platform in platforms:
+            if platform[0][0] < pos[0] < platform[1][0] and pos[1] <= platform[0][1]:
+                return False
+        return True
+
+    # friendly
     def walk_to_position(self, target_position):
         player_position = tuple(self.model.players[self.player_id].position)
         player_above_which_land = self.get_above_which_platform(player_position)
