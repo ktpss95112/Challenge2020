@@ -116,7 +116,7 @@ class GraphicalView:
                 self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id, self.model.players))
             elif event.item_id == Const.ZAP_ZAP_ZAP:
                 self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id, self.model.players))
-                
+
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
@@ -207,7 +207,7 @@ class GraphicalView:
 
         if self.cutin_list[0].expired: self.cutin_list.pop(0)
         else:                          self.cutin_list[0].draw(target, True)
-        
+
         pg.display.flip()
 
     def render_endgame(self, target=None, update=True):
