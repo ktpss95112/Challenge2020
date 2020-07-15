@@ -94,7 +94,6 @@ class CancerBomb(Entity):
     def __init__(self, user_id, position):
         super().__init__(user_id, position, pg.Vector2(0, 0), Const.BOMB_TIME)
         self.red = False
-        self.red_timer = 0
 
     def update_every_tick(self, players, items, platforms, time):
         self.maintain_velocity_every_tick(platforms)
