@@ -2,6 +2,7 @@ import pygame as pg
 import os.path
 from Events.EventManager import *
 from Model.Model import GameEngine
+from Model.GameObject.entity import CancerBomb , PistolBullet, BananaPeel, BigBlackHole, DeathRain
 from View import SOUND_ENABLE
 import Const
 
@@ -17,6 +18,8 @@ if SOUND_ENABLE:
         effect_list = {
             'attack': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'shoot.wav')),
             'bomb_explode': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'bomb_explode.wav')),
+            'bomb_beep': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'bomb_beep.wav')),
+            'bomb_beeps': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'bomb_beeps.wav')),
             'blackhole': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'blackhole.wav')),
             'electric_shock': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'electric_shock.wav')),
             'pick_item': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'pickup_item.wav')),
@@ -33,6 +36,8 @@ if SOUND_ENABLE:
             self.ev_manager = ev_manager
             self.model = model
             ev_manager.register_listener(self)
+            self.effect_list['bomb_beep'].set_volume(0.3)
+            self.effect_list['bomb_beeps'].set_volume(0.3)
 
         def notify(self, event):
             '''
@@ -47,6 +52,12 @@ if SOUND_ENABLE:
                     for sound in self.cutin_sound_list:
                         self.effect_list[sound].play()
                         self.cutin_sound_list.remove(sound)
+                    for entity in self.model.entities:
+                        if isinstance(entity, CancerBomb):
+                            if entity.timer == 60:
+                                self.effect_list['bomb_beeps'].play()
+                            elif entity.timer > 60 and (entity.timer % 18) == 0:
+                                self.effect_list['bomb_beep'].play()
 
             elif isinstance(event, EventPlayerAttack):
                 self.effect_list['attack'].play()
@@ -73,6 +84,9 @@ if SOUND_ENABLE:
                 self.effect_list['Invincible'].play()
 
             elif not Const.HAS_CUT_IN[Const.CANCER_BOMB] and isinstance(event, EventUseCancerBomb):
+                pass
+
+            elif isinstance(event, EventBombExplode):
                 self.effect_list['bomb_explode'].play()
 
             elif not Const.HAS_CUT_IN[Const.BANANA_PISTOL] and isinstance(event, EventUseBananaPistol):
