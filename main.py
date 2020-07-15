@@ -14,7 +14,7 @@ def main(argv):
     controller = Controller(ev_manager, model)
     view       = GraphicalView(ev_manager, model)
     interface  = API.interface.Interface(ev_manager, model)
-    sound      = Audio(ev_manager)
+    sound      = Audio(ev_manager, model)
     model.run()
 
 if __name__ == "__main__":

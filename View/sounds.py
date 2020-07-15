@@ -1,6 +1,7 @@
 import pygame as pg
 import os.path
 from Events.EventManager import *
+from Model.Model import GameEngine
 from View import SOUND_ENABLE
 import Const
 
@@ -10,6 +11,9 @@ if SOUND_ENABLE:
 
         pg.mixer.init()
         pg.mixer.music.load(os.path.join(Const.SOUND_PATH, 'Funky-Chiptune.wav'))
+
+        cutin_sound_list = []
+
         effect_list = {
             'attack': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'shoot.wav')),
             'bomb_explode': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'bomb_explode.wav')),
@@ -25,8 +29,9 @@ if SOUND_ENABLE:
             'Cutin_keyboard_typing': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'keyboard_typing_slow.wav'))
         }
 
-        def __init__(self, ev_manager: EventManager):
+        def __init__(self, ev_manager: EventManager, model: GameEngine):
             self.ev_manager = ev_manager
+            self.model = model
             ev_manager.register_listener(self)
 
         def notify(self, event):
@@ -35,6 +40,13 @@ if SOUND_ENABLE:
             '''
             if isinstance(event, EventInitialize):
                 pg.mixer.music.play()
+
+            elif isinstance(event, EventEveryTick):
+                cur_state = self.model.state_machine.peek()
+                if cur_state == Const.STATE_PLAY:
+                    for sound in self.cutin_sound_list:
+                        self.effect_list[sound].play()
+                        self.cutin_sound_list.remove(sound)
 
             elif isinstance(event, EventPlayerAttack):
                 self.effect_list['attack'].play()
@@ -45,28 +57,36 @@ if SOUND_ENABLE:
             elif isinstance(event, EventPlayerPickItem):
                 self.effect_list['pick_item'].play()
 
-            elif isinstance(event, EventUseZapZapZap):
+            elif not Const.HAS_CUT_IN[Const.ZAP_ZAP_ZAP] and isinstance(event, EventUseZapZapZap):
                 self.effect_list['electric_shock'].play()
 
-            elif isinstance(event, EventUseRainbowGrounder):
+            elif not Const.HAS_CUT_IN[Const.RAINBOW_GROUNDER] and isinstance(event, EventUseRainbowGrounder):
                 self.effect_list['rainbow'].play()
 
-            elif isinstance(event, EventUseBigBlackHole):
+            elif not Const.HAS_CUT_IN[Const.BIG_BLACK_HOLE] and isinstance(event, EventUseBigBlackHole):
                 self.effect_list['blackhole'].play()
 
-            elif isinstance(event, EventUseBananaPeel):
+            elif not Const.HAS_CUT_IN[Const.BANANA_PEEL] and isinstance(event, EventUseBananaPeel):
                 self.effect_list['banana_peel'].play()
 
-            elif isinstance(event, EventUseInvincibleBattery):
+            elif not Const.HAS_CUT_IN[Const.INVINCIBLE_BATTERY] and isinstance(event, EventUseInvincibleBattery):
                 self.effect_list['Invincible'].play()
 
-            elif isinstance(event, EventUseCancerBomb):
+            elif not Const.HAS_CUT_IN[Const.CANCER_BOMB] and isinstance(event, EventUseCancerBomb):
                 self.effect_list['bomb_explode'].play()
 
-            elif isinstance(event, EventUseBananaPistol):
+            elif not Const.HAS_CUT_IN[Const.BANANA_PISTOL] and isinstance(event, EventUseBananaPistol):
                 self.effect_list['gun_shot'].play()
 
             elif isinstance(event, EventCutInStart):
+                #self.effect_list['Cutin_keyboard_typing'].play()
+                if event.item_id == Const.BIG_BLACK_HOLE:
+                    self.cutin_sound_list.append('blackhole')
+                elif event.item_id == Const.ZAP_ZAP_ZAP:
+                    self.cutin_sound_list.append('electric_shock')
+
+            elif isinstance(event, EventTextType):
+                print("get event")
                 self.effect_list['Cutin_keyboard_typing'].play()
 
             elif isinstance(event, EventContinue):

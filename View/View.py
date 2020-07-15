@@ -114,9 +114,9 @@ class GraphicalView:
         elif isinstance(event, EventCutInStart):
             self.render_play(self.cutin_screen)
             if event.item_id == Const.BIG_BLACK_HOLE:
-                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id, self.model.players))
+                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id, self.model.players, self.ev_manager))
             elif event.item_id == Const.ZAP_ZAP_ZAP:
-                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id, self.model.players))
+                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id, self.model.players, self.ev_manager))
 
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))

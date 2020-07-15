@@ -28,7 +28,7 @@ class Cutin_base():
     The first-in animation in CUTIN should be drawn (if valid) or be discarded (if expired) in every tick.
     '''
 
-    def __init__(self, delay_of_flames):
+    def __init__(self):
         self._timer = 0
         self.expired = False
 
@@ -134,7 +134,7 @@ class Cutin_raster(Cutin_board):
         'emoticon_3' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.27),
         'emoticon_4' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_fourth.png')), 0.27),
     }
-    def __init__(self, player_id, players):
+    def __init__(self, player_id, players, ev_manager:EventManager):
         # Add type_time to random type speed of typewriter
         super().__init__(player_id)
         self.rank = self.ranking(players)
@@ -144,13 +144,19 @@ class Cutin_raster(Cutin_board):
         self.fontSmall = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 6)
         self.stay_time = Const.CUTIN_STAY_TIME # The time cut-in would stay after every thing finish
         self.text_type = False
-
+        self.ev_manager = ev_manager
+        self.sound_effect_played = False
 
     def update(self):
         # Update board position and update the state
         self._timer += 1
         self.update_board_position()
         if self.board_stop:
+            if not self.sound_effect_played:
+                # Post Type Event
+                self.ev_manager.post(EventTextType)
+
+            self.sound_effect_played = True
             self.text_type = True
         if self.type_time[-1] == 0:
             self.stay_time -= 1
@@ -344,3 +350,4 @@ class Cutin_zap_zap_zap(Cutin_raster):
 
 def init_cutin():
     Cutin_big_black_hole.init_convert()
+    Cutin_zap_zap_zap.init_convert()
