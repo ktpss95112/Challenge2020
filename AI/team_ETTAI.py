@@ -299,7 +299,7 @@ class TeamAI():
         return False
 
     def not_drop(self):
-        if not self.helper.get_self_will_drop():
+        if self.helper.get_self_have_platform_below():
             return None
         if self.helper.get_self_direction() == LEFT:
             if self.exist_left_platform():
@@ -356,7 +356,7 @@ class TeamAI():
         if right_distance < left_distance:
             go_left = False
         if go_left:
-            if self.helper.get_self_will_drop():
+            if not self.helper.get_self_have_platform_below():
                 if self.helper.get_self_can_jump():
                     return AI_DIR_JUMP
                 else:
@@ -365,7 +365,7 @@ class TeamAI():
                 return AI_DIR_LEFT
 
         else:
-            if self.helper.get_self_will_drop():
+            if not self.helper.get_self_have_platform_below():
                 if self.helper.get_self_can_jump():
                     return AI_DIR_JUMP
                 else:
