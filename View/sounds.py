@@ -21,7 +21,8 @@ if SOUND_ENABLE:
             'gun_shot': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Gun_Shot.wav')),
             'banana_peel': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Banana_peel.wav')),
             'rainbow': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'rainbow.wav')),
-            'Invincible': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Invincibe.wav'))
+            'Invincible': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Invincibe.wav')),
+            'Cutin_keyboard_typing': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'keyboard_typing_slow.wav'))
         }
 
         def __init__(self, ev_manager: EventManager):
@@ -64,6 +65,9 @@ if SOUND_ENABLE:
 
             elif isinstance(event, EventUseBananaPistol):
                 self.effect_list['gun_shot'].play()
+
+            elif isinstance(event, EventCutInStart):
+                self.effect_list['Cutin_keyboard_typing'].play()
 
             elif isinstance(event, EventContinue):
                 pg.mixer.music.unpause()
