@@ -1,4 +1,3 @@
-from API.base import BaseAI
 import Const
 
 AI_DIR_LEFT        = 0
@@ -20,7 +19,7 @@ def tuple_minus(a, b):
 def tuple_times(a, b):
     return (a[0] * b, a[1] * b)
 
-class TeamAI(BaseAI):
+class TeamAI(object):
     def __init__(self, helper):
         self.helper = helper
         self.enhancement = [0, 0, 0, 0]
@@ -78,7 +77,7 @@ class TeamAI(BaseAI):
                 factor = 1
             elif item_id == 6 and self.helper.get_self_voltage() > 10:
                 factor = 1
-            elif item_id == 7 and not self.helper.get_self_will_drop():
+            elif item_id == 7 and not self.helper.get_self_have_platform_below():
                 factor = 1
         return AI_DIR_USE_ITEM if factor else -1
 
@@ -124,7 +123,7 @@ class TeamAI(BaseAI):
         game_boundary = self.helper.get_game_arena_boundary()
         vector_to_land = self.helper.get_position_vector_to_closest_land()
         live_time = 0.15
-        if my_pos[1] > game_boundary[1][1] or self.helper.get_self_will_drop():
+        if my_pos[1] > game_boundary[1][1] or self.helper.get_self_have_platform_below():
             if vector_to_land[0] > 0:
                 if self.can_jump():
                     return AI_DIR_RIGHT_JUMP
