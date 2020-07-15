@@ -26,6 +26,7 @@ if SOUND_ENABLE:
             'menu_nevigate': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'menu_nevigate.wav')),
             'jump': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'jump.wav')),
             'gun_shot': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Gun_Shot.wav')),
+            'banana_peel_slip': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'banana_peel_slip.wav')),
             'banana_peel': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Banana_peel.wav')),
             'rainbow': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'rainbow.wav')),
             'Invincible': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Invincibe.wav')),
@@ -38,6 +39,7 @@ if SOUND_ENABLE:
             ev_manager.register_listener(self)
             self.effect_list['bomb_beep'].set_volume(0.3)
             self.effect_list['bomb_beeps'].set_volume(0.3)
+            self.effect_list['banana_peel_slip'].set_volume(0.4)
 
         def notify(self, event):
             '''
@@ -79,6 +81,9 @@ if SOUND_ENABLE:
 
             elif not Const.HAS_CUT_IN[Const.BANANA_PEEL] and isinstance(event, EventUseBananaPeel):
                 self.effect_list['banana_peel'].play()
+
+            elif isinstance(event, EventSlipOnBananaPeelSound):
+                self.effect_list['banana_peel_slip'].play()
 
             elif not Const.HAS_CUT_IN[Const.INVINCIBLE_BATTERY] and isinstance(event, EventUseInvincibleBattery):
                 self.effect_list['Invincible'].play()
