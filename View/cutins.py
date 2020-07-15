@@ -134,7 +134,7 @@ class Cutin_raster(Cutin_board):
         'emoticon_3' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.27),
         'emoticon_4' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_fourth.png')), 0.27),
     }
-    def __init__(self, player_id, players, ev_manager:EventManager):
+    def __init__(self, player_id, players, ev_manager : EventManager):
         # Add type_time to random type speed of typewriter
         super().__init__(player_id)
         self.rank = self.ranking(players)
@@ -154,7 +154,7 @@ class Cutin_raster(Cutin_board):
         if self.board_stop:
             if not self.sound_effect_played:
                 # Post Type Event
-                self.ev_manager.post(EventTextType)
+                self.ev_manager.post(EventTextType())
 
             self.sound_effect_played = True
             self.text_type = True

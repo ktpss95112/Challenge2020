@@ -86,7 +86,6 @@ if SOUND_ENABLE:
                     self.cutin_sound_list.append('electric_shock')
 
             elif isinstance(event, EventTextType):
-                print("get event")
                 self.effect_list['Cutin_keyboard_typing'].play()
 
             elif isinstance(event, EventContinue):
