@@ -408,6 +408,12 @@ class Helper(object):
 
     # get special information
     def get_nearest_player(self):  # when the nearest_player not only one?
+        return min\
+            (\
+                (player for player in self.model.players if player.player_id != self.player_id),\
+                key = lambda player: (self.model.players[self.player_id].position - player.position).magnitude()\
+            ).player_id
+        '''
         nearest_id = 0
         minimum_distance = 10000 ** 2 
         for player in self.model.players:
@@ -417,8 +423,15 @@ class Helper(object):
                     minimum_distance = current_distance
                     nearest_id = player.player_id
         return nearest_id
+        '''
     
     def get_highest_voltage_player(self):    # when the highest_voltage_player not only one?
+        return max\
+            (\
+                (player for player in self.model.players if player.player_id != self.player_id),\
+                key = lambda player: player.voltage\
+            ).player_id
+        '''
         highest_voltage_id = 0
         highest_voltage = 0
         for player in self.model.players:
@@ -427,8 +440,15 @@ class Helper(object):
                     highest_voltage = player.voltage
                     highest_voltage_id = player.player_id
         return highest_voltage_id
+        '''
 
     def get_highest_score_player(self):   # when the highest_score_player not only one?
+        return max\
+            (\
+                (player for player in self.model.players if player.player_id != self.player_id),\
+                key = lambda player: player.score\
+            ).player_id
+        '''
         highest_score_id = 0
         highest_score = 0
         for player in self.model.players:
@@ -437,6 +457,7 @@ class Helper(object):
                     highest_score = player.score
                     highest_score_id = player.player_id
         return highest_score_id
+        '''
 
     def get_distance(self, p1, p2):
         return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
