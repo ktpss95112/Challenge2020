@@ -23,7 +23,7 @@ if SOUND_ENABLE:
             'blackhole': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'blackhole.wav')),
             'electric_shock': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'electric_shock.wav')),
             'pick_item': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'pickup_item.wav')),
-            'menu_nevigate': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'menu_nevigate.wav')),
+            'menu_navigate': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'menu_navigate.wav')),
             'jump': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'jump.wav')),
             'gun_shot': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Gun_Shot.wav')),
             'banana_peel_slip': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'banana_peel_slip.wav')),
@@ -60,6 +60,9 @@ if SOUND_ENABLE:
                                 self.effect_list['bomb_beeps'].play()
                             elif entity.timer > 60 and (entity.timer % 18) == 0:
                                 self.effect_list['bomb_beep'].play()
+
+            elif isinstance(event, EventPickArena):
+                self.effect_list['menu_navigate'].play()
 
             elif isinstance(event, EventPlayerAttack):
                 self.effect_list['attack'].play()
