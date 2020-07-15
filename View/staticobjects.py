@@ -100,7 +100,7 @@ class View_endgame(__Object_base):
     player_images = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, 'players', Const.PLAYER_PIC[_i])),
-            0.15 if _i < 20 else 0.15 * 1.5
+            0.04 if _i < 20 else 0.04 * 1.5
         )
         for _i in range(0, 40)
     )
@@ -178,14 +178,13 @@ class View_players(__Object_base):
     images = tuple(
         scaled_surface(
             load_image(os.path.join(Const.IMAGE_PATH, 'players', Const.PLAYER_PIC[_i])),
-            0.075 if _i < 20 else 0.075 * 1.5
+            0.02 if _i < 20 else 0.02 * 1.5
         )
         for _i in range(0, 40)
     )
 
     @classmethod
     def init_convert(cls):
-        cls.font = pg.font.Font(os.path.join(Const.FONT_PATH, 'Noto', 'NotoSansCJK-Black.ttc'), 15)
         cls.images = tuple( _frame.convert_alpha() for _frame in cls.images )
 
     def draw(self, screen):
@@ -218,7 +217,7 @@ class View_entities(__Object_base):
         'bomber_red'  : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_bomber_red.png')), 0.15),
         'banana_bullet': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_pulp.png')), 0.15),
         'banana_peel' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_banana_peel.png')), 0.04 * 0.7),
-        'gift' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_gift.png')), 0.12),
+        'gift' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'entity_gift.png')), 0.28),
         'black_hole': scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'blackhole.png')), 0.3)
     }
 
@@ -230,7 +229,7 @@ class View_entities(__Object_base):
         # draw players
         for entity in self.model.entities:
             if isinstance(entity, CancerBomb):
-                img_bomb = 'bomber_red' if (entity.timer <= 60 or (int)(entity.timer / 9)  % 2 == 0) else 'bomber_normal'
+                img_bomb = 'bomber_red' if entity.red else 'bomber_normal'
                 screen.blit(self.images[img_bomb], self.images[img_bomb].get_rect(center=entity.position))
 
             elif isinstance(entity, PistolBullet):

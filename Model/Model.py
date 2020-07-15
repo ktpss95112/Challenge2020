@@ -60,7 +60,6 @@ class GameEngine:
     '''
     The main game engine. The main loop of the game is in GameEngine.run()
     '''
-
     def __init__(self, ev_manager: EventManager, AI_names: list):
         '''
         This function is called when the GameEngine is created.
@@ -74,8 +73,13 @@ class GameEngine:
         self.AI_names = AI_names
         while len(self.AI_names) < 4:
             self.AI_names.append("m")
-        check_probability()
+        self.check_probability()
 
+    @staticmethod
+    def check_probability():
+        if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
+            print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
+    
     def initialize(self):
         '''
         This method is called when a new game is instantiated.
@@ -150,6 +154,8 @@ class GameEngine:
             # compute score
             max_KO_amount = max(player.KO_amount for player in self.players)
             for player in self.players:
+                player.KO_score = player.KO_amount * 300
+                player.die_score = -player.die_amount * 150
                 if player.KO_amount == max_KO_amount:
                     player.just_too_good_score = 500
                 if player.die_amount == 0:
@@ -252,7 +258,7 @@ class GameEngine:
                 self.stage = random.randrange(Const.STAGE_NUMBER)
 
         elif isinstance(event, EventDeathRainTrigger):
-            self.ev_manager.post(EventDeathRainStart())
+            pass
 
         elif isinstance(event, EventDeathRainStart):
             self.death_rain()
@@ -288,7 +294,7 @@ class GameEngine:
         self.players_collision_detect()
         for player in self.players:
             if player.is_alive():
-                # maintain position, velocity and timer
+                # maintain position, velocity, timer and score
                 player.update_every_tick(self.platforms, self.timer)
 
                 # maintain items
@@ -302,9 +308,6 @@ class GameEngine:
                 # maintain lifes
                 if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                     self.ev_manager.post(EventPlayerDied(player.player_id))
-        # maintain scores
-        for player in self.players:
-            player.maintain_score_every_tick()
 
     def update_objects(self):
         '''
@@ -326,7 +329,7 @@ class GameEngine:
                 if isinstance(entity, CancerBomb):
                     self.ev_manager.post(EventBombExplode(entity.position))
                 elif isinstance(entity, DeathRain):
-                    self.ev_manager.post(EventDeathRainTrigger())
+                    self.ev_manager.post(EventDeathRainTrigger(entity.position, self.timer))
                 self.entities.remove(entity)
 
     def update_stop(self):
@@ -429,7 +432,7 @@ class GameEngine:
                 self.generate_item_in_range(0, -100, Const.ARENA_SIZE[0], 100)
 
         if len(self.items) < int(self.item_amount) and random.random() < self.generate_item_probability:
-            self.generate_item_in_range(0, 0, Const.ARENA_SIZE[0], Const.ARENA_SIZE[1])
+            self.generate_item_in_range(0, 0, Const.ARENA_SIZE[0], Const.ARENA_SIZE[1] // 3)
 
     def generate_item_in_range(self, left, upper, width, height):
         enabled_items, p = [], []
@@ -462,7 +465,6 @@ class GameEngine:
             unit = direction.normalize()
             self.entities.append(PistolBullet(-1, pg.Vector2(pos), unit * Const.BULLET_SPEED))
 
-
     def run(self):
         '''
         The main loop of the game is in this function.
@@ -473,65 +475,3 @@ class GameEngine:
         while self.running:
             self.ev_manager.post(EventEveryTick())
             self.clock.tick(Const.FPS)
-
-def check_probability():
-    if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
-        print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
-
-
-""" Events that model.py should handle.
-
-EventInitialize{
-    initiate all players;
-    respawn all players;
-    initiate timer
-}
-EventStateChange{
-    pass
-}
-EventEveryTick{
-
-}
-EventTimesUp{
-    maintain item spawn time
-    maintain player respawn time
-    maintain [layer last-being-attacked-time-elapsed;
-}
-EventPlayerMove
-EventPlayerAttack
-EventPlayerRespawn
-EventPlayerDied
-EventPlayerUseItem
-
-"""
-
-"""
-class player's varible
-
-player-id; (1-indexed):int
-last-being-attacked-by:int
-last-being-attacked-time-elapsed:int
-respawn-time-elapsed:int
-is-invincible; (is true when respawn-time-elapsed < t):int
-KO time:int
-has-item:int
-be KOed time:int
-voltage:int
-position:vec2
-velocity; (there is no acceleration variable because acceleration is instant)
-:vec2
-"""
-
-"""
-class item's varible
-item-id (0-indexed)
-postition
-"""
-
-"""
-class platform
-upper-left
-bottom-right
-"""
-
-

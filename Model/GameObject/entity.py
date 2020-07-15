@@ -87,17 +87,20 @@ class BigBlackHole(Entity):
                 # below can be change into "normal.y * tangent.x > 0" but current one is clearer
                 if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0):
                     tangent *= -1
-                obj.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 120
+                obj.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 200
 
 
 class CancerBomb(Entity):
     def __init__(self, user_id, position):
         super().__init__(user_id, position, pg.Vector2(0, 0), Const.BOMB_TIME)
+        self.red = False
 
     def update_every_tick(self, players, items, platforms, time):
         self.maintain_velocity_every_tick(platforms)
         self.move_every_tick(platforms, Const.BOMB_RADIUS)
         self.maintain_timer_every_tick()
+
+        self.red = True if (self.timer <= 60 or (self.timer // 9) % 2 == 0) else False
 
         if self.timer == 0:
             for player in players:
