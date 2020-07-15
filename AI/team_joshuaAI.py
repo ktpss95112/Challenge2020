@@ -40,6 +40,7 @@ class TeamAI(BaseAI):
         return minimum_vector
 
     def can_jump(self):
+        print(self.helper.get_self_jump_to_the_highest_time())
         return (self.helper.get_self_jump_to_the_highest_time() < 0.02 and self.helper.get_self_can_jump())
 
     def use_item(self):
@@ -50,7 +51,7 @@ class TeamAI(BaseAI):
             elif item_id == 2:
                 effect_num = 0
                 for i in range(Const.PLAYER_NUM):
-                    if Const.BLACK_HOLE_EFFECT_RADIUS > self.helper.get_other_distance(i):
+                    if Const.BLACK_HOLE_EFFECT_RADIUS > self.helper.get_other_player_distance(i):
                         effect_num = effect_num + 1
                 if effect_num >= 3 or self.helper.get_live_player_num() == 2:
                     return 1

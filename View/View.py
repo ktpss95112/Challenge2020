@@ -115,11 +115,17 @@ class GraphicalView:
             self.render_play(self.cutin_screen)
             if event.item_id == Const.BIG_BLACK_HOLE:
                 self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id, self.model.players))
+            elif event.item_id == Const.ZAP_ZAP_ZAP:
+                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id, self.model.players))
+
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
 
         elif isinstance(event, EventUseRainbowGrounder):
             self.animation_list.append(View.animations.Animation_Rainbow(center=event.player_position))
+
+        elif isinstance(event, EventDeathRainTrigger):
+            self.animation_list.append(View.animations.Animation_Gift_Explode(center=event.position))
 
         elif isinstance(event, EventUseBigBlackHole):
             self.animation_black_hole_list.append(View.animations.Animation_Black_Hole(event.black_hole_position))
@@ -159,6 +165,8 @@ class GraphicalView:
 
         # draw animation
         for ani in self.animation_list:
+            if ani.expired and isinstance(ani, View.animations.Animation_Gift_Explode):
+                self.ev_manager.post(EventDeathRainStart())
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(target, update)
 

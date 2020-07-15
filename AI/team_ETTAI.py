@@ -1,4 +1,3 @@
-from API.base import BaseAI
 import random
 import math
 
@@ -28,7 +27,7 @@ BOMB_EXPLODE_RADIUS = 16 * PLAYER_RADIUS
 BLACK_HOLE_EFFECT_RADIUS = 10 * PLAYER_RADIUS
 
 
-class TeamAI(BaseAI):
+class TeamAI():
     def __init__(self, helper):
         self.helper = helper
         self.enhancement = [0, 0, 0, 0]
