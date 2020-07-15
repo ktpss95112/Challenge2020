@@ -93,11 +93,15 @@ class BigBlackHole(Entity):
 class CancerBomb(Entity):
     def __init__(self, user_id, position):
         super().__init__(user_id, position, pg.Vector2(0, 0), Const.BOMB_TIME)
+        self.red = False
+        self.red_timer = 0
 
     def update_every_tick(self, players, items, platforms, time):
         self.maintain_velocity_every_tick(platforms)
         self.move_every_tick(platforms, Const.BOMB_RADIUS)
         self.maintain_timer_every_tick()
+
+        self.red = True if (self.timer <= 60 or (self.timer // 9) % 2 == 0) else False
 
         if self.timer == 0:
             for player in players:
