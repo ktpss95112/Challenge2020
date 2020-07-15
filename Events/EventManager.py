@@ -214,6 +214,10 @@ class EventUseBananaPeel(BaseEvent):
         self.used_time = used_time
 
 
+class EventSlipOnBananaPeelSound(BaseEvent):
+    name = 'SlipOnBananaPeelSound event'
+
+
 class EventUseRainbowGrounder(BaseEvent):
     name = 'UseRainbowGrounder event'
 
