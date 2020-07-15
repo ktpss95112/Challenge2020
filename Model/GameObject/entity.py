@@ -130,8 +130,6 @@ class BananaPeel(Entity):
                 (player.position - self.position).magnitude() < player.player_radius + Const.BANANA_PEEL_RADIUS:
                 player.uncontrollable_time += Const.BANANA_PEEL_AFFECT_TIME
                 return False
-        if not Const.LIFE_BOUNDARY.collidepoint(self.position):
-            return False
         return True if self.timer > 0 else False
 
 
@@ -148,8 +146,6 @@ class DeathRain(Entity):
             if player.is_alive() and not player.is_invincible() and\
                 (player.position - self.position).magnitude() < player.player_radius + Const.DEATH_RAIN_RADIUS:
                 return False
-        if not Const.LIFE_BOUNDARY.collidepoint(self.position):
-            return False
         return True
 
     def find_position(self, platforms):

@@ -331,6 +331,8 @@ class GameEngine:
                 elif isinstance(entity, DeathRain):
                     self.ev_manager.post(EventDeathRainTrigger(entity.position, self.timer))
                 self.entities.remove(entity)
+            if not Const.LIFE_BOUNDARY.collidepoint(entity.position):
+                self.entities.remove(entity)
 
     def update_stop(self):
         if self.stop_screen_timer == 0:
