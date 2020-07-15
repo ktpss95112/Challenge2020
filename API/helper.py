@@ -410,7 +410,7 @@ class Helper(object):
     def get_nearest_player(self):  # when the nearest_player not only one?
         return min\
             (\
-                (player for player in self.model.players if player.player_id != self.player_id),\
+                filter(lambda player: player.player_id != self.player_id, self.model.players),\
                 key = lambda player: (self.model.players[self.player_id].position - player.position).magnitude()\
             ).player_id
         '''
@@ -428,7 +428,7 @@ class Helper(object):
     def get_highest_voltage_player(self):    # when the highest_voltage_player not only one?
         return max\
             (\
-                (player for player in self.model.players if player.player_id != self.player_id),\
+                filter(lambda player: player.player_id != self.player_id, self.model.players),\
                 key = lambda player: player.voltage\
             ).player_id
         '''
@@ -445,7 +445,7 @@ class Helper(object):
     def get_highest_score_player(self):   # when the highest_score_player not only one?
         return max\
             (\
-                (player for player in self.model.players if player.player_id != self.player_id),\
+                filter(lambda player: player.player_id != self.player_id, self.model.players),\
                 key = lambda player: player.score\
             ).player_id
         '''
