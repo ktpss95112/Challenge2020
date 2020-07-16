@@ -267,5 +267,5 @@ class EventCutInStart(BaseEvent):
 class EventCutInEnd(BaseEvent):
     name = 'Cut-in end event'
 
-class EventTextType(BaseEvent):
-    name = 'Cut-in start typing event'
+class EventTypeSound(BaseEvent):
+    name = 'Cut-in typing sound event'

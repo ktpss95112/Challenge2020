@@ -30,7 +30,7 @@ if SOUND_ENABLE:
             'banana_peel': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Banana_peel.wav')),
             'rainbow': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'rainbow.wav')),
             'Invincible': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Invincibe.wav')),
-            'Cutin_keyboard_typing': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'keyboard_typing_slow.wav')),
+            'keyboard_typing': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'keyboard_typing.wav')),
             'jingle_bell': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'jingle_bell.wav'))
         }
 
@@ -112,8 +112,8 @@ if SOUND_ENABLE:
                 elif event.item_id == Const.ZAP_ZAP_ZAP:
                     self.cutin_sound_list.append('electric_shock')
 
-            elif isinstance(event, EventTextType):
-                self.effect_list['Cutin_keyboard_typing'].play()
+            elif isinstance(event, EventTypeSound):
+                self.effect_list['keyboard_typing'].play()
 
             elif isinstance(event, EventTimesUp):
                 pg.mixer.stop()
