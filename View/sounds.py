@@ -30,23 +30,28 @@ if SOUND_ENABLE:
             'banana_peel': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Banana_peel.wav')),
             'rainbow': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'rainbow.wav')),
             'Invincible': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Invincibe.wav')),
-            'Cutin_keyboard_typing': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'keyboard_typing_slow.wav'))
+            'Cutin_keyboard_typing': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'keyboard_typing_slow.wav')),
+            'jingle_bell': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'jingle_bell.wav'))
         }
 
         def __init__(self, ev_manager: EventManager, model: GameEngine):
             self.ev_manager = ev_manager
             self.model = model
             ev_manager.register_listener(self)
-            self.effect_list['bomb_beep'].set_volume(0.3)
-            self.effect_list['bomb_beeps'].set_volume(0.3)
-            self.effect_list['banana_peel_slip'].set_volume(0.4)
+            self.effect_list['bomb_beep'].set_volume(0.5)
+            self.effect_list['bomb_beeps'].set_volume(0.5)
+            self.effect_list['banana_peel'].set_volume(0.3)
+            self.effect_list['banana_peel_slip'].set_volume(0.3)
+            self.effect_list['Invincible'].set_volume(0.4)
+            self.effect_list['menu_navigate'].set_volume(0.5)
+            pg.mixer.music.set_volume(0.7)
 
         def notify(self, event):
             '''
             Called by EventManager when a event occurs.
             '''
             if isinstance(event, EventInitialize):
-                pg.mixer.music.play()
+                pg.mixer.music.play(-1)
 
             elif isinstance(event, EventEveryTick):
                 cur_state = self.model.state_machine.peek()
@@ -110,12 +115,20 @@ if SOUND_ENABLE:
             elif isinstance(event, EventTextType):
                 self.effect_list['Cutin_keyboard_typing'].play()
 
+            elif isinstance(event, EventTimesUp):
+                pg.mixer.stop()
+
             elif isinstance(event, EventContinue):
                 pg.mixer.music.unpause()
+                pg.mixer.unpause()
 
             elif isinstance(event, EventStop):
                 pg.mixer.music.pause()
+                pg.mixer.pause()
 
+            elif isinstance(event, EventDeathRainTrigger):
+                self.effect_list['jingle_bell'].play()
+                self.effect_list['jingle_bell'].fadeout(15000)
 
 else:
     class Audio(object):
