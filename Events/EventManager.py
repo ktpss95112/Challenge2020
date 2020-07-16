@@ -119,6 +119,7 @@ class EventPlayerJump(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} jump'
 
+
 class EventPlayerAttack(BaseEvent):
     name = 'PlayerAttack event'
 
@@ -127,6 +128,7 @@ class EventPlayerAttack(BaseEvent):
 
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} attack'
+
 
 class EventPlayerRespawn(BaseEvent):
     name = 'PlayerRespawn event'
