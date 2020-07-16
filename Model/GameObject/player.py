@@ -257,6 +257,7 @@ class Player:
         # EventPlayerDied
         self.life -= 1
         self.die_amount += 1
+        self.keep_item_id = Const.NO_ITEM
         if self.last_being_attacked_by != -1 and self.last_being_attacked_time_elapsed - time < Const.VALID_KO_TIME:
             players[self.last_being_attacked_by].KO_amount += 1
         elif self.last_being_collided_with != -1 and self.last_being_collided_time_elapsed - time < Const.VALID_KO_TIME:
@@ -271,7 +272,6 @@ class Player:
         self.uncontrollable_time = 0
         self.attack_cool_down_time = 0
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
-        self.keep_item_id = Const.NO_ITEM
         # move
         self.position = pg.Vector2(position)
         self.velocity = pg.Vector2(0, 0)
