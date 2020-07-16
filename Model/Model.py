@@ -209,8 +209,7 @@ class GameEngine:
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
                 item_id = self.players[event.player_id].keep_item_id
-                if Const.HAS_CUT_IN[item_id]:
-                    self.ev_manager.post(EventCutInStart(event.player_id, item_id))
+                
                 entities = self.players[event.player_id].use_item(self.players, self.timer)
                 peel_position, bullet_position, black_hole_position, bomb_position = [], None, None, None
                 for entity in entities:
@@ -238,6 +237,8 @@ class GameEngine:
                     self.ev_manager.post(EventUseRainbowGrounder(player.position, self.timer))
                 elif item_id == Const.INVINCIBLE_BATTERY:
                     self.ev_manager.post(EventUseInvincibleBattery(player.position, self.timer))
+                if Const.HAS_CUT_IN[item_id]:
+                    self.ev_manager.post(EventCutInStart(event.player_id, item_id))
 
         elif isinstance(event, EventCutInStart):
             if self.state_machine.peek() != Const.STATE_CUTIN:

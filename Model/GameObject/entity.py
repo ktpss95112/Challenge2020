@@ -86,7 +86,7 @@ class BigBlackHole(Entity):
                 tangent = pg.Vector2(-normal.y, normal.x)
                 if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0):
                     tangent *= -1
-                obj.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 200
+                obj.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 50000 + normal * 250
 
 
 class CancerBomb(Entity):
