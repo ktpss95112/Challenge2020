@@ -46,7 +46,6 @@ class View_stage(__Object_base):
 
 class View_platform(__Object_base):
     def draw(self, screen):
-        # screen.fill(Const.BACKGROUND_COLOR)
         for platform in self.model.platforms:
             pg.draw.rect(screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
 

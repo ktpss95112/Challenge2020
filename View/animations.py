@@ -38,7 +38,6 @@ class Animation_raster(Animation_base):
         self.frame_index_to_draw = 0
         self.expire_time = expire_time
         self.expired = False
-        #self.pos = pos
 
     def update(self):
         self._timer += 1
