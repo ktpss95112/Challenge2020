@@ -21,8 +21,8 @@ class StateMachine(object):
 
     def peek(self):
         '''
-        Returns the current state without altering the stack.
-        Returns None if the stack is empty.
+        Return the current state without altering the stack.
+        Return None if the stack is empty.
         '''
         try:
             return self.statestack[-1]
@@ -32,8 +32,8 @@ class StateMachine(object):
 
     def pop(self):
         '''
-        Returns the current state and remove it from the stack.
-        Returns None if the stack is empty.
+        Return the current state and remove it from the stack.
+        Return None if the stack is empty.
         '''
         try:
             return self.statestack.pop()
@@ -44,7 +44,7 @@ class StateMachine(object):
     def push(self, state):
         '''
         Push a new state onto the stack.
-        Returns the pushed value.
+        Return the pushed value.
         '''
         self.statestack.append(state)
         return state
@@ -127,7 +127,6 @@ class GameEngine:
                 self.update_variable()
                 self.timer -= 1
                 self.player_image_timer += 1
-                # check if game ends
                 cnt = sum(player.is_alive() for player in self.players)
                 if self.timer == 0 or cnt <= 1:
                     self.ev_manager.post(EventTimesUp())
@@ -210,8 +209,7 @@ class GameEngine:
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
                 item_id = self.players[event.player_id].keep_item_id
-                if Const.HAS_CUT_IN[item_id]:
-                    self.ev_manager.post(EventCutInStart(event.player_id, item_id))
+                
                 entities = self.players[event.player_id].use_item(self.players, self.timer)
                 peel_position, bullet_position, black_hole_position, bomb_position = [], None, None, None
                 for entity in entities:
@@ -239,6 +237,8 @@ class GameEngine:
                     self.ev_manager.post(EventUseRainbowGrounder(player.position, self.timer))
                 elif item_id == Const.INVINCIBLE_BATTERY:
                     self.ev_manager.post(EventUseInvincibleBattery(player.position, self.timer))
+                if Const.HAS_CUT_IN[item_id]:
+                    self.ev_manager.post(EventCutInStart(event.player_id, item_id))
 
         elif isinstance(event, EventCutInStart):
             if self.state_machine.peek() != Const.STATE_CUTIN:

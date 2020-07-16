@@ -145,18 +145,12 @@ class Cutin_raster(Cutin_board):
         self.stay_time = Const.CUTIN_STAY_TIME # The time cut-in would stay after every thing finish
         self.text_type = False
         self.ev_manager = ev_manager
-        self.sound_effect_played = False
 
     def update(self):
         # Update board position and update the state
         self._timer += 1
         self.update_board_position()
         if self.board_stop:
-            if not self.sound_effect_played:
-                # Post Type Event
-                self.ev_manager.post(EventTextType())
-
-            self.sound_effect_played = True
             self.text_type = True
         if self.type_time[-1] == 0:
             self.stay_time -= 1
@@ -221,6 +215,8 @@ class Cutin_raster(Cutin_board):
                 word += self.skill_name[i]
             else:
                 self.type_time[i] -= 1
+                if self.type_time[i] == 0:
+                    self.ev_manager.post(EventTypeSound())
                 break
         if self.type_time[-1] != 0 or (self._timer // Const.CUTIN_CURSOR_PERIOD) % 2 != 0:
             word += '_'
@@ -267,6 +263,7 @@ class Cutin_big_black_hole(Cutin_raster):
 
         # Update text to show
         text = self.text()
+
         # Draw skill's name on board
         text_surface = self.fontLarge.render(text, 1, pg.Color('white'))
         self.board.blit(
@@ -318,6 +315,7 @@ class Cutin_zap_zap_zap(Cutin_raster):
 
         # Update text to show
         text = self.text()
+
         # Draw skill's name on board
         text_surface = self.fontLarge.render(text, 1, pg.Color('white'))
         self.board.blit(

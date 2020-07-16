@@ -222,7 +222,6 @@ class Player:
         self.voltage += (Const.ATTACK_VOLTAGE_INCREASE / magnitude)
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
-        #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def be_attacked_by_pistol_bullet(self, unit, attacker_id, time):
         voltage_acceleration = self.voltage_acceleration()
@@ -230,12 +229,10 @@ class Player:
         self.voltage += Const.BULLET_VOLTAGE_UP
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
-        #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def be_attacked_by_cancer_bomb(self, unit, magnitude, time):
         self.velocity += Const.BE_ATTACKED_ACCELERATION * unit / magnitude / Const.FPS
         self.voltage += Const.BOMB_ATK
-        #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def be_attacked_by_zap_zap_zap(self, unit, attacker_id, time):
         voltage_acceleration = self.voltage_acceleration()
@@ -245,7 +242,6 @@ class Player:
                                             * (1 if unit.x > 0 else -1)
         self.last_being_attacked_by = attacker_id
         self.last_being_attacked_time_elapsed = time
-        #self.uncontrollable_time = 0.1 * Const.FPS # for the player to fly
 
     def voltage_acceleration(self):
         if self.voltage < 125:
@@ -257,6 +253,7 @@ class Player:
         # EventPlayerDied
         self.life -= 1
         self.die_amount += 1
+        self.keep_item_id = Const.NO_ITEM
         if self.last_being_attacked_by != -1 and self.last_being_attacked_time_elapsed - time < Const.VALID_KO_TIME:
             players[self.last_being_attacked_by].KO_amount += 1
         elif self.last_being_collided_with != -1 and self.last_being_collided_time_elapsed - time < Const.VALID_KO_TIME:
@@ -271,7 +268,6 @@ class Player:
         self.uncontrollable_time = 0
         self.attack_cool_down_time = 0
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
-        self.keep_item_id = Const.NO_ITEM
         # move
         self.position = pg.Vector2(position)
         self.velocity = pg.Vector2(0, 0)

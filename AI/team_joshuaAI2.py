@@ -1,4 +1,3 @@
-from API.base import BaseAI
 import Const
 
 AI_DIR_LEFT        = 0
@@ -9,7 +8,6 @@ AI_DIR_RIGHT_JUMP  = 4
 AI_DIR_ATTACK      = 5
 AI_DIR_USE_ITEM    = 6
 AI_DIR_STAY        = 7
-AI_DIR_NOT_JUMP    = 8
 
 def tuple_plus(a, b):
     return (a[0] + b[0], a[1] + b[1])
@@ -20,7 +18,7 @@ def tuple_minus(a, b):
 def tuple_times(a, b):
     return (a[0] * b, a[1] * b)
 
-class TeamAI(BaseAI):
+class TeamAI(object):
     def __init__(self, helper):
         self.helper = helper
         self.enhancement = [0, 0, 0, 0]
@@ -58,27 +56,27 @@ class TeamAI(BaseAI):
                 for i in range(Const.PLAYER_NUM):
                     if Const.BLACK_HOLE_EFFECT_RADIUS > self.helper.get_other_player_distance(i):
                         effect_num = effect_num + 1
-                if effect_num >= 3 or self.helper.get_live_player_num() == 2:
+                if effect_num >= 3 or (self.helper.get_live_player_num() == 2 and effect_num == 2):
                     factor = 1
             elif item_id == 3:
                 effect_num = 0
                 for i in range(Const.PLAYER_NUM):
                     if Const.BOMB_EXPLODE_RADIUS > self.helper.get_other_player_distance(i):
                         effect_num = effect_num + 1
-                if effect_num >= 3 or self.helper.get_live_player_num() == 2:
+                if effect_num >= 3 or (self.helper.get_live_player_num() == 2 and effect_num == 2):
                     factor = 1
             elif item_id == 4:
                 effect_num = 0
                 for i in range(Const.PLAYER_NUM):
                     if Const.ZAP_ZAP_ZAP_RANGE > abs(self.helper.get_other_position(i)[0] - self.helper.get_self_position()[0]):
                         effect_num = effect_num + 1
-                if effect_num >= 3 or self.helper.get_live_player_num() == 2:
+                if effect_num >= 3 or (self.helper.get_live_player_num() == 2 and effect_num == 2):
                     factor = 1
             elif item_id == 5:
                 factor = 1
             elif item_id == 6 and self.helper.get_self_voltage() > 10:
                 factor = 1
-            elif item_id == 7 and not self.helper.get_self_will_drop():
+            elif item_id == 7 and not self.helper.get_self_have_platform_below():
                 factor = 1
         return AI_DIR_USE_ITEM if factor else -1
 
@@ -110,7 +108,7 @@ class TeamAI(BaseAI):
         my_normal_speed = self.helper.get_self_normal_speed()
         my_jump_speed = self.helper.get_self_jump_speed()
         game_boundary = self.helper.get_game_arena_boundary()
-        live_time = 0.15
+        live_time = 0.1
         after_pos = (my_pos[0] + (my_normal_speed * (1 if direction[0] > 0 else -1) + my_v[0]) * live_time, my_pos[1] + (my_jump_speed * (-1 if direction[1] < 0 else 0) + my_v[1]) * live_time + 1/2 * g * live_time ** 2)
         if after_pos[1] > game_boundary[1][1] or self.helper.get_position_will_drop(after_pos) or my_pos[0] < game_boundary[0][0] or my_pos[0] > game_boundary[1][0]:
             return (0, 0)
@@ -124,7 +122,7 @@ class TeamAI(BaseAI):
         game_boundary = self.helper.get_game_arena_boundary()
         vector_to_land = self.helper.get_position_vector_to_closest_land()
         live_time = 0.15
-        if my_pos[1] > game_boundary[1][1] or self.helper.get_self_will_drop():
+        if my_pos[1] > game_boundary[1][1] or self.helper.get_self_have_platform_below():
             if vector_to_land[0] > 0:
                 if self.can_jump():
                     return AI_DIR_RIGHT_JUMP
@@ -139,8 +137,6 @@ class TeamAI(BaseAI):
                 return AI_DIR_JUMP
         elif my_pos[0] < game_boundary[0][0]:
             return AI_DIR_RIGHT
-        elif my_pos[1] < game_boundary[0][1]:
-            return AI_DIR_NOT_JUMP
         elif my_pos[0] > game_boundary[1][0]:
             return AI_DIR_LEFT
         future_pos = (my_pos[0] + my_v[0] * live_time, my_pos[1] + my_v[1] * live_time + 1/2 * g * live_time ** 2)
@@ -151,10 +147,10 @@ class TeamAI(BaseAI):
             if distance < nearest_distance:
                 nearest_distance = distance
                 nearest = banana
-        if nearest != (0, 0) and (my_pos[0] > nearest[0]) * (future_pos[0] < nearest[0]):
-            if my_v[0] > 0:
+        if nearest != (0, 0) and nearest_distance < 20:
+            if my_v[0] > 0 and nearest[0] - my_pos[0] > 0:
                 return AI_DIR_LEFT
-            elif my_v[0] < 0:
+            elif my_v[0] < 0 and nearest[0] - my_pos[0] < 0:
                 return AI_DIR_RIGHT
 
         if self.helper.get_position_will_drop(future_pos):
@@ -272,7 +268,7 @@ class TeamAI(BaseAI):
         highest_voltage = self.helper.get_other_voltage(self.helper.get_highest_voltage_player())
         if self.helper.get_self_can_attack_time() < 0.75:
             if my_voltage <= mean_voltage or self.helper.get_self_is_invincible() or self.helper.get_live_player_num() <= 2:
-                self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("highestV"), lambda self: self.trace_enemy("highestV"),
+                self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("highestV"), lambda self: self.trace_enemy("highestV"), lambda self: self.trace_enemy("nearest"),
                             lambda self: self.use_item(), lambda self: self.trace_item()]
             elif my_voltage <= (mean_voltage + highest_voltage) / 2:
                 self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("nearest"), lambda self: self.use_item(),
@@ -284,13 +280,9 @@ class TeamAI(BaseAI):
             self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.use_item(),
                         lambda self: self.run_away("nearest"), lambda self: self.trace_item(), lambda self: self.trace_enemy("nearest")]
 
-        not_jump = 0
         for i, function in enumerate(self.mode):
             instruction = function(self)
             if instruction != -1:
-                if instruction == AI_DIR_NOT_JUMP:
-                    not_jump = 1
-                elif not (not_jump and instruction == AI_DIR_LEFT_JUMP or instruction == AI_DIR_RIGHT_JUMP or instruction == AI_DIR_JUMP):
-                    return instruction
+                return instruction
         return AI_DIR_STAY
 
