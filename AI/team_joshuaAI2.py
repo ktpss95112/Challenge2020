@@ -268,7 +268,7 @@ class TeamAI(object):
         highest_voltage = self.helper.get_other_voltage(self.helper.get_highest_voltage_player())
         if self.helper.get_self_can_attack_time() < 0.75:
             if my_voltage <= mean_voltage or self.helper.get_self_is_invincible() or self.helper.get_live_player_num() <= 2:
-                self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("highestV"), lambda self: self.trace_enemy("highestV"), lambda self: self.trace_enemy("nearest"),
+                self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("highestV"), lambda self: self.trace_enemy("nearest"), lambda self: self.trace_enemy("nearest"),
                             lambda self: self.use_item(), lambda self: self.trace_item()]
             elif my_voltage <= (mean_voltage + highest_voltage) / 2:
                 self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("nearest"), lambda self: self.use_item(),
