@@ -38,8 +38,7 @@ class Animation_raster(Animation_base):
         self.frame_index_to_draw = 0
         self.expire_time = expire_time
         self.expired = False
-        pos[next(iter(pos))] = pg.math.Vector2(pos[next(iter(pos))]) # turn tuple into vec2
-        self.pos = pos
+        #self.pos = pos
 
     def update(self):
         self._timer += 1
@@ -48,11 +47,6 @@ class Animation_raster(Animation_base):
             self.expired = True
         elif self._timer % self.delay_of_frames == 0:
             self.frame_index_to_draw = (self.frame_index_to_draw + 1) % len(self.frames)
-
-        # update self.pos if needed
-        # self.pos[ next(iter(self.pos)) ] = pg.math.Vector2(next_pos)
-        # or
-        # self.pos[ next(iter(self.pos)) ] += pg.math.Vector2(dx, dy)
 
     # the "update" argument is for the purpose of GraphicalView.theworld_background in View/main.py
     def draw(self, screen, update=True):
@@ -74,7 +68,8 @@ class Animation_Bomb_Explode(Animation_raster):
     )
 
     def __init__(self, **pos):
-        super().__init__(2, 2*len(self.frames), **pos)
+        super().__init__(2, 2*len(self.frames))
+        self.pos = pos
 
 
 class Animation_Lightning(Animation_raster):
@@ -86,10 +81,7 @@ class Animation_Lightning(Animation_raster):
         cls.lightning = cls.lightning.convert_alpha()
 
     def __init__(self, pos):
-        self._timer = 0
-        self.delay_of_frames = 2
-        self.expire_time = 27
-        self.expired = False
+        super().__init__(2, 27)
         self.pos = pos - Const.ZAP_ZAP_ZAP_RANGE
         self.lightning_alpha = random.randint(100, 255)
 
@@ -125,12 +117,7 @@ class Animation_player_attack(Animation_raster):
     )
 
     def __init__(self, player: Player):
-        # TODO: refactor the following code, use super().__init__
-        self._timer = 0
-        self.delay_of_frames = 2
-        self.frame_index_to_draw = 0
-        self.expire_time = 2*len(self.frames)
-        self.expired = False
+        super().__init__(2, 2*len(self.frames))
         self.player = player
 
     def draw(self, screen, update=True):
@@ -152,12 +139,7 @@ class Animation_player_attack_big(Animation_raster):
     )
 
     def __init__(self, player: Player):
-        # TODO: refactor the following code, use super().__init__
-        self._timer = 0
-        self.delay_of_frames = 2
-        self.frame_index_to_draw = 0
-        self.expire_time = 2*len(self.frames)
-        self.expired = False
+        super().__init__(2, 2*len(self.frames))
         self.player = player
 
     def draw(self, screen, update=True):
@@ -179,7 +161,8 @@ class Animation_Bomb_Explode(Animation_raster):
     )
 
     def __init__(self, **pos):
-        super().__init__(2, 2*len(self.frames), **pos)
+        super().__init__(2, 2*len(self.frames))
+        self.pos = pos
         r = Const.BOMB_SCREEN_VIBRATION_RADIUS
         self.vibration = np.zeros((Const.BOMB_TIME, 2), dtype=np.int8)
         self.vibration[:Const.BOMB_SCREEN_VIBRATION_DURATION, :] = np.random.randint(-r, r+1, size=(Const.BOMB_SCREEN_VIBRATION_DURATION, 2))
@@ -203,7 +186,8 @@ class Animation_Rainbow(Animation_raster):
     )
 
     def __init__(self, **pos):
-        super().__init__(4, 4*(len(self.frames) + 10), **pos)
+        super().__init__(4, 4*(len(self.frames) + 10))
+        self.pos = pos
 
     def update(self):
         self._timer += 1
@@ -230,7 +214,8 @@ class Animation_Gift_Explode(Animation_raster):
     )
 
     def __init__(self, **pos):
-        super().__init__(4, 4*len(self.frames), **pos)
+        super().__init__(4, 4*len(self.frames))
+        self.pos = pos
 
     def draw(self, screen, update=True):
         screen.blit(
