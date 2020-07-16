@@ -147,39 +147,24 @@ class GraphicalView:
         if target is None:
             target = self.screen
 
-        # draw stage
+        # draw
         self.stage.draw(target)
-
-        # draw platform
         self.platform.draw(target)
-
-        # draw players
         self.players.draw(target)
-
-        # draw items
         self.items.draw(target)
-
-        # draw entities
+        self.scoreboard.draw(target)
+        self.timer.draw(target)
         self.entities.draw(target)
 
-        # draw animation
         for ani in self.animation_list:
             if ani.expired and isinstance(ani, View.animations.Animation_Gift_Explode):
                 self.ev_manager.post(EventDeathRainStart())
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(target, update)
 
-        # draw blackhole
         for ani in self.animation_black_hole_list:
             if ani.expired: self.animation_black_hole_list.remove(ani)
             else          : ani.draw(target, update)
-
-        # draw scoreboard
-        self.scoreboard.draw(target)
-
-        # draw timer
-        self.timer.draw(target)
-
 
         pg.display.flip()
 

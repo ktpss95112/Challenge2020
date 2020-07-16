@@ -1,20 +1,3 @@
-'''
-* How Animation works:
-
-tick = 0
-animations = []
-while True:
-    for ani in animations:
-        if ani.expired:
-            animations.remove(ani)
-
-    animations.append(new_animation)
-
-    for ani in animations:
-        ani.draw(screen)
-
-    tick += 1
-'''
 import os
 import pygame as pg
 import numpy as np
@@ -38,26 +21,9 @@ in the init_otherobjects() function!
 
 
 class Animation_base():
-    '''
-    Base class of all animation.
-    There will be a list (call it ANI) of all currently effective animations in main.py of view.
-    To start an animation, you have to append the new Animation to ANI.
-    Every animation in ANI should be drawn (if valid) or be discarded (if expired) in every tick.
-    '''
-
     def __init__(self, delay_of_frames, **pos):
         self._timer = 0
         self.expired = False
-
-    def update(self):
-        pass
-
-    # the "update" argument is for the purpose of GraphicalView.theworld_background in View/main.py
-    def draw(self, screen, update=True):
-        # draw first
-        # update second
-        pass
-
 
 class Animation_raster(Animation_base):
     frames = tuple()
