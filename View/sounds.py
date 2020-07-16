@@ -34,6 +34,7 @@ if SOUND_ENABLE:
             'jingle_bell': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'jingle_bell.wav')),
             'player_die': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'player_die.wav')),
             'player_no_life': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'player_no_life.wav')),
+            'endgame': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'endgame.wav')),
         }
 
         def __init__(self, ev_manager: EventManager, model: GameEngine):
@@ -118,6 +119,10 @@ if SOUND_ENABLE:
                 self.effect_list['keyboard_typing'].play()
 
             elif isinstance(event, EventTimesUp):
+                pg.mixer.stop()
+                self.effect_list['endgame'].play()
+
+            elif isinstance(event, EventRestart):
                 pg.mixer.stop()
 
             elif isinstance(event, EventContinue):
