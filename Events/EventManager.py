@@ -199,7 +199,7 @@ class EventUseCancerBomb(BaseEvent):
 
 
 class EventUseZapZapZap(BaseEvent):
-    name = 'UseCancerBomb event'
+    name = 'UseZapZapZap event'
 
     def __init__(self, player_position, used_time):
         self.player_position = player_position
