@@ -157,7 +157,7 @@ class EventPlayerItem(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id}'
 
-    
+
 class EventPlayerPickItem(BaseEvent):
     name = 'Player pick item event (model => view)'
 
@@ -260,9 +260,12 @@ class EventCutInStart(BaseEvent):
     def __init__(self, player_id, item_id):
         self.player_id = player_id
         self.item_id = item_id
-    
+
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} use item_id {self.item_id} with cut in'
 
 class EventCutInEnd(BaseEvent):
     name = 'Cut-in end event'
+
+class EventTypeSound(BaseEvent):
+    name = 'Cut-in typing sound event'
