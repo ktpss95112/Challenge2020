@@ -79,6 +79,9 @@ class GraphicalView:
         if isinstance(event, EventInitialize):
             self.initialize()
 
+        if isinstance(event, EventRestart):
+            self.initialize()
+
         elif isinstance(event, EventEveryTick):
             self.display_fps()
 
