@@ -2,7 +2,7 @@ import pygame as pg
 
 
 try:
-    pg.mixer.init(22050, -16, 2, 64)
+    pg.mixer.init()
     SOUND_ENABLE = True
 
 except pg.error:
