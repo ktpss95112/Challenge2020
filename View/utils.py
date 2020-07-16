@@ -1,5 +1,4 @@
 import pygame as pg
-import numpy as np
 
 class PureText:
     def __init__(self, text, size, font, color, **pos):
