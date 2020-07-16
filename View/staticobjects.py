@@ -46,9 +46,7 @@ class View_stage(__Object_base):
 
 class View_platform(__Object_base):
     def draw(self, screen):
-        # screen.fill(Const.BACKGROUND_COLOR)
         for platform in self.model.platforms:
-            # TODO: refactor the below line to be cleaner
             pg.draw.rect(screen, pg.Color('white'), (*platform.upper_left, *map(lambda x, y: x - y, platform.bottom_right, platform.upper_left)))
 
 
@@ -128,27 +126,21 @@ class View_endgame(__Object_base):
         screen.blit(self.images['Background'], (0, 0))
 
         for player_id in range(4):
-            # draw player name
+            # draw player name & score
             self.name_text[player_id].draw(self.model.players[player_id].player_name, screen, center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 345))
-
-            # draw player score
-
             self.score_text[player_id].draw(f"{self.model.players[player_id].score}", screen, center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 600))
 
             # draw player ball
-
             img_shining_period = (int)(self.model.player_image_timer / 7 ) % 5
             img_play_state = (player_id) * 5 + img_shining_period
             screen.blit(self.player_images[img_play_state], self.player_images[img_play_state].get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260)))
 
             # draw player emoticon
-
             emoji_surface = self.images[f'emoji_{self.model.players[player_id].rank}']
             emoji_rect = emoji_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252, 260))
             screen.blit(emoji_surface, emoji_rect)
 
             # draw medal
-
             if 1 <= self.model.players[player_id].rank and self.model.players[player_id].rank <= 3:
                 medal_surface = self.images[f'medal_{self.model.players[player_id].rank}']
                 medal_rect = medal_surface.get_rect(center=(Const.WINDOW_SIZE[0] / 2 + (player_id - 1.5) * 252 + 75, 210))
@@ -319,11 +311,6 @@ class View_items(__Object_base):
         floating = (0, Const.FLOATING_RADIUS * math.sin(Const.FLOATING_THETA*self.model.timer))
         for item in self.model.items:
             screen.blit(self.images[item.item_id], self.images[item.item_id].get_rect(center=item.position + floating))
-            #pg.draw.circle(screen, Const.ITEM_COLOR[item.item_id], center, item.item_radius)
-            #font = pg.font.Font(None, 15)
-            #item_surface = font.render(f"{item.item_id:d}", 1, pg.Color('black'))
-            #item_pos = item.position
-            #screen.blit(item_surface, item_surface.get_rect(center = item_pos))
 
 class View_stop(__Object_base):
     images = {

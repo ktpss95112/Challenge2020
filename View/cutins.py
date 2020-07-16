@@ -28,7 +28,7 @@ class Cutin_base():
     The first-in animation in CUTIN should be drawn (if valid) or be discarded (if expired) in every tick.
     '''
 
-    def __init__(self, delay_of_flames):
+    def __init__(self):
         self._timer = 0
         self.expired = False
 
@@ -134,7 +134,7 @@ class Cutin_raster(Cutin_board):
         'emoticon_3' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_third.png')), 0.27),
         'emoticon_4' : scaled_surface(load_image(os.path.join(Const.IMAGE_PATH, 'players', 'ball_emoticon_fourth.png')), 0.27),
     }
-    def __init__(self, player_id, players):
+    def __init__(self, player_id, players, ev_manager : EventManager):
         # Add type_time to random type speed of typewriter
         super().__init__(player_id)
         self.rank = self.ranking(players)
@@ -144,7 +144,7 @@ class Cutin_raster(Cutin_board):
         self.fontSmall = pg.font.Font(os.path.join(Const.FONT_PATH, 'bitter', 'Bitter-Bold.ttf'), 6)
         self.stay_time = Const.CUTIN_STAY_TIME # The time cut-in would stay after every thing finish
         self.text_type = False
-
+        self.ev_manager = ev_manager
 
     def update(self):
         # Update board position and update the state
@@ -215,6 +215,8 @@ class Cutin_raster(Cutin_board):
                 word += self.skill_name[i]
             else:
                 self.type_time[i] -= 1
+                if self.type_time[i] == 0:
+                    self.ev_manager.post(EventTypeSound())
                 break
         if self.type_time[-1] != 0 or (self._timer // Const.CUTIN_CURSOR_PERIOD) % 2 != 0:
             word += '_'
@@ -261,6 +263,7 @@ class Cutin_big_black_hole(Cutin_raster):
 
         # Update text to show
         text = self.text()
+
         # Draw skill's name on board
         text_surface = self.fontLarge.render(text, 1, pg.Color('white'))
         self.board.blit(
@@ -312,6 +315,7 @@ class Cutin_zap_zap_zap(Cutin_raster):
 
         # Update text to show
         text = self.text()
+
         # Draw skill's name on board
         text_surface = self.fontLarge.render(text, 1, pg.Color('white'))
         self.board.blit(
@@ -344,3 +348,4 @@ class Cutin_zap_zap_zap(Cutin_raster):
 
 def init_cutin():
     Cutin_big_black_hole.init_convert()
+    Cutin_zap_zap_zap.init_convert()
