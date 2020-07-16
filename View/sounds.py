@@ -31,7 +31,9 @@ if SOUND_ENABLE:
             'rainbow': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'rainbow.wav')),
             'Invincible': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'Invincibe.wav')),
             'keyboard_typing': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'keyboard_typing.wav')),
-            'jingle_bell': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'jingle_bell.wav'))
+            'jingle_bell': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'jingle_bell.wav')),
+            'player_die': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'player_die.wav')),
+            'player_no_life': pg.mixer.Sound(os.path.join(Const.SOUND_PATH, 'player_no_life.wav')),
         }
 
         def __init__(self, ev_manager: EventManager, model: GameEngine):
@@ -129,6 +131,12 @@ if SOUND_ENABLE:
             elif isinstance(event, EventDeathRainTrigger):
                 self.effect_list['jingle_bell'].play()
                 self.effect_list['jingle_bell'].fadeout(15000)
+
+            elif isinstance(event, EventPlayerDied):
+                if self.model.players[event.player_id].life > 0:
+                    self.effect_list['player_die'].play()
+                else:
+                    self.effect_list['player_no_life'].play()
 
 else:
     class Audio(object):
