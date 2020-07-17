@@ -21,10 +21,6 @@ INVINCIBLE_BATTERY = 7
 
 LEFT = (-1, 0)
 RIGHT = (1, 0)
-PLAYER_RADIUS = 25
-ZAP_ZAP_ZAP_RANGE = 5 * PLAYER_RADIUS
-BOMB_EXPLODE_RADIUS = 16 * PLAYER_RADIUS
-BLACK_HOLE_EFFECT_RADIUS = 10 * PLAYER_RADIUS
 
 
 class TeamAI():
@@ -35,9 +31,6 @@ class TeamAI():
 
     def decide(self):
         decision = None
-        #if decision == None and self.jump:
-        #    self.jump = False
-        #    return AI_DIR_JUMP
         if decision == None:
             decision = self.attack()
         
@@ -51,11 +44,14 @@ class TeamAI():
             decision = self.dodge_bomb()
 
         if decision == None:
+            decision = self.dodge_big_black_hole()
+
+        if decision == None:
             decision = self.use_strategy_item()
 
         if decision == None:
             decision = self.pick_item()
-
+        
         #if decision == None:
         #    decision = self.walk_to_highest_voltage_vincible_player()
 
@@ -65,38 +61,18 @@ class TeamAI():
         if decision == None:
             decision = AI_DIR_STAY
 
-        #if decision == AI_DIR_JUMP:
-        #    self.jump = True
-
         return decision
 
     def attack(self):
         nearest_id = self.helper.get_nearest_player()
         nearest_player_position = self.helper.get_other_position(nearest_id)
         if self.helper.get_self_can_attack_time() == 0 and \
-           self.helper.get_distance(self.helper.get_self_position(), nearest_player_position) <  self.helper.get_self_radius() + 1.2 * self.helper.get_other_radius(nearest_id):
+           self.helper.get_distance(self.helper.get_self_position(), nearest_player_position) <  self.effective_attack_radius(nearest_id):
             return AI_DIR_ATTACK
         return None
 
-    def walk_to_good_place(self):
-        self_position = self.helper.get_self_position()
-        land_index = self.helper.get_above_which_land(self_position)
-        if land_index == -1:
-            land_position_vector = self.helper.get_position_vector_to_closest_land()
-            return self.helper.walk_to_position((land_position_vector[0] + self_position[0], land_position_vector[1] + self_position[1]))
-        
-        land_position = self.helper.get_platform_position()[land_index]
-        land_radius = (land_position[1][0] - land_position[0][0]) // 2
-        land_center = (land_position[1][0] + land_position[0][0]) // 2
-        if land_center - land_radius // 2 <= self_position[0] <= land_center - land_radius // 2:
-            return None
-        return self.helper.walk_to_position((land_center, land_position[0][1] - 2 * self.helper.get_self_radius()))
-        
-
-    def walk_to_nearest_player(self):
-        nearest_id = self.helper.get_nearest_player()
-        nearest_player_position = self.helper.get_other_position(nearest_id)
-        return self.helper.walk_to_position((nearest_player_position[0], nearest_player_position[1] + self.helper.get_other_radius(nearest_id) + self.helper.get_self_radius()))
+    def effective_attack_radius(self, other_id):
+        return min(self.helper.get_self_radius() + 1.2 * self.helper.get_other_radius(other_id), self.helper.get_self_attack_radius())
 
     def walk_to_nearest_vincible_player(self):
         self_id = self.helper.get_self_id()
@@ -174,7 +150,17 @@ class TeamAI():
     def use_immediate_item(self):
         item_id = self.helper.get_self_keep_item_id()
         if item_id == BANANA_PISTOL:
-            return AI_DIR_USE_ITEM
+            self_id = self.helper.get_self_id()
+            self_position = self.helper.get_self_position()
+            for i in range(4):
+                if i == self_id or self.helper.get_other_life(i) == 0 or self.helper.get_other_is_invincible(i):
+                    continue
+                other_position = self.helper.get_other_position(i)
+                if (self.helper.get_self_radius() == LEFT) ^ (other_position[0] > self_position[0]):
+                    if abs(other_position[0] - self_position[0]) < 5 * self.helper.get_self_radius() and -self.helper.get_self_radius() <= other_position[1] - self_position[1] < 3 * self.helper.get_self_radius():
+                        return AI_DIR_USE_ITEM
+
+            return None
 
         elif item_id == BIG_BLACK_HOLE:
             return AI_DIR_USE_ITEM
@@ -187,15 +173,25 @@ class TeamAI():
             self_id = self.helper.get_self_id()
             self_position = self.helper.get_self_position()
             for i in range(4):
-                if i == self_id:
+                if i == self_id or self.helper.get_other_life(i) == 0 or self.helper.get_other_is_invincible(i):
                     continue
                 other_position = self.helper.get_other_position(i)
-                if abs(self_position[0] - other_position[0]) < ZAP_ZAP_ZAP_RANGE // 2:
+                if abs(self_position[0] - other_position[0]) < self.helper.get_zap_zap_zap_effect_range() // 2:
                     return AI_DIR_USE_ITEM
             return None
 
         elif item_id == BANANA_PEEL:
-            return AI_DIR_USE_ITEM
+            self_id = self.helper.get_self_id()
+            self_position = self.helper.get_self_position()
+            for i in range(4):
+                if i == self_id or self.helper.get_other_life(i) == 0 or self.helper.get_other_is_invincible(i):
+                    continue
+                other_position = self.helper.get_other_position(i)
+                if (self.helper.get_self_radius() == LEFT) ^ (other_position[0] > self_position[0]):
+                    if abs(other_position[0] - self_position[0]) < 5 * self.helper.get_self_radius() and -self.helper.get_self_radius() <= other_position[1] - self_position[1] < 3 * self.helper.get_self_radius():
+                        return AI_DIR_USE_ITEM
+
+            return None
 
         elif item_id == RAINBOW_GROUNDER:
             return AI_DIR_USE_ITEM
@@ -212,7 +208,7 @@ class TeamAI():
             return None
 
         else:
-            return AI_DIR_USE_ITEM
+            return None
 
     def dodge(self, target, radius):
         # Use self_position when implement where could arrive quickly
@@ -234,15 +230,15 @@ class TeamAI():
         bomb_explode_first = None
         # Fine neareat bomb
         for bomb in zip(bombs_position, explode_time):
-            if bomb[1] < dodge_time and self.helper.get_distance(self_position, bomb[0]) <= 2 * BOMB_EXPLODE_RADIUS:
+            if bomb[1] < dodge_time and self.helper.get_distance(self_position, bomb[0]) <= 2 * self.helper.get_cancer_bomb_effect_radius():
                 if bomb_explode_first == None or bomb[1] < bomb_explode_first[1]:
                     bomb_explode_first = bomb
 
         if bomb_explode_first == None:
             return None
-        if self.helper.get_distance(self_position, bomb_explode_first[0]) >= 2 * BOMB_EXPLODE_RADIUS:
-            return AI_DIR_JUMP        
-        return self.dodge(bomb[0], BOMB_EXPLODE_RADIUS)
+        if self.helper.get_distance(self_position, bomb_explode_first[0]) >= 2 * self.helper.get_black_hole_effect_radius():
+            return self.jump_high()     
+        return self.dodge(bomb[0], self.helper.get_black_hole_effect_radius())
 
     def dodge_big_black_hole(self):
         self_position = self.helper.get_self_position()
@@ -254,7 +250,7 @@ class TeamAI():
         # Find neareat hole
         for pos in hole_position:
             distance = self.helper.get_distance(self_position, pos)
-            if distance <= 2 * BLACK_HOLE_EFFECT_RADIUS:
+            if distance <= 2 * self.helper.get_black_hole_effect_radius():
                 if target_hole_position == None or distance < min_distance:
                     min_distance = distance
                     target_hole_position = pos
@@ -262,7 +258,7 @@ class TeamAI():
         if target_hole_position == None:
             return None
         
-        return self.dodge(target_hole_position, BLACK_HOLE_EFFECT_RADIUS)
+        return self.dodge(target_hole_position, self.helper.get_black_hole_effect_radius())
 
     def get_left_most_position(self):
         # Get position of the left most place
@@ -303,14 +299,14 @@ class TeamAI():
             return None
         if self.helper.get_self_direction() == LEFT:
             if self.exist_left_platform():
-                return AI_DIR_LEFT_JUMP
+                return self.left_jump()
             else:
-                return AI_DIR_RIGHT_JUMP
+                return self.right_jump()
         else:
             if self.exist_right_platform():
-                return AI_DIR_RIGHT_JUMP
+                return self.right_jump()
             else:
-                return AI_DIR_LEFT_JUMP
+                return self.left_jump()
 
         self_position = self.helper.get_self_position()
         platforms = self.helper.get_platform_position()
@@ -340,7 +336,16 @@ class TeamAI():
             min_position = (min_position[0] - 2 * self_radius, 0)
 
         return self.helper.walk_to_position(min_position)
-        
+    
+    def left_jump(self):
+        return AI_DIR_LEFT_JUMP if self.helper.get_self_velocity()[1] >= 0 else AI_DIR_LEFT
+
+    def right_jump(self):
+        return AI_DIR_RIGHT_JUMP if self.helper.get_self_velocity()[1] >= 0 else AI_DIR_RIGHT
+
+    def jump_high(self):
+        return AI_DIR_JUMP if self.helper.get_self_velocity()[1] >= 0 else AI_DIR_STAY
+
     def suicide(self):
         # Wait to implement well
         if self.helper.get_self_voltage() < 90:

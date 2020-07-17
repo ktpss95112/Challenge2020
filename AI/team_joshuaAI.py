@@ -1,4 +1,3 @@
-from API.base import BaseAI
 import Const
 
 AI_DIR_LEFT        = 0
@@ -9,14 +8,14 @@ AI_DIR_RIGHT_JUMP  = 4
 AI_DIR_ATTACK      = 5
 AI_DIR_USE_ITEM    = 6
 
-class TeamAI(BaseAI):
+class TeamAI(object):
     def __init__(self, helper):
         self.helper = helper
         self.enhancement = [0, 0, 0, 0]
         self.item_timer = 0
     
     def jump_distance(self,t):
-        return self.helper.get_self_velocity()[1] * t + self.helper.get_self_jump_speed() * t + 1/2 * self.helper.get_game_player_gravity_acceleration() * t ** 2
+        return self.helper.get_self_velocity()[1] * t + self.helper.get_self_jump_speed() * t + 1/2 * self.helper.get_game_gravity_acceleration() * t ** 2
 
     def get_position_vector_to_closest_land(self, position):
         minimum_distance = 10000 ** 2
@@ -40,7 +39,6 @@ class TeamAI(BaseAI):
         return minimum_vector
 
     def can_jump(self):
-        print(self.helper.get_self_jump_to_the_highest_time())
         return (self.helper.get_self_jump_to_the_highest_time() < 0.02 and self.helper.get_self_can_jump())
 
     def use_item(self):
@@ -68,7 +66,7 @@ class TeamAI(BaseAI):
                 return 1
             elif item_id == 6 and self.helper.get_self_voltage() > 10:
                 return 1
-            elif item_id == 7 and not self.helper.get_self_will_drop():
+            elif item_id == 7 and not self.helper.get_self_have_platform_below():
                 return 1
         return 0
 
@@ -85,7 +83,7 @@ class TeamAI(BaseAI):
                 return AI_DIR_LEFT
 
     def to_live(self, direction, enemy_dst, enemy_id):
-        g = self.helper.get_game_player_gravity_acceleration()
+        g = self.helper.get_game_gravity_acceleration()
         my_pos = self.helper.get_self_position()
         my_v = self.helper.get_self_velocity()
         my_normal_speed = self.helper.get_self_normal_speed()
@@ -93,7 +91,7 @@ class TeamAI(BaseAI):
         game_boundary = self.helper.get_game_arena_boundary()
         live_time = 0.1
         future_pos = (my_pos[0] + my_v[0] * live_time, my_pos[1] + my_v[1] * live_time - 1/2 * g * live_time ** 2)
-        if future_pos[1] > game_boundary[1][1] or self.helper.get_self_will_drop() or self.helper.get_position_will_drop(future_pos):
+        if future_pos[1] > game_boundary[1][1] or self.helper.get_self_have_platform_below() or self.helper.get_position_will_drop(future_pos):
             if self.get_position_vector_to_closest_land(future_pos)[0] > 0:
                 if self.can_jump():
                     return AI_DIR_RIGHT_JUMP
@@ -152,7 +150,7 @@ class TeamAI(BaseAI):
             direction = (-direction[0], -direction[1])
         if(self.helper.get_self_can_attack() and enemy_dst < self.helper.get_self_attack_radius() / 2.5 and not self.helper.get_other_is_invincible(enemy_id)):
             return AI_DIR_ATTACK
-        if self.helper.get_self_will_drop() and direction[0] * self.helper.get_position_vector_to_closest_land()[0] < 0:
+        if self.helper.get_self_have_platform_below() and direction[0] * self.helper.get_position_vector_to_closest_land()[0] < 0:
             direction = (- direction[0], direction[1])
         return self.where_to_go(direction)
 
