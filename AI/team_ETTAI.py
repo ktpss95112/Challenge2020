@@ -55,7 +55,7 @@ class TeamAI():
 
         if decision == None:
             decision = self.pick_item()
-
+        
         #if decision == None:
         #    decision = self.walk_to_highest_voltage_vincible_player()
 
@@ -303,14 +303,14 @@ class TeamAI():
             return None
         if self.helper.get_self_direction() == LEFT:
             if self.exist_left_platform():
-                return AI_DIR_LEFT_JUMP
+                return self.left_jump()
             else:
-                return AI_DIR_RIGHT_JUMP
+                return self.right_jump()
         else:
             if self.exist_right_platform():
-                return AI_DIR_RIGHT_JUMP
+                return self.right_jump()
             else:
-                return AI_DIR_LEFT_JUMP
+                return self.left_jump()
 
         self_position = self.helper.get_self_position()
         platforms = self.helper.get_platform_position()
@@ -340,7 +340,13 @@ class TeamAI():
             min_position = (min_position[0] - 2 * self_radius, 0)
 
         return self.helper.walk_to_position(min_position)
-        
+    
+    def left_jump(self):
+        return AI_DIR_LEFT_JUMP if self.helper.get_self_velocity()[1] >= 0 else AI_DIR_LEFT
+
+    def right_jump(self):
+        return AI_DIR_RIGHT_JUMP if self.helper.get_self_velocity()[1] >= 0 else AI_DIR_RIGHT
+
     def suicide(self):
         # Wait to implement well
         if self.helper.get_self_voltage() < 90:
