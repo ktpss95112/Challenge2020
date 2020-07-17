@@ -247,7 +247,7 @@ class Player:
         if self.voltage < 125:
             return 1 + self.voltage * Const.VOLTAGE_ACCELERATION_COEFFICIENT
         else:
-            return 10
+            return 10 + self.voltage * Const.VOLTAGE_ACCELERATION_COEFFICIENT
 
     def die(self, players, time):
         # EventPlayerDied
