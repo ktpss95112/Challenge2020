@@ -76,7 +76,7 @@ class TeamAI(object):
                 factor = 1
             elif item_id == 6 and self.helper.get_self_voltage() > 10:
                 factor = 1
-            elif item_id == 7 and not self.helper.get_self_have_platform_below():
+            elif item_id == 7 and self.helper.get_self_have_platform_below():
                 factor = 1
         return AI_DIR_USE_ITEM if factor else -1
 
@@ -122,7 +122,7 @@ class TeamAI(object):
         game_boundary = self.helper.get_game_arena_boundary()
         vector_to_land = self.helper.get_position_vector_to_closest_land()
         live_time = 0.15
-        if my_pos[1] > game_boundary[1][1] or self.helper.get_self_have_platform_below():
+        if my_pos[1] > game_boundary[1][1] or not self.helper.get_self_have_platform_below():
             if vector_to_land[0] > 0:
                 if self.can_jump():
                     return AI_DIR_RIGHT_JUMP
