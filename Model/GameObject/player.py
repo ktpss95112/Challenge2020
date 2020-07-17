@@ -244,7 +244,7 @@ class Player:
         self.last_being_attacked_time_elapsed = time
 
     def voltage_acceleration(self):
-        if self.voltage < 125:
+        if self.voltage < 120:
             return 1 + self.voltage * Const.VOLTAGE_ACCELERATION_COEFFICIENT
         else:
             return 10 + self.voltage * Const.VOLTAGE_ACCELERATION_COEFFICIENT
