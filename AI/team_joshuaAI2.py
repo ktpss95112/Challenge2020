@@ -50,17 +50,17 @@ class TeamAI(object):
         my_direction = self.helper.get_self_direction()
         item_id = self.helper.get_self_keep_item_id()
         factor = 0
-        all_pos = self.helper.get_all_position()
+        all_pos = list(map(lambda x: self.helper.get_other_position(x), filter(lambda x: self.helper.get_other_life(x) > 0 and x != self.helper.get_self_id(),[i for i in range(self.helper.get_live_player_num())])))
         if item_id > 0:
             if item_id == 1:
-                if any(map(lambda x: (x[0] - my_pos[0]) * my_direction[0] > 0, all_pos)):
+                if any(map(lambda x: ((x[0] - my_pos[0]) * my_direction[0] > 0), all_pos)):
                     factor = 1
             elif item_id == 2:
                 effect_num = 0
                 for i in range(Const.PLAYER_NUM):
                     if Const.BLACK_HOLE_EFFECT_RADIUS > self.helper.get_other_player_distance(i):
                         effect_num = effect_num + 1
-                if effect_num >= 3 or (self.helper.get_live_player_num() == 2 and effect_num == 2):
+                if effect_num >= 3 or (self.helper.get_live_player_num() == 2 and effect_num == 2) or not self.helper.get_self_is_controllable():
                     factor = 1
             elif item_id == 3:
                 effect_num = 0
@@ -271,7 +271,7 @@ class TeamAI(object):
         voltages = self.helper.get_all_voltage()
         mean_voltage = sum(voltages) / len(voltages)
         highest_voltage = self.helper.get_other_voltage(self.helper.get_highest_voltage_player())
-        if self.helper.get_self_can_attack_time() < 0.75:
+        if self.helper.get_self_can_attack_time() < 0.75 :
             if my_voltage <= mean_voltage or self.helper.get_self_is_invincible() or self.helper.get_live_player_num() <= 2:
                 self.mode = [lambda self: self.avoid_urgent_item(), lambda self: self.to_live(), lambda self: self.avoid_item(), lambda self: self.to_attack("highestV"), lambda self: self.trace_enemy("nearest"), lambda self: self.trace_enemy("nearest"),
                             lambda self: self.use_item(), lambda self: self.trace_item()]
@@ -288,6 +288,7 @@ class TeamAI(object):
         for i, function in enumerate(self.mode):
             instruction = function(self)
             if instruction != -1:
+                #print(i, instruction)
                 return instruction
         return AI_DIR_STAY
 

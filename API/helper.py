@@ -33,7 +33,7 @@ class Helper(object):
 
     def get_game_life_boundary(self):
         # return upper-left and bottom-right coordinate of life boundary
-        return ((Const.LIFE_BOUNDARY[0], Const.LIFE_BOUNDARY[1]), (Const.LIFE_BOUNDARY[2], Const.LIFE_BOUNDARY[3]))
+        return ((Const.LIFE_BOUNDARY[0], Const.LIFE_BOUNDARY[1]), (Const.LIFE_BOUNDARY[0] + Const.LIFE_BOUNDARY[2], Const.LIFE_BOUNDARY[1] + Const.LIFE_BOUNDARY[3]))
 
     def get_game_gravity_acceleration(self):
         return Const.GRAVITY_ACCELERATION / Const.FPS
@@ -46,55 +46,55 @@ class Helper(object):
         return self.player_id
     
     def get_self_position(self):
-        return tuple(self.model.players[self.player_id].position)
+        return tuple(self.model.players[self.player_id].position) if self.model.players[self.player_id].is_alive() else None
 
     def get_self_velocity(self):
-        return tuple(self.model.players[self.player_id].velocity)
+        return tuple(self.model.players[self.player_id].velocity) if self.model.players[self.player_id].is_alive() else None
 
     def get_self_direction(self):
-        return tuple(self.model.players[self.player_id].direction)
+        return tuple(self.model.players[self.player_id].direction) if self.model.players[self.player_id].is_alive() else None
 
     def get_self_normal_speed(self):
-        return self.model.players[self.player_id].normal_speed
+        return self.model.players[self.player_id].normal_speed if self.model.players[self.player_id].is_alive() else None
 
     def get_self_jump_speed(self):
-        return self.model.players[self.player_id].jump_speed
+        return self.model.players[self.player_id].jump_speed if self.model.players[self.player_id].is_alive() else None
 
     def get_self_keep_item_id(self):
-        return self.model.players[self.player_id].keep_item_id
+        return self.model.players[self.player_id].keep_item_id if self.model.players[self.player_id].is_alive() else None
 
     def get_self_voltage(self):
-        return self.model.players[self.player_id].voltage
+        return self.model.players[self.player_id].voltage if self.model.players[self.player_id].is_alive() else None
 
     def get_self_radius(self):
-        return self.model.players[self.player_id].player_radius
+        return self.model.players[self.player_id].player_radius if self.model.players[self.player_id].is_alive() else None
 
     def get_self_attack_radius(self):
-        return self.model.players[self.player_id].attack_radius
+        return self.model.players[self.player_id].attack_radius if self.model.players[self.player_id].is_alive() else None
 
     def get_self_is_invincible(self):
-        return (self.model.players[self.player_id].is_invincible())
+        return self.model.players[self.player_id].is_invincible() if self.model.players[self.player_id].is_alive() else None
     
     def get_self_invincible_time(self):
-        return self.model.players[self.player_id].invincible_time / Const.FPS
+        return self.model.players[self.player_id].invincible_time / Const.FPS if self.model.players[self.player_id].is_alive() else None
 
     def get_self_is_controllable(self):
-        return self.model.players[self.player_id].uncontrollable_time <= 0
+        return self.model.players[self.player_id].uncontrollable_time <= 0 if self.model.players[self.player_id].is_alive() else None
 
     def get_self_uncontrollable_time(self):
-        return self.model.players[self.player_id].uncontrollable_time / Const.FPS
+        return self.model.players[self.player_id].uncontrollable_time / Const.FPS if self.model.players[self.player_id].is_alive() else None
 
     def get_self_can_attack(self):
-        return self.model.players[self.player_id].can_attack()
+        return self.model.players[self.player_id].can_attack() if self.model.players[self.player_id].is_alive() else None
 
     def get_self_can_attack_time(self):
-        return self.model.players[self.player_id].attack_cool_down_time / Const.FPS
+        return self.model.players[self.player_id].attack_cool_down_time / Const.FPS if self.model.players[self.player_id].is_alive() else None
 
     def get_self_can_jump(self):
-        return (self.get_self_jump_quota() > 0)
+        return (self.get_self_jump_quota() > 0) if self.model.players[self.player_id].is_alive() else None
 
     def get_self_jump_quota(self):
-        return self.model.players[self.player_id].jump_quota
+        return self.model.players[self.player_id].jump_quota if self.model.players[self.player_id].is_alive() else None
 
     def get_self_life(self):
         return self.model.players[self.player_id].life
@@ -103,135 +103,141 @@ class Helper(object):
         return self.model.players[self.player_id].score
 
     def get_self_jump_to_the_highest_time(self):
-        return -self.model.players[self.player_id].velocity.y / Const.GRAVITY_ACCELERATION
+        return (-self.model.players[self.player_id].velocity.y / Const.GRAVITY_ACCELERATION if self.model.players[self.player_id].velocity.y < 0 else 0)\
+                if self.model.players[self.player_id].is_alive() else None
 
     def get_self_have_platform_below(self):
+        if not self.model.players[self.player_id].is_alive():
+            return None
         self_position = self.get_self_position()
         self_radius = self.get_self_radius()
         platforms = self.get_platform_position()
         for platform in platforms:
             if platform[0][0] < self_position[0] < platform[1][0] and self_position[1] + self_radius <= platform[0][1]:
-                return False
-        return True
+                return True
+        return False
     
     # get all player information 
     def get_all_position(self):
-        return [tuple(player.position) for player in self.model.players if player.life > 0]
+        return [tuple(player.position) if player.is_alive() else None for player in self.model.players]
 
     def get_all_velocity(self):
-        return [tuple(player.velocity) for player in self.model.players if player.life > 0]
+        return [tuple(player.velocity) if player.is_alive() else None for player in self.model.players]
 
     def get_all_direction(self):
-        return [tuple(player.direction) for player in self.model.players if player.life > 0]
+        return [tuple(player.direction) if player.is_alive() else None for player in self.model.players]
 
     def get_all_normal_speed(self):
-        return [player.normal_speed for player in self.model.players if player.life > 0]
+        return [player.normal_speed if player.is_alive() else None for player in self.model.players]
 
     def get_all_jump_speed(self):
-        return [player.jump_speed for player in self.model.players if player.life > 0]
+        return [player.jump_speed if player.is_alive() else None for player in self.model.players]
     
     def get_all_keep_item_id(self):
-        return [player.keep_item_id for player in self.model.players if player.life > 0]
+        return [player.keep_item_id if player.is_alive() else None for player in self.model.players]
 
     def get_all_voltage(self):
-        return [player.voltage for player in self.model.players if player.life > 0]
+        return [player.voltage if player.is_alive() else None for player in self.model.players]
 
     def get_all_radius(self):
-        return [player.player_radius for player in self.model.players if player.life > 0]
+        return [player.player_radius if player.is_alive() else None for player in self.model.players]
 
     def get_all_attack_radius(self):
-        return [player.attack_radius for player in self.model.players if player.life > 0]
+        return [player.attack_radius if player.is_alive() else None for player in self.model.players]
 
     def get_all_is_invincible(self):
-        return [player.is_invincible() for player in self.model.players if player.life > 0]
+        return [player.is_invincible() if player.is_alive() else None for player in self.model.players]
     
     def get_all_invincible_time(self):
-        return [player.invincible_time / Const.FPS for player in self.model.players if player.life > 0]
+        return [player.invincible_time / Const.FPS if player.is_alive() else None for player in self.model.players]
 
     def get_all_is_controllable(self):
-        return [player.uncontrollable_time <= 0 for player in self.model.players if player.life > 0]
+        return [player.uncontrollable_time <= 0 if player.is_alive() else None for player in self.model.players]
 
     def get_all_uncontrollable_time(self):
-        return [player.uncontrollable_time / Const.FPS for player in self.model.players if player.life > 0]
+        return [player.uncontrollable_time / Const.FPS if player.is_alive() else None for player in self.model.players]
     
     def get_all_can_attack(self):
-        return [player.can_attack() for player in self.model.players if player.life > 0]
+        return [player.can_attack() if player.is_alive() else None for player in self.model.players]
 
     def get_all_can_attack_time(self):
-        return [player.attack_cool_down_time / Const.FPS for player in self.model.players if player.life > 0]
+        return [player.attack_cool_down_time / Const.FPS if player.is_alive() else None for player in self.model.players]
 
     def get_all_can_jump(self):
-        return [player.jump_quota > 0 for player in self.model.players if player.life > 0]
+        return [player.jump_quota > 0 if player.is_alive() else None for player in self.model.players]
 
     def get_all_jump_quota(self):
-        return [player.jump_quota for player in self.model.players if player.life > 0]
+        return [player.jump_quota if player.is_alive() else None for player in self.model.players]
 
     def get_all_life(self):
-        return [player.life for player in self.model.players if player.life > 0]
+        return [player.life for player in self.model.players]
 
     def get_all_score(self):
-        return [player.score for player in self.model.players if player.life > 0]
+        return [player.score for player in self.model.players]
 
     def get_all_jump_to_the_highest_time(self):
-        return [-player.velocity.y / Const.GRAVITY_ACCELERATION for player in self.model.players if player.life > 0]
+        return [(-player.velocity.y / Const.GRAVITY_ACCELERATION if player.velocity.y < 0 else 0) if player.is_alive() else None\
+                for player in self.model.players]
     
     def get_all_player_vector(self):
-        return [self.get_vector(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM) if self.model.players[i].life > 0]
+        return [self.get_vector(self.get_self_position(), player.position) if player.is_alive() else None\
+                for player in self.model.players]
     
     def get_all_player_distance(self):
-        return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM) if self.model.players[i].life > 0]
+        return [self.get_distance(self.get_self_position(), player.position) if player.is_alive() else None\
+                for player in self.model.players]
 
     # get other players information
     def get_other_position(self, index):
-        return tuple(self.model.players[index].position)
+        return tuple(self.model.players[index].position) if self.model.players[index].is_alive() else None
 
     def get_other_velocity(self, index):
-        return tuple(self.model.players[index].velocity)
+        return tuple(self.model.players[index].velocity) if self.model.players[index].is_alive() else None
 
     def get_other_direction(self, index):
-        return tuple(self.model.players[index].direction)
+        return tuple(self.model.players[index].direction) if self.model.players[index].is_alive() else None
 
     def get_other_normal_speed(self, index):
-        return self.model.players[index].normal_speed
+        return self.model.players[index].normal_speed if self.model.players[index].is_alive() else None
 
     def get_other_jump_speed(self, index):
-        return self.model.players[index].jump_speed
+        return self.model.players[index].jump_speed if self.model.players[index].is_alive() else None
 
     def get_other_keep_item_id(self, index):
-        return self.model.players[index].keep_item_id
+        return self.model.players[index].keep_item_id if self.model.players[index].is_alive() else None
 
     def get_other_voltage(self, index):
-        return self.model.players[index].voltage
+        return self.model.players[index].voltage if self.model.players[index].is_alive() else None
 
     def get_other_radius(self, index):
-        return self.model.players[index].player_radius
+        return self.model.players[index].player_radius if self.model.players[index].is_alive() else None
 
     def get_other_attack_radius(self, index):
-        return self.model.players[index].attack_radius
+        return self.model.players[index].attack_radius if self.model.players[index].is_alive() else None
 
     def get_other_is_invincible(self, index):
-        return (self.model.players[index].is_invincible())
+        return (self.model.players[index].is_invincible()) if self.model.players[index].is_alive() else None
     
     def get_other_invincible_time(self, index):
-        return self.model.players[index].invincible_time / Const.FPS
+        return self.model.players[index].invincible_time / Const.FPS if self.model.players[index].is_alive() else None
 
     def get_other_is_controllable(self, index):
-        return self.model.players[index].uncontrollable_time <= 0
+        return self.model.players[index].uncontrollable_time <= 0 if self.model.players[index].is_alive() else None
 
     def get_other_uncontrollable_time(self, index):
-        return self.model.players[index].uncontrollable_time / Const.FPS
+        return self.model.players[index].uncontrollable_time / Const.FPS if self.model.players[index].is_alive() else None
     
     def get_other_can_jump(self, index):
-        return (self.model.players[index].jump_quota > 0)
+        return (self.model.players[index].jump_quota > 0) if self.model.players[index].is_alive() else None
 
     def get_other_jump_quota(self, index):
-        return self.model.players[index].jump_quota
+        return self.model.players[index].jump_quota if self.model.players[index].is_alive() else None
 
     def get_other_can_attack(self, index):
-        return self.model.players[index].can_attack()
+        return self.model.players[index].can_attack() if self.model.players[index].is_alive() else None
 
     def get_other_can_attack_time(self, index):
-        return self.model.players[index].attack_cool_down_time / Const.FPS
+        return self.model.players[index].attack_cool_down_time / Const.FPS if self.model.players[index].is_alive() else None
 
     def get_other_life(self, index):
         return self.model.players[index].life
@@ -240,22 +246,27 @@ class Helper(object):
         return self.model.players[index].score
 
     def get_other_jump_to_the_highest_time(self, index):
-        return -self.model.players[index].velocity.y / Const.GRAVITY_ACCELERATION
+        return (-self.model.players[index].velocity.y / Const.GRAVITY_ACCELERATION if self.model.players[index].velocity.y < 0 else 0)\
+                if self.model.players[index].is_alive() else None
 
     def get_other_have_platform_below(self, index):
+        if not self.model.players[index].is_alive():
+            return None
         other_position = self.get_other_position(index)
         other_radius = self.get_other_radius(index)
         platforms = self.get_platform_position()
         for platform in platforms:
             if platform[0][0] < other_position[0] < platform[1][0] and other_position[1] + other_radius <= platform[0][1]:
-                return False
-        return True
+                return True
+        return False
 
     def get_other_player_vector(self, index):
-        return self.get_vector(self.get_self_position(), self.get_other_position(index))
+        return self.get_vector(self.get_self_position(), self.get_other_position(index))\
+                if self.model.players[index].is_alive() else None
 
     def get_other_player_distance(self, index):
-        return self.get_distance(self.get_self_position(), self.get_other_position(index))
+        return self.get_distance(self.get_self_position(), self.get_other_position(index))\
+                if self.model.players[index].is_alive() else None
 
     # get platform information 
     def get_platform_position(self):
@@ -308,15 +319,12 @@ class Helper(object):
         return (True if self.model.items else False)
 
     def get_nearest_item_position(self):
-        player_pos = self.get_self_position()
-        minimum_distance = 10000
-        position = (0, 0)
+        nearest_pos, minimum_distance = None, 10000 ** 2 
         for item in self.model.items:
-            distance = self.get_distance(player_pos, item.position)
+            distance = self.get_distance(self.get_self_position(), item.position)
             if distance < minimum_distance:
-                minimum_distance = distance
-                position = item.position
-        return position
+                minimum_distance, nearest_pos = distance, tuple(item.position)
+        return nearest_pos
 
     def get_all_item_position(self):
         return [tuple(item.position) for item in self.model.items]
@@ -407,57 +415,29 @@ class Helper(object):
         return Const.ZAP_ZAP_ZAP_RANGE
 
     # get special information
-    def get_nearest_player(self):  # when the nearest_player not only one?
-        return min\
-            (\
-                filter(lambda player: player.player_id != self.player_id and player.life > 0, self.model.players),\
-                key = lambda player: (self.model.players[self.player_id].position - player.position).magnitude()\
-            ).player_id
-        '''
-        nearest_id = 0
-        minimum_distance = 10000 ** 2 
+    def get_nearest_player(self):
+        index, minimum_distance = None, 10000 ** 2 
         for player in self.model.players:
-            if player.player_id != self.player_id:
-                current_distance = (self.model.players[self.player_id].position - player.position).magnitude() 
-                if current_distance < minimum_distance:
-                    minimum_distance = current_distance
-                    nearest_id = player.player_id
-        return nearest_id
-        '''
+            distance = self.get_distance(self.get_self_position(), player.position)
+            if player.player_id != self.player_id and player.is_alive() and distance < minimum_distance:
+                minimum_distance, index = distance, player.player_id
+        return index
     
-    def get_highest_voltage_player(self):    # when the highest_voltage_player not only one?
-        return max\
-            (\
-                filter(lambda player: player.player_id != self.player_id and player.life > 0, self.model.players),\
-                key = lambda player: player.voltage\
-            ).player_id
-        '''
-        highest_voltage_id = 0
-        highest_voltage = 0
+    def get_highest_voltage_player(self):
+        index, highest_voltage = None, 0
         for player in self.model.players:
-            if player.player_id != self.player_id:
-                if player.voltage > highest_voltage:
-                    highest_voltage = player.voltage
-                    highest_voltage_id = player.player_id
-        return highest_voltage_id
-        '''
+            if player.player_id != self.player_id and player.is_alive() and\
+                player.voltage > highest_voltage:
+                highest_voltage, index = player.voltage, player.player_id
+        return index
 
-    def get_highest_score_player(self):   # when the highest_score_player not only one?
-        return max\
-            (\
-                filter(lambda player: player.player_id != self.player_id and player.life > 0, self.model.players),\
-                key = lambda player: player.score\
-            ).player_id
-        '''
-        highest_score_id = 0
-        highest_score = 0
+    def get_highest_score_player(self):
+        index, highest_score = None, 0
         for player in self.model.players:
-            if player.player_id != self.player_id:
-                if player.score > highest_score:
-                    highest_score = player.score
-                    highest_score_id = player.player_id
-        return highest_score_id
-        '''
+            if player.player_id != self.player_id and player.is_alive() and\
+                player.score > highest_score:
+                highest_score, index = player.score, player.player_id
+        return index
 
     def get_distance(self, p1, p2):
         return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
