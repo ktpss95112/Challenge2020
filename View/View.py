@@ -35,7 +35,6 @@ class GraphicalView:
         self.clock = None
         self.last_update = 0
         self.current_stop_index = None
-        self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
 
     def initialize(self):
         '''
@@ -44,15 +43,23 @@ class GraphicalView:
         pg.init()
         pg.font.init()
         pg.display.set_caption(Const.WINDOW_CAPTION)
+        if not self.is_initialized:
+            try:
+                self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
+            except pg.error:
+                self.low_resolution = True
+                self.real_window_size = (Const.WINDOW_SIZE[0] * 2 // 3, Const.WINDOW_SIZE[1] * 2 // 3)
+                self.real_screen = pg.display.set_mode(self.real_window_size, pg.FULLSCREEN)
+                self.screen = pg.Surface(Const.WINDOW_SIZE)
         self.cutin_screen = pg.Surface(Const.WINDOW_SIZE)
         self.stop_background = pg.Surface(Const.WINDOW_SIZE)
         self.clock = pg.time.Clock()
-        self.is_initialized = True
 
         # convert images
-        View.staticobjects.init_staticobjects()
-        View.animations.init_animation()
-        View.cutins.init_cutin()
+        if not self.is_initialized:
+            View.staticobjects.init_staticobjects()
+            View.animations.init_animation()
+            View.cutins.init_cutin()
 
         # animations
         self.animation_list = []
@@ -73,6 +80,8 @@ class GraphicalView:
         self.stop = View.staticobjects.View_stop(self.model)
         self.stage = View.staticobjects.View_stage(self.model)
 
+        self.is_initialized = True
+
     def notify(self, event):
         '''
         Called by EventManager when a event occurs.
@@ -92,6 +101,10 @@ class GraphicalView:
             elif cur_state == Const.STATE_STOP: self.render_stop()
             elif cur_state == Const.STATE_CUTIN: self.render_cutin()
             elif cur_state == Const.STATE_ENDGAME: self.render_endgame()
+
+            if self.low_resolution:
+                self.real_screen.blit(pg.transform.smoothscale(self.screen, self.real_window_size), (0, 0))
+                pg.display.flip()
 
         elif isinstance(event, EventToggleFullScreen):
             self.toggle_fullscreen()
@@ -211,13 +224,13 @@ class GraphicalView:
     def toggle_fullscreen(self):
         self.ev_manager.post(EventStop())
         # save screen content before toggling
-        screen = pg.display.get_surface()
-        tmp = screen.convert()
+        _screen = pg.display.get_surface()
+        tmp = _screen.convert()
         caption = pg.display.get_caption()
         cursor = pg.mouse.get_cursor()
-        w, h = screen.get_width(), screen.get_height()
-        flags = screen.get_flags()
-        bits = screen.get_bitsize()
+        w, h = _screen.get_width(), _screen.get_height()
+        flags = _screen.get_flags()
+        bits = _screen.get_bitsize()
 
         pg.display.quit()
         pg.display.init()
@@ -225,16 +238,19 @@ class GraphicalView:
         # toggle fullscreen
         self.fullscreen = not self.fullscreen
         if self.fullscreen:
-            screen = pg.display.set_mode((w, h), pg.FULLSCREEN, bits)
+            _screen = pg.display.set_mode((w, h), pg.FULLSCREEN, bits)
         else:
-            screen = pg.display.set_mode((w, h))
+            _screen = pg.display.set_mode((w, h))
 
-        # restore screen content
-        screen.blit(tmp, (0, 0))
+        # restore _screen content
+        _screen.blit(tmp, (0, 0))
         pg.display.set_caption(*caption)
 
         pg.key.set_mods(0)
         pg.mouse.set_cursor(*cursor)
 
-        self.screen = screen
+        if self.low_resolution:
+            self.real_screen = _screen
+        else:
+            self.screen = _screen
         self.ev_manager.post(EventContinue())
