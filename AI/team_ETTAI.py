@@ -67,29 +67,12 @@ class TeamAI():
         nearest_id = self.helper.get_nearest_player()
         nearest_player_position = self.helper.get_other_position(nearest_id)
         if self.helper.get_self_can_attack_time() == 0 and \
-           self.helper.get_distance(self.helper.get_self_position(), nearest_player_position) <  self.helper.get_self_radius() + 1.2 * self.helper.get_other_radius(nearest_id):
+           self.helper.get_distance(self.helper.get_self_position(), nearest_player_position) <  self.effective_attack_radius(nearest_id):
             return AI_DIR_ATTACK
         return None
 
-    def walk_to_good_place(self):
-        self_position = self.helper.get_self_position()
-        land_index = self.helper.get_above_which_land(self_position)
-        if land_index == -1:
-            land_position_vector = self.helper.get_position_vector_to_closest_land()
-            return self.helper.walk_to_position((land_position_vector[0] + self_position[0], land_position_vector[1] + self_position[1]))
-        
-        land_position = self.helper.get_platform_position()[land_index]
-        land_radius = (land_position[1][0] - land_position[0][0]) // 2
-        land_center = (land_position[1][0] + land_position[0][0]) // 2
-        if land_center - land_radius // 2 <= self_position[0] <= land_center - land_radius // 2:
-            return None
-        return self.helper.walk_to_position((land_center, land_position[0][1] - 2 * self.helper.get_self_radius()))
-        
-
-    def walk_to_nearest_player(self):
-        nearest_id = self.helper.get_nearest_player()
-        nearest_player_position = self.helper.get_other_position(nearest_id)
-        return self.helper.walk_to_position((nearest_player_position[0], nearest_player_position[1] + self.helper.get_other_radius(nearest_id) + self.helper.get_self_radius()))
+    def effective_attack_radius(self, other_id):
+        return min(self.helper.get_self_radius() + 1.2 * self.helper.get_other_radius(other_id), self.helper.get_self_attack_radius())
 
     def walk_to_nearest_vincible_player(self):
         self_id = self.helper.get_self_id()
@@ -167,7 +150,17 @@ class TeamAI():
     def use_immediate_item(self):
         item_id = self.helper.get_self_keep_item_id()
         if item_id == BANANA_PISTOL:
-            return AI_DIR_USE_ITEM
+            self_id = self.helper.get_self_id()
+            self_position = self.helper.get_self_position()
+            for i in range(4):
+                if i == self_id or self.helper.get_other_life(i) == 0 or self.helper.get_other_is_invincible(i):
+                    continue
+                other_position = self.helper.get_other_position(i)
+                if (self.helper.get_self_radius() == LEFT) ^ (other_position[0] > self_position[0]):
+                    if abs(other_position[0] - self_position[0]) < 5 * self.helper.get_self_radius() and -self.helper.get_self_radius() <= other_position[1] - self_position[1] < 3 * self.helper.get_self_radius():
+                        return AI_DIR_USE_ITEM
+
+            return None
 
         elif item_id == BIG_BLACK_HOLE:
             return AI_DIR_USE_ITEM
@@ -188,7 +181,17 @@ class TeamAI():
             return None
 
         elif item_id == BANANA_PEEL:
-            return AI_DIR_USE_ITEM
+            self_id = self.helper.get_self_id()
+            self_position = self.helper.get_self_position()
+            for i in range(4):
+                if i == self_id or self.helper.get_other_life(i) == 0 or self.helper.get_other_is_invincible(i):
+                    continue
+                other_position = self.helper.get_other_position(i)
+                if (self.helper.get_self_radius() == LEFT) ^ (other_position[0] > self_position[0]):
+                    if abs(other_position[0] - self_position[0]) < 5 * self.helper.get_self_radius() and -self.helper.get_self_radius() <= other_position[1] - self_position[1] < 3 * self.helper.get_self_radius():
+                        return AI_DIR_USE_ITEM
+
+            return None
 
         elif item_id == RAINBOW_GROUNDER:
             return AI_DIR_USE_ITEM
