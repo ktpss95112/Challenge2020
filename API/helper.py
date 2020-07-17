@@ -111,8 +111,8 @@ class Helper(object):
         platforms = self.get_platform_position()
         for platform in platforms:
             if platform[0][0] < self_position[0] < platform[1][0] and self_position[1] + self_radius <= platform[0][1]:
-                return False
-        return True
+                return True
+        return False
     
     # get all player information 
     def get_all_position(self):

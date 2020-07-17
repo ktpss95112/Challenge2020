@@ -21,10 +21,6 @@ INVINCIBLE_BATTERY = 7
 
 LEFT = (-1, 0)
 RIGHT = (1, 0)
-PLAYER_RADIUS = 25
-ZAP_ZAP_ZAP_RANGE = 5 * PLAYER_RADIUS
-BOMB_EXPLODE_RADIUS = 16 * PLAYER_RADIUS
-BLACK_HOLE_EFFECT_RADIUS = 10 * PLAYER_RADIUS
 
 
 class TeamAI():
@@ -35,9 +31,6 @@ class TeamAI():
 
     def decide(self):
         decision = None
-        #if decision == None and self.jump:
-        #    self.jump = False
-        #    return AI_DIR_JUMP
         if decision == None:
             decision = self.attack()
         
@@ -49,6 +42,9 @@ class TeamAI():
 
         if decision == None:
             decision = self.dodge_bomb()
+
+        if decision == None:
+            decision = self.dodge_big_black_hole()
 
         if decision == None:
             decision = self.use_strategy_item()
@@ -64,9 +60,6 @@ class TeamAI():
             
         if decision == None:
             decision = AI_DIR_STAY
-
-        #if decision == AI_DIR_JUMP:
-        #    self.jump = True
 
         return decision
 
@@ -187,10 +180,10 @@ class TeamAI():
             self_id = self.helper.get_self_id()
             self_position = self.helper.get_self_position()
             for i in range(4):
-                if i == self_id:
+                if i == self_id or self.helper.get_other_life(i) == 0 or self.helper.get_other_is_invincible(i):
                     continue
                 other_position = self.helper.get_other_position(i)
-                if abs(self_position[0] - other_position[0]) < ZAP_ZAP_ZAP_RANGE // 2:
+                if abs(self_position[0] - other_position[0]) < self.helper.get_zap_zap_zap_effect_range() // 2:
                     return AI_DIR_USE_ITEM
             return None
 
@@ -212,7 +205,7 @@ class TeamAI():
             return None
 
         else:
-            return AI_DIR_USE_ITEM
+            return None
 
     def dodge(self, target, radius):
         # Use self_position when implement where could arrive quickly
@@ -234,15 +227,15 @@ class TeamAI():
         bomb_explode_first = None
         # Fine neareat bomb
         for bomb in zip(bombs_position, explode_time):
-            if bomb[1] < dodge_time and self.helper.get_distance(self_position, bomb[0]) <= 2 * BOMB_EXPLODE_RADIUS:
+            if bomb[1] < dodge_time and self.helper.get_distance(self_position, bomb[0]) <= 2 * self.helper.get_cancer_bomb_effect_radius():
                 if bomb_explode_first == None or bomb[1] < bomb_explode_first[1]:
                     bomb_explode_first = bomb
 
         if bomb_explode_first == None:
             return None
-        if self.helper.get_distance(self_position, bomb_explode_first[0]) >= 2 * BOMB_EXPLODE_RADIUS:
-            return AI_DIR_JUMP        
-        return self.dodge(bomb[0], BOMB_EXPLODE_RADIUS)
+        if self.helper.get_distance(self_position, bomb_explode_first[0]) >= 2 * self.helper.get_black_hole_effect_radius():
+            return self.jump_high()     
+        return self.dodge(bomb[0], self.helper.get_black_hole_effect_radius())
 
     def dodge_big_black_hole(self):
         self_position = self.helper.get_self_position()
@@ -254,7 +247,7 @@ class TeamAI():
         # Find neareat hole
         for pos in hole_position:
             distance = self.helper.get_distance(self_position, pos)
-            if distance <= 2 * BLACK_HOLE_EFFECT_RADIUS:
+            if distance <= 2 * self.helper.get_black_hole_effect_radius():
                 if target_hole_position == None or distance < min_distance:
                     min_distance = distance
                     target_hole_position = pos
@@ -262,7 +255,7 @@ class TeamAI():
         if target_hole_position == None:
             return None
         
-        return self.dodge(target_hole_position, BLACK_HOLE_EFFECT_RADIUS)
+        return self.dodge(target_hole_position, self.helper.get_black_hole_effect_radius())
 
     def get_left_most_position(self):
         # Get position of the left most place
@@ -346,6 +339,9 @@ class TeamAI():
 
     def right_jump(self):
         return AI_DIR_RIGHT_JUMP if self.helper.get_self_velocity()[1] >= 0 else AI_DIR_RIGHT
+
+    def jump_high(self):
+        return AI_DIR_JUMP if self.helper.get_self_velocity()[1] >= 0 else AI_DIR_STAY
 
     def suicide(self):
         # Wait to implement well
