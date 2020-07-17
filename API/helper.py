@@ -116,70 +116,70 @@ class Helper(object):
     
     # get all player information 
     def get_all_position(self):
-        return [tuple(player.position) for player in self.model.players if player.life > 0]
+        return [tuple(player.position) for player in self.model.players]
 
     def get_all_velocity(self):
-        return [tuple(player.velocity) for player in self.model.players if player.life > 0]
+        return [tuple(player.velocity) for player in self.model.players]
 
     def get_all_direction(self):
-        return [tuple(player.direction) for player in self.model.players if player.life > 0]
+        return [tuple(player.direction) for player in self.model.players]
 
     def get_all_normal_speed(self):
-        return [player.normal_speed for player in self.model.players if player.life > 0]
+        return [player.normal_speed for player in self.model.players]
 
     def get_all_jump_speed(self):
-        return [player.jump_speed for player in self.model.players if player.life > 0]
+        return [player.jump_speed for player in self.model.players]
     
     def get_all_keep_item_id(self):
-        return [player.keep_item_id for player in self.model.players if player.life > 0]
+        return [player.keep_item_id for player in self.model.players]
 
     def get_all_voltage(self):
-        return [player.voltage for player in self.model.players if player.life > 0]
+        return [player.voltage for player in self.model.players]
 
     def get_all_radius(self):
-        return [player.player_radius for player in self.model.players if player.life > 0]
+        return [player.player_radius for player in self.model.players]
 
     def get_all_attack_radius(self):
-        return [player.attack_radius for player in self.model.players if player.life > 0]
+        return [player.attack_radius for player in self.model.players]
 
     def get_all_is_invincible(self):
-        return [player.is_invincible() for player in self.model.players if player.life > 0]
+        return [player.is_invincible() for player in self.model.players]
     
     def get_all_invincible_time(self):
-        return [player.invincible_time / Const.FPS for player in self.model.players if player.life > 0]
+        return [player.invincible_time / Const.FPS for player in self.model.players]
 
     def get_all_is_controllable(self):
-        return [player.uncontrollable_time <= 0 for player in self.model.players if player.life > 0]
+        return [player.uncontrollable_time <= 0 for player in self.model.players]
 
     def get_all_uncontrollable_time(self):
-        return [player.uncontrollable_time / Const.FPS for player in self.model.players if player.life > 0]
+        return [player.uncontrollable_time / Const.FPS for player in self.model.players]
     
     def get_all_can_attack(self):
-        return [player.can_attack() for player in self.model.players if player.life > 0]
+        return [player.can_attack() for player in self.model.players]
 
     def get_all_can_attack_time(self):
-        return [player.attack_cool_down_time / Const.FPS for player in self.model.players if player.life > 0]
+        return [player.attack_cool_down_time / Const.FPS for player in self.model.players]
 
     def get_all_can_jump(self):
-        return [player.jump_quota > 0 for player in self.model.players if player.life > 0]
+        return [player.jump_quota > 0 for player in self.model.players]
 
     def get_all_jump_quota(self):
-        return [player.jump_quota for player in self.model.players if player.life > 0]
+        return [player.jump_quota for player in self.model.players]
 
     def get_all_life(self):
-        return [player.life for player in self.model.players if player.life > 0]
+        return [player.life for player in self.model.players]
 
     def get_all_score(self):
-        return [player.score for player in self.model.players if player.life > 0]
+        return [player.score for player in self.model.players]
 
     def get_all_jump_to_the_highest_time(self):
-        return [-player.velocity.y / Const.GRAVITY_ACCELERATION for player in self.model.players if player.life > 0]
+        return [-player.velocity.y / Const.GRAVITY_ACCELERATION for player in self.model.players]
     
     def get_all_player_vector(self):
-        return [self.get_vector(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM) if self.model.players[i].life > 0]
+        return [self.get_vector(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
     
     def get_all_player_distance(self):
-        return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM) if self.model.players[i].life > 0]
+        return [self.get_distance(self.get_self_position(), self.get_other_position(i)) for i in range(Const.PLAYER_NUM)]
 
     # get other players information
     def get_other_position(self, index):
