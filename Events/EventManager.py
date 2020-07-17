@@ -119,6 +119,7 @@ class EventPlayerJump(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} jump'
 
+
 class EventPlayerAttack(BaseEvent):
     name = 'PlayerAttack event'
 
@@ -127,6 +128,7 @@ class EventPlayerAttack(BaseEvent):
 
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} attack'
+
 
 class EventPlayerRespawn(BaseEvent):
     name = 'PlayerRespawn event'
@@ -157,7 +159,7 @@ class EventPlayerItem(BaseEvent):
     def __str__(self):
         return f'{self.name} => player_id {self.player_id}'
 
-    
+
 class EventPlayerPickItem(BaseEvent):
     name = 'Player pick item event (model => view)'
 
@@ -199,7 +201,7 @@ class EventUseCancerBomb(BaseEvent):
 
 
 class EventUseZapZapZap(BaseEvent):
-    name = 'UseCancerBomb event'
+    name = 'UseZapZapZap event'
 
     def __init__(self, player_position, used_time):
         self.player_position = player_position
@@ -260,9 +262,12 @@ class EventCutInStart(BaseEvent):
     def __init__(self, player_id, item_id):
         self.player_id = player_id
         self.item_id = item_id
-    
+
     def __str__(self):
         return f'{self.name} => player_id {self.player_id} use item_id {self.item_id} with cut in'
 
 class EventCutInEnd(BaseEvent):
     name = 'Cut-in end event'
+
+class EventTypeSound(BaseEvent):
+    name = 'Cut-in typing sound event'

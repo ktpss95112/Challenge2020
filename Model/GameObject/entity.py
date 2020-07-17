@@ -84,10 +84,9 @@ class BigBlackHole(Entity):
                 # counterclockwise rotation
                 normal = (self.position - obj.position).normalize()
                 tangent = pg.Vector2(-normal.y, normal.x)
-                # below can be change into "normal.y * tangent.x > 0" but current one is clearer
                 if (normal.y < 0 and tangent.x < 0) or (normal.y > 0 and tangent.x > 0):
                     tangent *= -1
-                obj.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 30000 + normal * 200
+                obj.velocity = pg.Vector2(0, Const.GRAVITY_ACCELERATION / Const.FPS) + tangent / dist * 50000 + normal * 250
 
 
 class CancerBomb(Entity):
@@ -139,7 +138,6 @@ class DeathRain(Entity):
         super().__init__(None, self.find_position(platforms), Const.DEATH_RAIN_VELOCITY, None)
 
     def update_every_tick(self, players, items, platforms, time):
-       # gravity effect
         self.move_every_tick(platforms, Const.DEATH_RAIN_RADIUS)
 
         for player in players:
