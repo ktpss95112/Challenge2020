@@ -46,11 +46,15 @@ class TeamAI(object):
         return minimum_vector
 
     def use_item(self):
+        my_pos = self.helper.get_self_position()
+        my_direction = self.helper.get_self_direction()
         item_id = self.helper.get_self_keep_item_id()
         factor = 0
+        all_pos = self.helper.get_all_position()
         if item_id > 0:
             if item_id == 1:
-                factor = 1
+                if any(map(lambda x: (x[0] - my_pos[0]) * my_direction[0] > 0, all_pos)):
+                    factor = 1
             elif item_id == 2:
                 effect_num = 0
                 for i in range(Const.PLAYER_NUM):
@@ -73,7 +77,8 @@ class TeamAI(object):
                 if effect_num >= 3 or (self.helper.get_live_player_num() == 2 and effect_num == 2):
                     factor = 1
             elif item_id == 5:
-                factor = 1
+                if any(map(lambda x: (x[0] - my_pos[0]) * my_direction[0] > 0, all_pos)):
+                    factor = 1
             elif item_id == 6 and self.helper.get_self_voltage() > 10:
                 factor = 1
             elif item_id == 7 and self.helper.get_self_have_platform_below():
@@ -178,11 +183,11 @@ class TeamAI(object):
             enemy_id = self.helper.get_highest_voltage_player()
         enemy_pos = self.helper.get_other_position(enemy_id)
         enemy_dst = self.helper.get_distance(my_pos, enemy_pos)
-        if mode == "highestV" and enemy_dst > self.helper.get_self_attack_radius() / 2.5 or self.helper.get_other_is_invincible(enemy_id):
+        if mode == "highestV" and enemy_dst > self.helper.get_self_attack_radius() / 2 or self.helper.get_other_is_invincible(enemy_id):
             enemy_id = self.helper.get_nearest_player()
             enemy_pos = self.helper.get_other_position(enemy_id)
             enemy_dst = self.helper.get_distance(my_pos, enemy_pos)
-        if(self.helper.get_self_can_attack() and enemy_dst < self.helper.get_self_attack_radius() / 2.5 and not self.helper.get_other_is_invincible(enemy_id)):
+        if(self.helper.get_self_can_attack() and enemy_dst < self.helper.get_self_attack_radius() / 2 and not self.helper.get_other_is_invincible(enemy_id)):
             return AI_DIR_ATTACK
         else:
             return -1
