@@ -35,6 +35,7 @@ class GraphicalView:
         self.clock = None
         self.last_update = 0
         self.current_stop_index = None
+        self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
 
     def initialize(self):
         '''
@@ -43,7 +44,6 @@ class GraphicalView:
         pg.init()
         pg.font.init()
         pg.display.set_caption(Const.WINDOW_CAPTION)
-        self.screen = pg.display.set_mode(Const.WINDOW_SIZE, pg.FULLSCREEN)
         self.cutin_screen = pg.Surface(Const.WINDOW_SIZE)
         self.stop_background = pg.Surface(Const.WINDOW_SIZE)
         self.clock = pg.time.Clock()
