@@ -248,8 +248,8 @@ class Helper(object):
         platforms = self.get_platform_position()
         for platform in platforms:
             if platform[0][0] < other_position[0] < platform[1][0] and other_position[1] + other_radius <= platform[0][1]:
-                return False
-        return True
+                return True
+        return False
 
     def get_other_player_vector(self, index):
         return self.get_vector(self.get_self_position(), self.get_other_position(index))

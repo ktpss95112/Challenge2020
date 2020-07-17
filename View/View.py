@@ -6,6 +6,7 @@ from View.utils import scaled_surface, load_image
 import View.staticobjects
 import View.animations
 import View.cutins
+import View.sounds
 import Const
 
 
@@ -79,6 +80,9 @@ class GraphicalView:
         if isinstance(event, EventInitialize):
             self.initialize()
 
+        if isinstance(event, EventRestart):
+            self.initialize()
+
         elif isinstance(event, EventEveryTick):
             self.display_fps()
 
@@ -113,9 +117,9 @@ class GraphicalView:
         elif isinstance(event, EventCutInStart):
             self.render_play(self.cutin_screen)
             if event.item_id == Const.BIG_BLACK_HOLE:
-                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id, self.model.players))
+                self.cutin_list.append(View.cutins.Cutin_big_black_hole(event.player_id, self.model.players, self.ev_manager))
             elif event.item_id == Const.ZAP_ZAP_ZAP:
-                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id, self.model.players))
+                self.cutin_list.append(View.cutins.Cutin_zap_zap_zap(event.player_id, self.model.players, self.ev_manager))
 
         elif isinstance(event, EventUseZapZapZap):
             self.animation_list.append(View.animations.Animation_Lightning(event.player_position.x))
@@ -147,39 +151,24 @@ class GraphicalView:
         if target is None:
             target = self.screen
 
-        # draw stage
+        # draw
         self.stage.draw(target)
-
-        # draw platform
         self.platform.draw(target)
-
-        # draw players
         self.players.draw(target)
-
-        # draw items
         self.items.draw(target)
-
-        # draw entities
+        self.scoreboard.draw(target)
+        self.timer.draw(target)
         self.entities.draw(target)
 
-        # draw animation
         for ani in self.animation_list:
             if ani.expired and isinstance(ani, View.animations.Animation_Gift_Explode):
                 self.ev_manager.post(EventDeathRainStart())
             if ani.expired: self.animation_list.remove(ani)
             else          : ani.draw(target, update)
 
-        # draw blackhole
         for ani in self.animation_black_hole_list:
             if ani.expired: self.animation_black_hole_list.remove(ani)
             else          : ani.draw(target, update)
-
-        # draw scoreboard
-        self.scoreboard.draw(target)
-
-        # draw timer
-        self.timer.draw(target)
-
 
         pg.display.flip()
 
