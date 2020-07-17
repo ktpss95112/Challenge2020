@@ -156,8 +156,6 @@ class GraphicalView:
         self.platform.draw(target)
         self.players.draw(target)
         self.items.draw(target)
-        self.scoreboard.draw(target)
-        self.timer.draw(target)
         self.entities.draw(target)
 
         for ani in self.animation_list:
@@ -169,6 +167,9 @@ class GraphicalView:
         for ani in self.animation_black_hole_list:
             if ani.expired: self.animation_black_hole_list.remove(ani)
             else          : ani.draw(target, update)
+
+        self.scoreboard.draw(target)
+        self.timer.draw(target)
 
         pg.display.flip()
 
