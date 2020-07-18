@@ -328,6 +328,15 @@ class Helper(object):
 
     def get_all_item_position(self):
         return [tuple(item.position) for item in self.model.items]
+
+    def get_nearest_specific_item_position(self,items_id):
+        nearest_pos, minimum_distance = None , 10000**2
+        specific_items = [item for item in self.model.items if item.item_id == items_id]
+        for item in specific_items:
+            distance = self.get_distance(self.get_self_position(), item.position)
+            if distance < minimum_distance:
+                minimum_distance, nearest_pos = distance , tuple(item.position)
+        return nearest_pos
     
     def get_all_banana_pistol_position(self):
         return [tuple(item.position) for item in self.model.items if item.item_id == 1]
@@ -380,6 +389,15 @@ class Helper(object):
     
     def get_all_drop_pistol_bullet_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, PistolBullet)]
+
+    def get_nearest_drop_pistol_bullet_position(self):
+        nearest_pos, minimum_distance = None , 10000**2
+        bullets = [entity for entity in self.model.entities if isinstance(entity, PistolBullet)]
+        for bullet in bullets:
+            distance = self.get_distance(self.get_self_position(), bullet.position)
+            if distance < minimum_distance:
+                minimum_distance, nearest_pos = distance , tuple(bullet.position)
+        return nearest_pos
     
     def get_all_drop_pistol_bullet_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, PistolBullet)]
@@ -390,17 +408,44 @@ class Helper(object):
     def get_all_drop_banana_peel_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
+    def get_nearest_drop_banana_peel_position(self):
+        nearest_pos, minimum_distance = None , 10000**2
+        peels = [entity for entity in self.model.entities if isinstance(entity, BananaPeel)]
+        for peel in peels:
+            distance = self.get_distance(self.get_self_position(), peel.position)
+            if distance < minimum_distance:
+                minimum_distance, nearest_pos = distance , tuple(peel.position)
+        return nearest_pos
+    
     def get_all_drop_banana_peel_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BananaPeel)]
     
     def get_all_drop_cancer_bomb_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, CancerBomb)]
 
+    def get_nearest_drop_cancer_bomb_position(self):
+        nearest_pos, minimum_distance = None , 10000**2
+        bombs = [entity for entity in self.model.entities if isinstance(entity, CancerBomb)]
+        for bomb in bombs:
+            distance = self.get_distance(self.get_self_position(), bomb.position)
+            if distance < minimum_distance:
+                minimum_distance, nearest_pos = distance , tuple(bomb.position)
+        return nearest_pos
+
     def get_all_drop_cancer_bomb_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, CancerBomb)]
     
     def get_all_drop_big_black_hole_position(self):
         return [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BigBlackHole)]
+
+    def get_nearest_drop_big_black_hole_position(self):
+        nearest_pos, minimum_distance = None , 10000**2
+        holes = [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BigBlackHole)]
+        for hole in holes:
+            distance = self.get_distance(self.get_self_position(), hole.position)
+            if distance < minimum_distance:
+                minimum_distance, nearest_pos = distance , tuple(hole.position)
+        return nearest_pos
 
     def get_all_drop_big_black_hole_timer(self):
         return [entity.timer / Const.FPS for entity in self.model.entities if isinstance(entity, BigBlackHole)]
@@ -416,15 +461,22 @@ class Helper(object):
 
     # get special information
     def get_nearest_player(self):
-        index, minimum_distance = None, float('inf')
+        index, minimum_distance = None, 10000 ** 2 
         for player in self.model.players:
             distance = self.get_distance(self.get_self_position(), player.position)
             if player.player_id != self.player_id and player.is_alive() and distance < minimum_distance:
                 minimum_distance, index = distance, player.player_id
         return index
     
+    def get_nearest_player_position(self):      
+         nearest_player = self.get_nearest_player()     
+         if nearest_player is not None:     
+             return self.get_other_position(nearest_player)     
+         else:      
+             return None
+
     def get_highest_voltage_player(self):
-        index, highest_voltage = None, float('-inf')
+        index, highest_voltage = None, -1
         for player in self.model.players:
             if player.player_id != self.player_id and player.is_alive() and\
                 player.voltage > highest_voltage:
@@ -432,12 +484,24 @@ class Helper(object):
         return index
 
     def get_highest_score_player(self):
-        index, highest_score = None, float('-inf')
+        index, highest_score = None, 0
         for player in self.model.players:
             if player.player_id != self.player_id and player.is_alive() and\
                 player.score > highest_score:
                 highest_score, index = player.score, player.player_id
         return index
+
+    def get_gift_position(self):
+        for entity in self.model.entities:
+            if isinstance(entity, DeathRain):
+                return tuple(entity.position)
+        return None
+
+    def get_gift_velocity(self):
+        for entity in self.model.entities:
+            if isinstance(entity, DeathRain):
+                return tuple(entity.velocity)
+        return None
 
     def get_distance(self, p1, p2):
         return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
