@@ -22,7 +22,8 @@ class TeamAI(object):
     def __init__(self, helper):
         self.helper = helper
         self.enhancement = [0, 0, 0, 0]
-        self.mode = []
+        self.walk_mode = False
+        self.walk_pos = (0, 0)
 
     def get_position_vector_to_closest_land(self, position):
         minimum_distance = 10000 ** 2
@@ -50,29 +51,30 @@ class TeamAI(object):
         my_direction = self.helper.get_self_direction()
         item_id = self.helper.get_self_keep_item_id()
         factor = 0
-        all_pos = list(map(lambda x: self.helper.get_other_position(x), filter(lambda x: self.helper.get_other_life(x) > 0 and x != self.helper.get_self_id(),[i for i in range(self.helper.get_live_player_num())])))
+        all_pos = [d for d in self.helper.get_all_position() if d != None]
+        all_dis = [d for d in self.helper.get_all_player_distance() if d != None]
         if item_id > 0:
             if item_id == 1:
                 if any(map(lambda x: ((x[0] - my_pos[0]) * my_direction[0] > 0), all_pos)):
                     factor = 1
             elif item_id == 2:
                 effect_num = 0
-                for i in range(Const.PLAYER_NUM):
-                    if Const.BLACK_HOLE_EFFECT_RADIUS > self.helper.get_other_player_distance(i):
-                        effect_num = effect_num + 1
+                for d in all_dis:
+                    if Const.BLACK_HOLE_EFFECT_RADIUS > d:
+                        effect_num += 1
                 if effect_num >= 3 or (self.helper.get_live_player_num() == 2 and effect_num == 2) or not self.helper.get_self_is_controllable():
                     factor = 1
             elif item_id == 3:
                 effect_num = 0
-                for i in range(Const.PLAYER_NUM):
-                    if Const.BOMB_EXPLODE_RADIUS > self.helper.get_other_player_distance(i):
-                        effect_num = effect_num + 1
+                for d in all_dis:
+                    if Const.BOMB_EXPLODE_RADIUS > d:
+                        effect_num += 1
                 if effect_num >= 3 or (self.helper.get_live_player_num() == 2 and effect_num == 2):
                     factor = 1
             elif item_id == 4:
                 effect_num = 0
-                for i in range(Const.PLAYER_NUM):
-                    if Const.ZAP_ZAP_ZAP_RANGE > abs(self.helper.get_other_position(i)[0] - self.helper.get_self_position()[0]):
+                for p in all_pos:
+                    if Const.ZAP_ZAP_ZAP_RANGE > abs(p[0] - my_pos[0]):
                         effect_num = effect_num + 1
                 if effect_num >= 3 or (self.helper.get_live_player_num() == 2 and effect_num == 2):
                     factor = 1
@@ -205,18 +207,21 @@ class TeamAI(object):
         if self.helper.get_self_keep_item_id() != 0:
             return -1
         my_pos = self.helper.get_self_position()
+        if self.helper.get_nearest_item_position() == None:
+            return -1
         item_vector = self.helper.get_vector(my_pos, self.helper.get_nearest_item_position())
         return self.where_to_go(self.judge_direction(item_vector))
 
     def run_away(self, mode):
         direction = (0, 0)
         if mode == "all":
-            all_distance = self.helper.get_all_player_distance()
-            all_vector = self.helper.get_all_player_vector()
+            all_distance = [d for d in self.helper.get_all_player_distance() if d != None]
+            all_vector = [d for d in self.helper.get_all_player_vector() if d != None]
+            all_atk_r = [d for d in self.helper.get_all_attack_radius() if d != None]
             ideal_vector = (0, 0)
-            for i in range(len(all_vector)):
-                if self.helper.get_other_player_distance(i) < self.helper.get_other_attack_radius(i):
-                    ideal_vector = (ideal_vector[0] + all_vector[i][0] * all_distance[i],ideal_vector[1] + all_vector[i][1] * all_distance[i])
+            for d, v, r in zip(all_distance, all_vector, all_atk_r):
+                if d < r:
+                    ideal_vector = (ideal_vector[0] + v[0] * d,ideal_vector[1] + v[1] * d)
             direction = tuple_times(ideal_vector, -1/sum(all_distance))
         elif mode == "nearest":
             enemy_pos = self.helper.get_other_position(self.helper.get_nearest_player())
@@ -267,8 +272,11 @@ class TeamAI(object):
         return self.where_to_go(direction)
 
     def decide(self):
+        if self.walk_mode and self.helper.get_above_which_platform(self.helper.get_self_position()) != self.helper.get_above_which_platform(self.walk_pos):
+            return self.helper.walk_to_position(self.walk_pos)
+        else: self.walk_mode = False
         my_voltage = self.helper.get_self_voltage()
-        voltages = self.helper.get_all_voltage()
+        voltages = [d for d in self.helper.get_all_voltage() if d != None]
         mean_voltage = sum(voltages) / len(voltages)
         highest_voltage = self.helper.get_other_voltage(self.helper.get_highest_voltage_player())
         if self.helper.get_self_can_attack_time() < 0.75 :
@@ -290,5 +298,9 @@ class TeamAI(object):
             if instruction != -1:
                 #print(i, instruction)
                 return instruction
-        return AI_DIR_STAY
+        enemy_pos = self.helper.get_other_position(self.helper.get_nearest_player())
+        if self.helper.get_above_which_platform(enemy_pos) != -1:
+            self.walk_pos = enemy_pos
+            self.walk_mode = True
+        return self.helper.walk_to_position(enemy_pos)
 

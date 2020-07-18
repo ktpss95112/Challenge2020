@@ -19,6 +19,8 @@ BANANA_PEEL = 5
 RAINBOW_GROUNDER = 6
 INVINCIBLE_BATTERY = 7
 
+BANANA_PEEL_RADIUS = 8
+
 LEFT = (-1, 0)
 RIGHT = (1, 0)
 
@@ -31,25 +33,28 @@ class TeamAI():
 
     def decide(self):
         decision = None
-        if decision == None:
+        if decision is None:
             decision = self.attack()
         
-        if decision == None:
+        if decision is None:
             decision = self.not_drop()
 
-        if decision == None:
+        if decision is None:
+            decision = self.dodge_banana_peel()
+
+        if decision is None:
             decision = self.use_immediate_item()
 
-        if decision == None:
+        if decision is None:
             decision = self.dodge_bomb()
 
-        if decision == None:
+        if decision is None:
             decision = self.dodge_big_black_hole()
 
-        if decision == None:
+        if decision is None:
             decision = self.use_strategy_item()
 
-        if decision == None:
+        if decision is None:
             decision = self.pick_item()
         
         #if decision == None:
@@ -181,6 +186,7 @@ class TeamAI():
             return None
 
         elif item_id == BANANA_PEEL:
+            return AI_DIR_USE_ITEM
             self_id = self.helper.get_self_id()
             self_position = self.helper.get_self_position()
             for i in range(4):
@@ -260,6 +266,21 @@ class TeamAI():
         
         return self.dodge(target_hole_position, self.helper.get_black_hole_effect_radius())
 
+    def dodge_banana_peel(self):
+        if self.helper.get_self_invincible_time() > 0.05:
+            return None
+            
+        self_pos = self.helper.get_self_position()
+        self_dir = self.helper.get_self_direction()
+        self_radius = self.helper.get_self_radius()
+        for peel in self.helper.get_all_drop_banana_peel_position():
+            if abs(peel[0] - self_pos[0]) < 2 * self_radius + BANANA_PEEL_RADIUS and -self_radius - BANANA_PEEL_RADIUS < abs(peel[1] - self_pos[1]) < self_radius + BANANA_PEEL_RADIUS:
+                if self_dir == LEFT and peel[0] - self_pos[0] < 0:
+                    return AI_DIR_LEFT_JUMP
+                elif self_dir == RIGHT and peel[0] - self_pos[0] > 0:
+                    return AI_DIR_RIGHT_JUMP
+        return None
+
     def get_left_most_position(self):
         # Get position of the left most place
         platform_position = self.helper.get_platform_position()
@@ -295,6 +316,9 @@ class TeamAI():
         return False
 
     def not_drop(self):
+        # Wait to modify
+        if self.helper.get_self_velocity()[1] > 3 * self.helper.get_self_jump_speed():
+            return self.jump_high()
         if self.helper.get_self_have_platform_below():
             return None
         if self.helper.get_self_direction() == LEFT:
