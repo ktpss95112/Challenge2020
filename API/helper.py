@@ -416,7 +416,7 @@ class Helper(object):
 
     # get special information
     def get_nearest_player(self):
-        index, minimum_distance = None, 10000 ** 2 
+        index, minimum_distance = None, float('inf')
         for player in self.model.players:
             distance = self.get_distance(self.get_self_position(), player.position)
             if player.player_id != self.player_id and player.is_alive() and distance < minimum_distance:
@@ -424,7 +424,7 @@ class Helper(object):
         return index
     
     def get_highest_voltage_player(self):
-        index, highest_voltage = None, 0
+        index, highest_voltage = None, float('-inf')
         for player in self.model.players:
             if player.player_id != self.player_id and player.is_alive() and\
                 player.voltage > highest_voltage:
@@ -432,7 +432,7 @@ class Helper(object):
         return index
 
     def get_highest_score_player(self):
-        index, highest_score = None, 0
+        index, highest_score = None, float('-inf')
         for player in self.model.players:
             if player.player_id != self.player_id and player.is_alive() and\
                 player.score > highest_score:
