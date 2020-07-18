@@ -468,6 +468,13 @@ class Helper(object):
                 minimum_distance, index = distance, player.player_id
         return index
     
+    def get_nearest_player_position(self):      
+         nearest_player = self.get_nearest_player()     
+         if nearest_player is not None:     
+             return self.get_other_position(nearest_player)     
+         else:      
+             return None
+
     def get_highest_voltage_player(self):
         index, highest_voltage = None, -1
         for player in self.model.players:
