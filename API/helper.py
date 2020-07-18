@@ -491,6 +491,18 @@ class Helper(object):
                 highest_score, index = player.score, player.player_id
         return index
 
+    def get_gift_position(self):
+        for entity in self.model.entities:
+            if isinstance(entity, DeathRain):
+                return entity.position
+        return None
+
+    def get_gift_velocity(self):
+        for entity in self.model.entities:
+            if isinstance(entity, DeathRain):
+                return entity.velocity
+        return None
+
     def get_distance(self, p1, p2):
         return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
 
