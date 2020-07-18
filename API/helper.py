@@ -331,9 +331,9 @@ class Helper(object):
 
     def get_nearest_specific_item_position(self,items_id):
         nearest_pos, minimum_distance = None , 10000**2
-        specific_items = [tuple(item.position) for item in self.model.items if item.item_id == items_id]
+        specific_items = [item for item in self.model.items if item.item_id == items_id]
         for item in specific_items:
-            distance = self.get_distance(self.get_self_postion(), item.position)
+            distance = self.get_distance(self.get_self_position(), item.position)
             if distance < minimum_distance:
                 minimum_distance, nearest_pos = distance , tuple(item.position)
         return nearest_pos
@@ -392,9 +392,9 @@ class Helper(object):
 
     def get_nearest_drop_pistol_bullet_position(self):
         nearest_pos, minimum_distance = None , 10000**2
-        bullets = [tuple(entity.position) for entity in self.model.entities if isinstance(entity, PistolBullet)]
+        bullets = [entity for entity in self.model.entities if isinstance(entity, PistolBullet)]
         for bullet in bullets:
-            distance = self.get_distance(self.get_self_postion(), bullet.position)
+            distance = self.get_distance(self.get_self_position(), bullet.position)
             if distance < minimum_distance:
                 minimum_distance, nearest_pos = distance , tuple(bullet.position)
         return nearest_pos
@@ -410,9 +410,9 @@ class Helper(object):
     
     def get_nearest_drop_banana_peel_position(self):
         nearest_pos, minimum_distance = None , 10000**2
-        peels = [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BananaPeel)]
+        peels = [entity for entity in self.model.entities if isinstance(entity, BananaPeel)]
         for peel in peels:
-            distance = self.get_distance(self.get_self_postion(), peel.position)
+            distance = self.get_distance(self.get_self_position(), peel.position)
             if distance < minimum_distance:
                 minimum_distance, nearest_pos = distance , tuple(peel.position)
         return nearest_pos
@@ -425,9 +425,9 @@ class Helper(object):
 
     def get_nearest_drop_cancer_bomb_position(self):
         nearest_pos, minimum_distance = None , 10000**2
-        bombs = [tuple(entity.position) for entity in self.model.entities if isinstance(entity, CancerBomb)]
+        bombs = [entity for entity in self.model.entities if isinstance(entity, CancerBomb)]
         for bomb in bombs:
-            distance = self.get_distance(self.get_self_postion(), bomb.position)
+            distance = self.get_distance(self.get_self_position(), bomb.position)
             if distance < minimum_distance:
                 minimum_distance, nearest_pos = distance , tuple(bomb.position)
         return nearest_pos
@@ -442,7 +442,7 @@ class Helper(object):
         nearest_pos, minimum_distance = None , 10000**2
         holes = [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BigBlackHole)]
         for hole in holes:
-            distance = self.get_distance(self.get_self_postion(), hole.position)
+            distance = self.get_distance(self.get_self_position(), hole.position)
             if distance < minimum_distance:
                 minimum_distance, nearest_pos = distance , tuple(hole.position)
         return nearest_pos
