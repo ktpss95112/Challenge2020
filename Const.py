@@ -66,10 +66,10 @@ PLATFORM_INIT_POSITION = [
 ]
 PLAYER_INIT_POSITION = [
     [ # stage 1
-        pg.Vector2(150 + X_OFFSET, 545 + Y_OFFSET),
+        pg.Vector2(200 + X_OFFSET, 545 + Y_OFFSET),
         pg.Vector2(420 + X_OFFSET, 545 + Y_OFFSET),
         pg.Vector2(690 + X_OFFSET, 545 + Y_OFFSET),
-        pg.Vector2(982 + X_OFFSET, 545 + Y_OFFSET)
+        pg.Vector2(932 + X_OFFSET, 545 + Y_OFFSET)
     ],
     [ # stage 2
         pg.Vector2(320 + X_OFFSET, 240 + Y_OFFSET),
