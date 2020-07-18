@@ -24,6 +24,7 @@ class TeamAI:
         self.enhancement = [0, 0, 0, 0]
     
     def decide(self):
+        print(self.helper.get_nearest_player_position())
         if self.helper.get_self_keep_item_id() != NO_ITEM:
             return AI_DIR_USE_ITEM
 
