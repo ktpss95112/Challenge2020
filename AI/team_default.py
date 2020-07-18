@@ -32,7 +32,7 @@ class TeamAI:
         distance.pop(self.helper.get_self_id())
         
         if self.helper.get_self_can_attack() and\
-            min(distance) < self.helper.get_self_attack_radius():
+            min(d for d in distance if not d is None) < self.helper.get_self_attack_radius():
             return AI_DIR_ATTACK
 
         platform_id = self.helper.get_above_which_platform(self.helper.get_self_position())
