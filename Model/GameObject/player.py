@@ -18,6 +18,7 @@ class Player:
         self.voltage = 0
         self.keep_item_id = Const.NO_ITEM
         self.invincible_time = 0
+        self.invincible_battery_time = 0
         self.uncontrollable_time = 0
         self.attack_power = Const.ATTACK_POWER
         self.attack_cool_down_time = 0
@@ -114,12 +115,15 @@ class Player:
     def maintain_timer_every_tick(self):
         if self.invincible_time > 0:
             self.invincible_time -= 1
-            if self.invincible_time == 0:
-                self.player_radius = Const.PLAYER_RADIUS
         if self.uncontrollable_time > 0:
             self.uncontrollable_time -= 1
         if self.attack_cool_down_time > 0:
             self.attack_cool_down_time -= 1
+        if self.invincible_battery_time > 0:
+            self.invincible_battery_time -= 1
+            if self.invincible_battery_time == 0:
+                self.player_radius /= Const.INVINCIBLE_BATTERY_PLAYER_RADIUS_RATIO
+                self.attack_radius /= Const.INVINCIBLE_BATTERY_ATTACK_RADIUS_RATIO
 
     def move_every_tick(self):
         self.position += self.velocity / Const.FPS
@@ -213,7 +217,7 @@ class Player:
             if player.player_id == self.player_id or not player.is_alive() or player.is_invincible():
                 continue
             # attack if they are close enough
-            if (self.player_radius == Const.INVINCIBLE_BATTERY_PLAYER_RADIUS and magnitude < Const.INVINCIBLE_BATTERY_ATTACK_RADIUS) or magnitude < self.attack_radius:
+            if magnitude < self.attack_radius:
                 unit = (player.position - self.position).normalize()
                 player.be_attacked(unit, magnitude, self.attack_power, self.player_id, time)
 
@@ -262,11 +266,14 @@ class Player:
     def respawn(self, position: pg.Vector2):
         # EventPlayerRespawn
         # status
-        self.player_radius = Const.PLAYER_RADIUS
+        if self.invincible_battery_time > 0:
+            self.player_radius /= Const.INVINCIBLE_BATTERY_PLAYER_RADIUS_RATIO
+            self.attack_radius /= Const.INVINCIBLE_BATTERY_ATTACK_RADIUS_RATIO
         self.voltage = 0
         self.invincible_time = Const.RESPAWN_INVINCIBLE_TIME
         self.uncontrollable_time = 0
         self.attack_cool_down_time = 0
+        self.invincible_battery_time = 0
         self.jump_quota = Const.PLAYER_JUMP_QUOTA
         # move
         self.position = pg.Vector2(position)
@@ -318,9 +325,12 @@ class Player:
                 self.voltage = 0
 
         elif self.keep_item_id == Const.INVINCIBLE_BATTERY:
-            self.position.y -= Const.INVINCIBLE_BATTERY_PLAYER_RADIUS - self.player_radius
-            self.player_radius = Const.INVINCIBLE_BATTERY_PLAYER_RADIUS
+            if self.invincible_battery_time == 0:
+                self.position.y -= (Const.INVINCIBLE_BATTERY_PLAYER_RADIUS_RATIO - 1) * self.player_radius
+                self.player_radius *= Const.INVINCIBLE_BATTERY_PLAYER_RADIUS_RATIO
+                self.attack_radius *= Const.INVINCIBLE_BATTERY_ATTACK_RADIUS_RATIO
             self.invincible_time = Const.INVINCIBLE_BATTERY_TIME
+            self.invincible_battery_time = Const.INVINCIBLE_BATTERY_TIME
 
         self.keep_item_id = Const.NO_ITEM
         return entities
