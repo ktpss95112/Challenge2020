@@ -85,7 +85,7 @@ class TeamAI():
         nearest_distance = None
         nearest_player_position = None
         for i in range(4):
-            if i == self_id:
+            if i == self_id or self.helper.get_other_life(i) == 0:
                 continue
             other_position = self.helper.get_other_position(i)
             distance = self.helper.get_distance(self_position, other_position)
@@ -103,7 +103,7 @@ class TeamAI():
         highest_voltage = None
         target_player_position = None
         for i in range(4):
-            if i == self_id:
+            if i == self_id or self.helper.get_other_life(i) == 0:
                 continue
             other_position = self.helper.get_other_position(i)
             other_voltage = self.helper.get_other_voltage(i)
@@ -269,7 +269,7 @@ class TeamAI():
     def dodge_banana_peel(self):
         if self.helper.get_self_invincible_time() > 0.05:
             return None
-            
+
         self_pos = self.helper.get_self_position()
         self_dir = self.helper.get_self_direction()
         self_radius = self.helper.get_self_radius()
