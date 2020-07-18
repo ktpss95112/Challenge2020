@@ -494,13 +494,13 @@ class Helper(object):
     def get_gift_position(self):
         for entity in self.model.entities:
             if isinstance(entity, DeathRain):
-                return entity.position
+                return tuple(entity.position)
         return None
 
     def get_gift_velocity(self):
         for entity in self.model.entities:
             if isinstance(entity, DeathRain):
-                return entity.velocity
+                return tuple(entity.velocity)
         return None
 
     def get_distance(self, p1, p2):
