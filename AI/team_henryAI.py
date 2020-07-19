@@ -37,21 +37,37 @@ class TeamAI(BaseAI):
         target_player_position = self.helper.get_other_position(self.helper.get_nearest_player())
         nearest_item_position = self.helper.get_nearest_item_position()
 
-        return self.helper.walk_to_position(self.helper.get_other_position(3))
-        '''
         if self.helper.get_other_voltage(self.helper.get_highest_voltage_player()) >= 100 and self.in_the_map(self.helper.get_other_position(self.helper.get_highest_voltage_player())):
             target_player_position = self.helper.get_other_position(self.helper.get_highest_voltage_player())
         if self.helper.get_distance(self_position , target_player_position) <= ATTACK_RADIUS and self.helper.get_self_can_attack_time() == 0:
             self.searching_item = True
             return AI_DIR_ATTACK
         elif self.helper.get_self_keep_item_id() != NO_ITEM:
-            self.searching_item = False
+            if self.helper.get_self_can_attack_time <= 0.2:
+                self.searching_item = False
             return AI_DIR_USE_ITEM
-        elif self.in_the_map(target_player_position) and self.helper.get_self_can_attack_time() <= 0.5 and self.searching_item:
+        elif self.in_the_map(target_player_position) and self.helper.get_self_can_attack_time() <= 0.2 and not self.searching_item:
             return self.helper.walk_to_position(target_player_position)
-        elif self.in_the_map(nearest_item_position):
-            return  self.helper.walk_to_position(nearest_item_position)
-        
-        return self.helper.walk_to_position((590,0))
-        '''
+        elif nearest_item_position != None and self.in_the_map(nearest_item_position):
+            if self.helper.get_nearest_specific_item_position(7) != None:
+                return  self.helper.walk_to_position(self.helper.get_nearest_specific_item_position(7))
+            elif self.helper.get_nearest_specific_item_position(6) != None:
+                return  self.helper.walk_to_position(self.helper.get_nearest_specific_item_position(6))
+            elif self.helper.item_exists():
+                return self.helper.walk_to_position(self.helper.get_nearest_item_position)
+                
+        platform_id = self.helper.get_above_which_land(self.helper.get_self_position())
+        if platform_id != -1:
+            # go to middle of the platform
+            platform_pos = self.helper.get_platform_position()[platform_id]
+            platform_mid = ((platform_pos[0][0] + platform_pos[1][0]) / 2,\
+                            (platform_pos[0][1]))
+            return self.helper.walk_to_position(platform_mid)
+        else:
+            # go to closest land
+            pos = self.helper.get_self_position()
+            closest_land_vec = self.helper.get_position_vector_to_closest_land()
+            closest_land_pos = (pos[0] + closest_land_vec[0], pos[1] + closest_land_vec[1])
+            return self.helper.walk_to_position(closest_land_pos)
+
         # add your code
