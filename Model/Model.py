@@ -482,7 +482,9 @@ class GameEngine:
         while self.state_machine.peek() != Const.STATE_ENDGAME:
             self.ev_manager.post(EventEveryTick())
             i += 1
+        
         for player in self.players:
             print(f"player{player.player_id + 1}: {player.score}")
 
+        return [player.score for player in self.players]
             #self.clock.tick(Const.FPS)

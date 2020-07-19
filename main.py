@@ -11,15 +11,15 @@ import numpy as np
 import random
 
 def main(argv):
-    np.random.seed(2019)
-    random.seed(2020)
+    np.random.seed(2020)
+    random.seed(2021)
     ev_manager = EventManager()
     model      = GameEngine(ev_manager, argv[1:5])
     #controller = Controller(ev_manager, model)
     #view       = GraphicalView(ev_manager, model)
     interface  = API.interface.Interface(ev_manager, model)
     #sound      = Audio(ev_manager, model)
-    model.run()
+    return model.run()
 
 if __name__ == "__main__":
 	main(sys.argv)
