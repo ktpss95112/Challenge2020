@@ -1,6 +1,6 @@
 import itertools as it
 import sys
-import main
+import main_no_display as main
 
 def test(argv):
     AI_score = {}
