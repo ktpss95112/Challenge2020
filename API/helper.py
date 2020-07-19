@@ -440,7 +440,7 @@ class Helper(object):
 
     def get_nearest_drop_big_black_hole_position(self):
         nearest_pos, minimum_distance = None , 10000**2
-        holes = [tuple(entity.position) for entity in self.model.entities if isinstance(entity, BigBlackHole)]
+        holes = [entity for entity in self.model.entities if isinstance(entity, BigBlackHole)]
         for hole in holes:
             distance = self.get_distance(self.get_self_position(), hole.position)
             if distance < minimum_distance:
