@@ -476,7 +476,7 @@ class GameEngine:
         '''
         self.running = True
         self.ev_manager.post(EventInitialize())
-        self.ev_manager.post(EventPickArena(Const.STAGE_1))
+        self.ev_manager.post(EventPickArena(Const.STAGE_2))
         self.ev_manager.post(EventPlay())
         i = 0
         while self.state_machine.peek() != Const.STATE_ENDGAME:
@@ -486,5 +486,5 @@ class GameEngine:
         for player in self.players:
             print(f"player{player.player_id + 1}: {player.score}")
 
-        return [player.score for player in self.players]
+        return [[player.score for player in self.players],[player.rank for player in self.players]]
             #self.clock.tick(Const.FPS)
