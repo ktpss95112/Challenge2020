@@ -55,6 +55,19 @@ class TeamAI(BaseAI):
                 return  self.helper.walk_to_position(self.helper.get_nearest_specific_item_position(6))
             elif self.helper.item_exists():
                 return self.helper.walk_to_position(self.helper.get_nearest_item_position)
-        
-        return self.helper.walk_to_position()
+                
+        platform_id = self.helper.get_above_which_land(self.helper.get_self_position())
+        if platform_id != -1:
+            # go to middle of the platform
+            platform_pos = self.helper.get_platform_position()[platform_id]
+            platform_mid = ((platform_pos[0][0] + platform_pos[1][0]) / 2,\
+                            (platform_pos[0][1]))
+            return self.helper.walk_to_position(platform_mid)
+        else:
+            # go to closest land
+            pos = self.helper.get_self_position()
+            closest_land_vec = self.helper.get_position_vector_to_closest_land()
+            closest_land_pos = (pos[0] + closest_land_vec[0], pos[1] + closest_land_vec[1])
+            return self.helper.walk_to_position(closest_land_pos)
+
         # add your code
