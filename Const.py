@@ -131,7 +131,7 @@ ZAP_ZAP_ZAP = 4
 BANANA_PEEL = 5
 RAINBOW_GROUNDER = 6
 INVINCIBLE_BATTERY = 7
-HAS_CUT_IN = [False, False, True, False, True, False, False, False]
+HAS_CUT_IN = [False, False, False, False, False, False, False, False]
 
 ZAP_ZAP_ZAP_RANGE = 5 * PLAYER_RADIUS
 ZAP_ZAP_ZAP_SELF_VOLTAGE_UP = 15
