@@ -1,7 +1,5 @@
-from API.base import BaseAI
 import pygame as pg
 import Const
-
 AI_DIR_LEFT        = 0
 AI_DIR_RIGHT       = 1
 AI_DIR_JUMP        = 2
@@ -21,7 +19,7 @@ DECIDE_TIME = DECIDE_FRAME_NUM / 60 # (second)
 STATE_PER_FRAME = (DIR_NUM ** (MAX_DEPTH + 1) - 1) // DECIDE_FRAME_NUM + 1
 DEBUG = False
 
-class TeamAI(BaseAI):
+class TeamAI():
     def __init__(self, helper):
         self.helper = helper
         self.enhancement = [0, 0, 0]
@@ -90,7 +88,7 @@ class StateTree(object):
         return avg_score_of_steps.index(max(avg_score_of_steps))
 
 
-class Environment(object):
+class Environment():
     def __init__(self, helper):
         self.helper = helper
 
@@ -131,7 +129,7 @@ class Environment(object):
 
         self.arena_boundary = self.helper.get_game_arena_boundary()
         self.life_boundary = self.helper.get_game_life_boundary()
-        self.g = self.helper.get_game_player_gravity_acceleration()
+        self.g = self.helper.get_game_gravity_acceleration()
 
     def self_info(self):
         return (self.self_life, self.self_pos, self.self_vel, self.self_voltage, self.self_item_id,\
@@ -139,7 +137,7 @@ class Environment(object):
             self.self_invincible_time, self.self_uncontrollable_time,)
 
 
-class SelfState(object):
+class SelfState():
     def __init__(self, life, pos, vel, voltage, item_id,\
                 jump_quota, attack_cd, invincible_time, uncontrollable_time,\
                 used_item, attack_player_num, be_attacked_num,\
