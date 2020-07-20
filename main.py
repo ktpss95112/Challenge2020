@@ -12,7 +12,7 @@ import random
 
 def main(argv):
     np.random.seed(2020)
-    random.seed(2021)
+    random.seed(2020)
     ev_manager = EventManager()
     model      = GameEngine(ev_manager, argv[1:5])
     controller = Controller(ev_manager, model)
