@@ -49,7 +49,6 @@ class TeamAI():
                 break
             elif i == 3:
                 return AI_DIR_STAY
-        for 
         if items:
             for position in items:
                 for i in range(4):
