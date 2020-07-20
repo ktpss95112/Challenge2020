@@ -31,6 +31,44 @@ class TeamAI():
         self.enhancement = [0, 0, 0, 0]
         self.jump = False
 
+    def defensive_action(self):
+        voltages = self.helper.get_all_voltage()
+        for voltage in voltages:
+            if voltage == None or voltage == self.helper.get_self_voltage():
+                continue
+            elif voltage >= 100:
+                return None
+        items = self.helper.get_all_item_position()
+        self_id = self.helper.get_self_id()
+        all_position = self.helper.get_all_position()
+        all_range = self.helper.get_all_attack_radius()
+        for i in range(4):
+            if i == self_id or all_position[i] == None or all_range[i] == None:
+                continue
+            elif self.helper.get_distance(all_position[i],all_position[self_id]) < all_range[i]:
+                break
+            elif i == 3:
+                return AI_DIR_STAY
+        for 
+        if items:
+            for position in items:
+                for i in range(4):
+                    if i == self_id or position == None or all_range[i] == None:   
+                        continue
+                    elif self.helper.get_distance(all_position[i],position) < all_range[i]:
+                        break
+                    elif i == 3:
+                        return self.helper.walk_to_position(position)
+        
+        platform_id = self.helper.get_above_which_platform(self.helper.get_self_position())
+        platform_pos = self.helper.get_platform_position()[platform_id]
+        platform_mid = ((platform_pos[0][0] + platform_pos[1][0]) / 2,\
+                        (platform_pos[0][1]))
+        return self.helper.walk_to_position(platform_mid)
+        '''
+        return AI_DIR_STAY
+        '''
+
     def decide(self):
         decision = None
         if decision is None:
@@ -53,10 +91,13 @@ class TeamAI():
 
         if decision is None:
             decision = self.use_strategy_item()
-
+        '''
+        if decision is None:
+            decision = self.defensive_action()
+        '''
         if decision is None:
             decision = self.pick_item()
-        
+
         #if decision == None:
         #    decision = self.walk_to_highest_voltage_vincible_player()
 

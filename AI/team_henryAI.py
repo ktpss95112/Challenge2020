@@ -20,6 +20,7 @@ ZAP_ZAP_ZAP = 4
 BANANA_PEEL = 5
 RAINBOW_GROUNDER = 6
 INVINCIBLE_BATTERY = 7
+
 X_OFFSET = 34.5
 Y_OFFSET = 31.85
 
@@ -34,11 +35,19 @@ class TeamAI:
             return True
         return False
 
+    def avoid_entity(self):
+        if self.helper.get_nearest_drop_banana_peel_position() != None and abs(self.helper.get_self_position()[0] + self.helper.get_self_velocity()[0] * 0.15 - self.helper.get_nearest_drop_banana_peel_position()[0]) < 10 and abs(self.helper.get_self_position()[1] + self.helper.get_self_velocity()[1] * 0.15 - self.helper.get_nearest_drop_banana_peel_position()[1]) < 10:
+            return True
+        return False
+        
     def decide(self):
         self_position = self.helper.get_self_position()
         target_player_position = self.helper.get_other_position(self.helper.get_nearest_player())
         nearest_item_position = self.helper.get_nearest_item_position()
-
+        '''
+        if self.avoid_entity():
+            return AI_DIR_JUMP
+        '''
         if self.helper.get_other_voltage(self.helper.get_highest_voltage_player()) >= 100 and self.in_the_map(self.helper.get_other_position(self.helper.get_highest_voltage_player())):
             target_player_position = self.helper.get_other_position(self.helper.get_highest_voltage_player())
         if self.helper.get_distance(self_position , target_player_position) <= ATTACK_RADIUS and self.helper.get_self_can_attack_time() == 0:
