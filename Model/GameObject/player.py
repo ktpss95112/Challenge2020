@@ -87,9 +87,6 @@ class Player:
         # Maintain three timers
         self.maintain_timer_every_tick()
 
-        # Maintain score
-        self.maintain_score_every_tick()
-
     def maintain_speed_every_tick(self, time):
         self.normal_speed = self.speed_function(time)
 

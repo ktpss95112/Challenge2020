@@ -293,10 +293,10 @@ class GameEngine:
         self.overlap_detect()
         self.players_collision_detect()
         for player in self.players:
+            player.maintain_score_every_tick()
             if player.is_alive():
                 # maintain position, velocity, timer and score
                 player.update_every_tick(self.platforms, self.timer)
-
                 # maintain items
                 if not player.has_item():
                     item = player.find_item_every_tick(self.items) # item is ref to an item in self.items
@@ -308,7 +308,6 @@ class GameEngine:
                 # maintain lifes
                 if not Const.LIFE_BOUNDARY.collidepoint(player.position):
                     self.ev_manager.post(EventPlayerDied(player.player_id))
-
     def update_objects(self):
         '''
         Update the objects not controlled by user.
