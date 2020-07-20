@@ -30,6 +30,7 @@ class TeamAI():
         self.helper = helper
         self.enhancement = [0, 0, 0, 0]
         self.jump = False
+        self.item_wait_time = 0
 
     def decide(self):
         decision = None
@@ -57,16 +58,16 @@ class TeamAI():
         if decision is None:
             decision = self.pick_item()
         
-        #if decision == None:
-        #    decision = self.walk_to_highest_voltage_vincible_player()
+        if decision == None:
+            decision = self.stay_away()
 
         if decision == None:
-            decision = self.walk_to_nearest_vincible_player()
-            
-        if decision == None:
-            decision = AI_DIR_STAY
+            decision = self.walk_to_specific_player()
 
         return decision
+
+    def stay_away(self):
+        pass
 
     def attack(self):
         nearest_id = self.helper.get_nearest_player()
@@ -79,11 +80,24 @@ class TeamAI():
     def effective_attack_radius(self, other_id):
         return min(self.helper.get_self_radius() + 1.2 * self.helper.get_other_radius(other_id), self.helper.get_self_attack_radius())
 
+    def walk_to_specific_player(self):
+        player_ids = [ 0, 1, 2, 3 ]
+        distances = self.helper.get_all_player_distance()
+        id2dis = zip(player_ids, distances)
+        id2dis = sorted(id2dis, key= lambda x : x[1] if x[1] is not None else 0, reverse= True)
+        for player_id, distance in id2dis:
+            if distance is not None and not self.helper.get_other_is_invincible(player_id) and self.helper.get_other_voltage(player_id) > 100:
+                return self.helper.walk_to_position(self.helper.get_other_position(player_id))
+        for player_id, distance in id2dis:
+            if distance is not None and not self.helper.get_other_is_invincible(player_id):
+                return self.helper.walk_to_position(self.helper.get_other_position(player_id))
+        return None
+
+
     def walk_to_nearest_vincible_player(self):
         self_id = self.helper.get_self_id()
         self_position = self.helper.get_self_position()
-        nearest_distance = None
-        nearest_player_position = None
+        nearest_distance, nearest_player_position, nearest_player_radius = None, None, None
         for i in range(4):
             if i == self_id or self.helper.get_other_life(i) == 0:
                 continue
@@ -91,31 +105,30 @@ class TeamAI():
             distance = self.helper.get_distance(self_position, other_position)
             if not self.helper.get_other_is_invincible(i):
                 if nearest_distance == None or distance < nearest_distance:
-                    nearest_distance, nearest_player_position = distance, other_position
+                    nearest_distance, nearest_player_position, nearest_player_radius = distance, other_position, self.helper.get_other_radius(i)
         
         if nearest_distance == None:
             return None
-        return self.helper.walk_to_position(nearest_player_position)
+        return self.helper.walk_to_position((nearest_player_position[0], nearest_player_position[1] - nearest_player_radius - self.helper.get_self_radius()))
     
     def walk_to_highest_voltage_vincible_player(self):
         self_id = self.helper.get_self_id()
         self_position = self.helper.get_self_position()
-        highest_voltage = None
-        target_player_position = None
+        highest_voltage, target_player_position, target_player_radius = None, None, None
         for i in range(4):
             if i == self_id or self.helper.get_other_life(i) == 0:
                 continue
             other_position = self.helper.get_other_position(i)
             other_voltage = self.helper.get_other_voltage(i)
-            if other_voltage > 85:
+            if other_voltage < 90:
                 continue
             if not self.helper.get_other_is_invincible(i):
                 if highest_voltage == None or other_voltage > highest_voltage:
-                    highest_voltage, target_player_position = other_voltage, other_position
+                    highest_voltage, target_player_position, target_player_radius = other_voltage, other_position, self.helper.get_other_radius(i)
         
         if target_player_position == None:
             return None
-        return self.helper.walk_to_position(target_player_position)
+        return self.helper.walk_to_position((target_player_position[0], target_player_position[0] - target_player_radius - self.helper.get_self_radius()))
     
     def pick_item(self):
         # Pick item according to priority
@@ -123,38 +136,27 @@ class TeamAI():
             return None
 
         elif self.helper.get_all_invincible_battery_position():
-            return self.walk_to_nearest_item(self.helper.get_all_invincible_battery_position())
+            return self.helper.walk_to_position(self.helper.get_nearest_specific_item_position(INVINCIBLE_BATTERY))
+        
+        elif self.helper.get_all_zap_zap_zap_position():
+            return self.helper.walk_to_position(self.helper.get_nearest_specific_item_position(ZAP_ZAP_ZAP))
         
         elif self.helper.get_all_rainbow_grounder_position():
-            return self.walk_to_nearest_item(self.helper.get_all_rainbow_grounder_position())
+            return self.helper.walk_to_position(self.helper.get_nearest_specific_item_position(RAINBOW_GROUNDER))
         
         elif self.helper.get_self_is_invincible():
             return None
 
-        elif self.helper.get_all_zap_zap_zap_position():
-            return self.walk_to_nearest_item(self.helper.get_all_zap_zap_zap_position())
-
         elif self.helper.get_all_big_black_hole_position():
-            return self.walk_to_nearest_item(self.helper.get_all_big_black_hole_position())
+            return self.helper.walk_to_position(self.helper.get_nearest_specific_item_position(BIG_BLACK_HOLE))
         
         return None
-
-    def walk_to_nearest_item(self, items):
-        # Walk to the nearist item in the list
-        self_position = self.helper.get_self_position()
-        min_distance = None
-        min_item_position = self_position
-        for p in items:
-            distance = self.helper.get_distance(self_position, p)
-            if not self.helper.get_position_will_drop(p):
-                if min_distance == None or distance < min_distance:
-                    min_distance = distance
-                    min_item_position = p
-        return self.helper.walk_to_position(min_item_position)
 
     def use_immediate_item(self):
         item_id = self.helper.get_self_keep_item_id()
         if item_id == BANANA_PISTOL:
+            return AI_DIR_USE_ITEM
+            '''
             self_id = self.helper.get_self_id()
             self_position = self.helper.get_self_position()
             for i in range(4):
@@ -166,6 +168,7 @@ class TeamAI():
                         return AI_DIR_USE_ITEM
 
             return None
+            '''
 
         elif item_id == BIG_BLACK_HOLE:
             return AI_DIR_USE_ITEM
@@ -186,7 +189,8 @@ class TeamAI():
             return None
 
         elif item_id == BANANA_PEEL:
-            return AI_DIR_USE_ITEM
+            if self.item_wait_time == 3 * 60:
+                return AI_DIR_USE_ITEM
             self_id = self.helper.get_self_id()
             self_position = self.helper.get_self_position()
             for i in range(4):
@@ -195,8 +199,9 @@ class TeamAI():
                 other_position = self.helper.get_other_position(i)
                 if (self.helper.get_self_radius() == LEFT) ^ (other_position[0] > self_position[0]):
                     if abs(other_position[0] - self_position[0]) < 5 * self.helper.get_self_radius() and -self.helper.get_self_radius() <= other_position[1] - self_position[1] < 3 * self.helper.get_self_radius():
+                        self.item_wait_time = 0
                         return AI_DIR_USE_ITEM
-
+            self.item_wait_time += 1
             return None
 
         elif item_id == RAINBOW_GROUNDER:
@@ -274,7 +279,7 @@ class TeamAI():
         self_dir = self.helper.get_self_direction()
         self_radius = self.helper.get_self_radius()
         for peel in self.helper.get_all_drop_banana_peel_position():
-            if abs(peel[0] - self_pos[0]) < 2 * self_radius + BANANA_PEEL_RADIUS and -self_radius - BANANA_PEEL_RADIUS < abs(peel[1] - self_pos[1]) < self_radius + BANANA_PEEL_RADIUS:
+            if abs(peel[0] - self_pos[0]) < 2 * self_radius + BANANA_PEEL_RADIUS and abs(peel[1] - self_pos[1]) <= self_radius + BANANA_PEEL_RADIUS:
                 if self_dir == LEFT and peel[0] - self_pos[0] < 0:
                     return AI_DIR_LEFT_JUMP
                 elif self_dir == RIGHT and peel[0] - self_pos[0] > 0:
@@ -317,8 +322,8 @@ class TeamAI():
 
     def not_drop(self):
         # Wait to modify
-        if self.helper.get_self_velocity()[1] > 3 * self.helper.get_self_jump_speed():
-            return self.jump_high()
+        if abs(self.helper.get_self_velocity()[1]) > 2 * self.helper.get_self_jump_speed():
+            return AI_DIR_JUMP
         if self.helper.get_self_have_platform_below():
             return None
         if self.helper.get_self_direction() == LEFT:
@@ -401,3 +406,16 @@ class TeamAI():
                     return AI_DIR_RIGHT
             else:
                 return AI_DIR_RIGHT
+
+    def walk_to_nearest_item(self, items):
+        # Walk to the nearist item in the list
+        self_position = self.helper.get_self_position()
+        min_distance = None
+        min_item_position = self_position
+        for p in items:
+            distance = self.helper.get_distance(self_position, p)
+            if not self.helper.get_position_will_drop(p):
+                if min_distance == None or distance < min_distance:
+                    min_distance = distance
+                    min_item_position = p
+        return self.helper.walk_to_position(min_item_position)
