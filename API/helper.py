@@ -521,71 +521,98 @@ class Helper(object):
     # friendly
     def walk_to_position(self, target_position):
         player_position = tuple(self.model.players[self.player_id].position)
+        #取得目標與玩家分別在哪個平台之上
         player_above_which_land = self.get_above_which_platform(player_position)
         target_above_which_land = self.get_above_which_platform(target_position)
-        command = AI_DIR_STAY        
-        self_velocity = self.get_self_velocity()
-        self_jump_quota = self.get_self_jump_quota()
-        closest_land_vector = self.get_position_vector_to_closest_land()
+
+        command = AI_DIR_STAY # 預設指令       
+        self_velocity = self.get_self_velocity() #獲取自身速度
+        self_jump_quota = self.get_self_jump_quota() #獲取剩餘跳躍次數
+        closest_land_vector = self.get_position_vector_to_closest_land() #離最近的平台的向量
+
+        #如果我正在往下掉、沒有任何跳躍次數、且我下方沒有任何平台時，靠近離我最近的平台
         if self_velocity[1] > 0 and self_jump_quota == 0 and player_above_which_land == -1:
             if closest_land_vector[0] < 0:
                 command = AI_DIR_LEFT
             else:
                 command = AI_DIR_RIGHT
+
+        #如果我正在往下掉、沒有任何跳躍次數、且我下方有平台時，走到平台的正中心
         elif self_velocity[1] > 0 and self_jump_quota == 0 and player_above_which_land != -1:
             if (self.model.platforms[player_above_which_land].upper_left.x + self.model.platforms[player_above_which_land].bottom_right.x) / 2 - player_position[0] > 0 :
                 command = AI_DIR_RIGHT
             else:
                 command = AI_DIR_LEFT
 
+        #如果我下方沒有平台時
         elif player_above_which_land == -1:
+            #如果我正在往下掉、有跳躍次數、且我的位置比目標還低，則跳躍
             if self_velocity[1] >= 0 and self_jump_quota > 0 and player_position[1] > target_position[1]:
                 command = AI_DIR_JUMP
+            #x座標上的靠近
             elif player_position[0] > target_position[0]:
                 command = AI_DIR_LEFT
             else:
                 command = AI_DIR_RIGHT
+        #如果我與目標在一樣的平台上 or 我的位置比目標還低
         elif player_above_which_land == target_above_which_land or player_position[1] > target_position[1]:
+            #如果我正在往下掉、有跳躍次數、且x,y座標差都在一定的誤差之外，則跳躍
             if self_velocity[1] >= 0 and self_jump_quota > 0 and abs(player_position[0] - target_position[0]) < 10 and abs(player_position[1] - target_position[1]) > Const.PLAYER_RADIUS*2:
                 command = AI_DIR_JUMP
+            #x座標上的靠近
             elif player_position[0] > target_position[0]:
                 command = AI_DIR_LEFT
             else:
                 command = AI_DIR_RIGHT
+        #如果目標位置比我的位置還低的時候(這裡寫法是在以知道所有平台相對位置的前提去寫的，所以閱讀此段程式碼前，推薦先把Const裡面的各個stage的平台座標看過一次)
         elif player_position[1] <= target_position[1]:
+            #stage1的情況
             if self.model.stage == Const.STAGE_1:
+                #如果在中間最高的平台上時，靠左走左，靠右走右
                 if player_above_which_land == 2:
                     if player_position[0] < 680:
                         command = AI_DIR_LEFT
                     else:
                         command = AI_DIR_RIGHT 
+                #如果在中間左邊的平台上時，一律向右
                 elif player_above_which_land == 1:
                     command = AI_DIR_RIGHT
+                #如果在中間右邊的平台上時，一律向左
                 elif player_above_which_land == 3:
                     command = AI_DIR_LEFT
+            #stage2的情況
             elif self.model.stage == Const.STAGE_2:
+                #如果你的x座標小於587則向右，大於587則向左
                 if player_position[0] < 587:
                     command = AI_DIR_RIGHT
                 else:
                     command = AI_DIR_LEFT
+            #stage3的情況
             elif self.model.stage == Const.STAGE_3:
+                #如果你在左上平台則向右
                 if player_above_which_land == 4:
                     command = AI_DIR_RIGHT
+                #如果你在左下平台則向左
                 elif player_above_which_land == 5:
                     command = AI_DIR_LEFT
+                #如果你在中間的那兩個平台時
                 elif player_above_which_land == 3 or player_above_which_land == 2:
+                    #如果目標在中間偏下的平台時(意味著我在中間偏上的平台)，則靠左走左，靠右走右
                     if target_above_which_land == 2:
                         if player_position[0] < 680:
                             command = AI_DIR_LEFT
                         else:
                             command = AI_DIR_RIGHT
+                    #其他情況(回過頭看好像也沒什麼例外情況?)，則盡可能在x座標上靠近
                     else:
                         if player_position[0] > target_position[0]:
                             command = AI_DIR_LEFT
                         else:
                             command = AI_DIR_RIGHT
+                #如果你在左下方的平台則向右
                 elif player_above_which_land == 0:
                     command = AI_DIR_RIGHT
+                #如果你在右下方的平台則向左
                 elif player_above_which_land == 1:
                     command = AI_DIR_LEFT
         return command
