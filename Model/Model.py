@@ -477,4 +477,4 @@ class GameEngine:
         self.ev_manager.post(EventInitialize())
         while self.running:
             self.ev_manager.post(EventEveryTick())
-            self.clock.tick(Const.FPS)
+            #self.clock.tick(Const.FPS)
