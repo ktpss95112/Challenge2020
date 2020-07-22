@@ -71,13 +71,13 @@ class TeamAI:
                     return AI_DIR_USE_ITEM
                 elif self.helper.get_self_voltage() >= 80:
                     return AI_DIR_USE_ITEM
-                    maxidx = distance.index(max(distance))
-                    meanpos = (sum(all_pos[i][0] for i in range(len(distance)) if i != maxidx)/2 , \
-                    sum(all_pos[i][1] for i in range(len(distance)) if i != maxidx)/2)
-                    return self.helper.walk_to_position(meanpos)
+                maxidx = distance.index(max(distance))
+                meanpos = (sum(all_pos[i][0] for i in range(len(distance)) if i != maxidx)/2 , \
+                sum(all_pos[i][1] for i in range(len(distance)) if i != maxidx)/2)
+                return self.helper.walk_to_position(meanpos)
                 
             elif self.helper.get_self_keep_item_id() == CANCER_BOMB: 
-                if min(dis for dis in distance if dis != None) < self.helper.get_cancer_bomb_effect_radius() * 0.8:
+                if min(dis for dis in distance if dis != None) < self.helper.get_cancer_bomb_effect_radius() * 0.7:
                     return AI_DIR_USE_ITEM
                 #return self.helper.walk_to_position(self.helper.get_nearest_player_position())
             elif self.helper.get_self_keep_item_id() == ZAP_ZAP_ZAP:
@@ -95,7 +95,7 @@ class TeamAI:
             p = plats[(platform_id + 2) % len(plats)]
             pos = ((p[0][0] + p[1][0]) / 2 , p[0][1])
             return self.helper.walk_to_position(pos)'''
-        if platform_id == -1:
+        if platform_id == -1 and self.helper.get_self_jump_quota() <= 2:
             closest_land_vec = self.helper.get_position_vector_to_closest_land()
             closest_land_pos = (my_pos[0] + closest_land_vec[0], my_pos[1] + closest_land_vec[1])
             return self.helper.walk_to_position(closest_land_pos)
