@@ -79,7 +79,7 @@ class GameEngine:
     def check_probability():
         if abs(sum(Const.ITEM_PROBABILITY.values()) - 1) > 1e-5:
             print('Warning: Sum of Const.ITEM_PROBABILITY does not equal to 1')
-    
+
     def initialize(self):
         '''
         This method is called when a new game is instantiated.
@@ -209,7 +209,7 @@ class GameEngine:
             player = self.players[event.player_id]
             if player.is_alive() and player.has_item():
                 item_id = self.players[event.player_id].keep_item_id
-                
+
                 entities = self.players[event.player_id].use_item(self.players, self.timer)
                 peel_position, bullet_position, black_hole_position, bomb_position = [], None, None, None
                 for entity in entities:
@@ -477,4 +477,4 @@ class GameEngine:
         self.ev_manager.post(EventInitialize())
         while self.running:
             self.ev_manager.post(EventEveryTick())
-            #self.clock.tick(Const.FPS)
+            self.clock.tick(Const.FPS)
