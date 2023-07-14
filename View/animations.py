@@ -251,7 +251,7 @@ class Animation_Black_Hole:
 
             # the radius of rotation decreases by time
             rotate_radius = int(cls.radius_max - (cls.radius_max - cls.radius_min) / cls.phase1_time * _timer)
-            # rotate_radius = np.linspace(cls.radius_max, cls.radius_min, cls.phase1_time, dtype=np.int)
+            # rotate_radius = np.linspace(cls.radius_max, cls.radius_min, cls.phase1_time, dtype=int)
 
             # new theta for rotation
             newt = t - (20 * ((_timer / Const.FPS * 2 + 1) / 6)**3) * (-np.abs((r / rotate_radius - 0.5)) + 0.5)**3
@@ -261,13 +261,13 @@ class Animation_Black_Hole:
 
             # calculate rotated
             mask_rotate = (r <= rotate_radius)
-            rotatedxv = np.where(mask_rotate, (r * np.cos(newt)).astype(np.int), xv) + cls.radius_max
-            rotatedyv = np.where(mask_rotate, (r * np.sin(newt)).astype(np.int), yv) + cls.radius_max
+            rotatedxv = np.where(mask_rotate, (r * np.cos(newt)).astype(int), xv) + cls.radius_max
+            rotatedyv = np.where(mask_rotate, (r * np.sin(newt)).astype(int), yv) + cls.radius_max
 
             # calculate compressed
             mask_compress = (r <= cls.radius_max)
-            compressedxv = np.where(mask_compress, (newr * np.cos(t)).astype(np.int), xv) + cls.radius_max
-            compressedyv = np.where(mask_compress, (newr * np.sin(t)).astype(np.int), yv) + cls.radius_max
+            compressedxv = np.where(mask_compress, (newr * np.cos(t)).astype(int), xv) + cls.radius_max
+            compressedyv = np.where(mask_compress, (newr * np.sin(t)).astype(int), yv) + cls.radius_max
 
             # combine
             yi, xi = np.indices((2 * cls.radius_max, 2 * cls.radius_max))
