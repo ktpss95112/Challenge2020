@@ -172,15 +172,15 @@ class GraphicalView:
         self.items.draw(target)
         self.entities.draw(target)
 
+        self.animation_list = [ani for ani in self.animation_list if not ani.expired]
         for ani in self.animation_list:
-            if ani.expired and isinstance(ani, View.animations.Animation_Gift_Explode):
+            if isinstance(ani, View.animations.Animation_Gift_Explode):
                 self.ev_manager.post(EventDeathRainStart())
-            if ani.expired: self.animation_list.remove(ani)
-            else          : ani.draw(target, update)
+            ani.draw(target, update)
 
+        self.animation_black_hole_list = [ani for ani in self.animation_black_hole_list if not ani.expired]
         for ani in self.animation_black_hole_list:
-            if ani.expired: self.animation_black_hole_list.remove(ani)
-            else          : ani.draw(target, update)
+            ani.draw(target, update)
 
         self.scoreboard.draw(target)
         self.timer.draw(target)
